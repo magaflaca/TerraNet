@@ -1,0 +1,13 @@
+bin/
+obj/
+.vs/
+.idea/
+*.user
+artifacts/
+.cache/
+node_modules/
+.wrangler/
+secrets/
+*.keystore
+*.jks
+local.env
