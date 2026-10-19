@@ -1,0 +1,11 @@
+{
+  "listenPort": 9990,
+  "portRangeStart": 10000,
+  "portRangeEnd": 10999,
+  "publicHost": "play.hacks.win",
+  "dataDirectory": "/var/lib/terranet",
+  "certificatePath": "/etc/terranet/relay.pfx",
+  "maxSessionsPerAddress": 8,
+  "maxPlayersPerSession": 64,
+  "portRetentionDays": 45
+}

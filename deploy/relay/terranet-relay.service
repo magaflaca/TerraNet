@@ -1,0 +1,23 @@
+[Unit]
+Description=TerraNet relay
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=terranet
+Group=terranet
+ExecStart=/opt/terranet/relay/TerraNet.Relay /etc/terranet/relay.json
+Restart=always
+RestartSec=3
+LimitNOFILE=65536
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/terranet
+Environment=DOTNET_gcServer=0
+Environment=DOTNET_GCHeapHardLimit=0x20000000
+
+[Install]
+WantedBy=multi-user.target
