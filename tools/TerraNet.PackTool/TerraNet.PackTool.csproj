@@ -5,6 +5,6 @@
     <RootNamespace>TerraNet.PackTool</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Mono.Cecil" Version="0.11.6" />
+    <PackageReference Include="SharpCompress" Version="0.50.10" />
   </ItemGroup>
 </Project>
