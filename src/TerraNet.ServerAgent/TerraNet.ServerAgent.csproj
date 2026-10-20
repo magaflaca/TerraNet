@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <TShockDir Condition="'$(TShockDir)' == ''">$(MSBuildThisFileDirectory)..\..\.cache\tshock\v6.2.1\publish</TShockDir>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="TShockAPI" HintPath="$(TShockDir)\ServerPlugins\TShockAPI.dll" Private="false" />
+    <Reference Include="TerrariaServer" HintPath="$(TShockDir)\bin\TerrariaServer.dll" Private="false" />
+    <Reference Include="OTAPI" HintPath="$(TShockDir)\bin\OTAPI.dll" Private="false" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\AgentWire.cs" Link="AgentWire.cs" />
+  </ItemGroup>
+</Project>
