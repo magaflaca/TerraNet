@@ -5,7 +5,6 @@ namespace TerraNet.PackTool;
 public static class ServerStager
 {
     private static readonly string[] JunkExtensions = [".pdb", ".xml"];
-    private static readonly string[] ForeignPrefixes = ["System.", "Microsoft.", "Mono.Cecil", "NuGet.", "MySql.", "Npgsql", "Google.", "BouncyCastle", "K4os", "ZstdSharp"];
 
     public static void Stage(string tshock, string destination, PackTarget target, string sqlitePath, string runtimeVersion)
     {
@@ -24,26 +23,6 @@ public static class ServerStager
             File.Delete(junk);
 
         PinRuntime(Path.Combine(destination, "TShock.Server.runtimeconfig.json"), runtimeVersion);
-        PatchAssemblies(destination);
-    }
-
-    private static void PatchAssemblies(string root)
-    {
-        var bin = Path.Combine(root, "bin");
-        foreach (var assembly in Directory.EnumerateFiles(root, "*.dll", SearchOption.AllDirectories)
-                     .Where(f => !ForeignPrefixes.Any(p => Path.GetFileName(f).StartsWith(p, StringComparison.Ordinal)))
-                     .Where(f => !f.Contains(Path.DirectorySeparatorChar + "runtimes" + Path.DirectorySeparatorChar)))
-        {
-            try
-            {
-                var count = PlatformPatcher.Patch(assembly, bin);
-                if (count > 0)
-                    Console.WriteLine($"  patched {Path.GetRelativePath(root, assembly)} ({count})");
-            }
-            catch (BadImageFormatException)
-            {
-            }
-        }
     }
 
     private static void PinRuntime(string runtimeConfig, string runtimeVersion)

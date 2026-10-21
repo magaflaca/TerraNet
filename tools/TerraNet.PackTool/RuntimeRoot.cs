@@ -8,7 +8,7 @@ public static class RuntimeRoot
     private const string Framework = "Microsoft.NETCore.App";
     private static readonly string[] SkippedExtensions = [".a", ".lib", ".h", ".pdb", ".dbg", ".xml", ".json"];
 
-    public static void Build(string runtimePack, PackTarget target, string version, string destination)
+    public static string Build(string runtimePack, PackTarget target, string version, string destination)
     {
         var source = Path.Combine(runtimePack, "runtimes", target.RuntimeRid);
         var managed = Directory.GetDirectories(Path.Combine(source, "lib")).Single();
@@ -32,6 +32,7 @@ public static class RuntimeRoot
         }
 
         WriteFrameworkDeps(shared, target, version);
+        return shared;
     }
 
     private static void WriteFrameworkDeps(string shared, PackTarget target, string version)
