@@ -5,4 +5,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TerraNet.Protocol\TerraNet.Protocol.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\AgentWire.cs" Link="Hosting\AgentWire.cs" />
+  </ItemGroup>
 </Project>
