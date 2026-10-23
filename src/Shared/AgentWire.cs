@@ -18,11 +18,12 @@ public static class AgentWire
 
     public static AgentEvent? TryDecode(string line)
     {
-        if (!line.StartsWith(Prefix, StringComparison.Ordinal))
+        var start = line.IndexOf(Prefix, StringComparison.Ordinal);
+        if (start < 0)
             return null;
         try
         {
-            return JsonSerializer.Deserialize<AgentEvent>(line.AsSpan(Prefix.Length), Options);
+            return JsonSerializer.Deserialize<AgentEvent>(line.AsSpan(start + Prefix.Length), Options);
         }
         catch (JsonException)
         {
@@ -36,6 +37,7 @@ public static class AgentEventKind
     public const string Ready = "ready";
     public const string Players = "players";
     public const string Saved = "saved";
+    public const string Progress = "progress";
 }
 
-public sealed record AgentEvent(string Kind, string? World = null, int? Port = null, int? MaxPlayers = null, string[]? Players = null);
+public sealed record AgentEvent(string Kind, string? World = null, int? Port = null, int? MaxPlayers = null, string[]? Players = null, double? Progress = null);

@@ -9,9 +9,13 @@ internal static class StartupHook
     public static void Initialize()
     {
         AssemblyLoadContext.Default.Resolving += ResolveFromBin;
+        InstallConsoleBridge();
         if (IsMono)
             PrimeTerraria();
     }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void InstallConsoleBridge() => TerraNet.ServerAgent.ConsoleBridge.SuppressVanillaInput();
 
     private static System.Reflection.Assembly? ResolveFromBin(AssemblyLoadContext context, System.Reflection.AssemblyName name)
     {
