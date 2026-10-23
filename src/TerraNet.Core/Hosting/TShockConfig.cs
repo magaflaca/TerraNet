@@ -1,0 +1,50 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using TerraNet.Core.Settings;
+
+namespace TerraNet.Core.Hosting;
+
+public static class TShockConfig
+{
+    private const string FileName = "config.json";
+
+    public static void Write(string directory, HostSettings settings)
+    {
+        Directory.CreateDirectory(directory);
+        var path = Path.Combine(directory, FileName);
+        var root = Read(path);
+        var values = root["Settings"] as JsonObject ?? new JsonObject();
+        root["Settings"] = values;
+
+        values["ServerPassword"] = settings.Password;
+        values["MaxSlots"] = settings.MaxPlayers;
+        values["ReservedSlots"] = 0;
+        values["EnableGeoIP"] = false;
+        values["KickProxyUsers"] = false;
+        values["RestApiEnabled"] = false;
+        values["SpawnProtection"] = false;
+        values["AutoSave"] = true;
+        values["AnnounceSave"] = false;
+        values["SaveWorldOnCrash"] = true;
+        values["SaveWorldOnLastPlayerExit"] = true;
+        values["ShowBackupAutosaveMessages"] = false;
+        values["BackupInterval"] = Math.Max(5, settings.AutoSaveMinutes);
+        values["BackupKeepFor"] = Math.Max(30, settings.AutoSaveMinutes * 6);
+
+        File.WriteAllText(path, root.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+    }
+
+    private static JsonObject Read(string path)
+    {
+        if (!File.Exists(path))
+            return new JsonObject();
+        try
+        {
+            return JsonNode.Parse(File.ReadAllText(path)) as JsonObject ?? new JsonObject();
+        }
+        catch (JsonException)
+        {
+            return new JsonObject();
+        }
+    }
+}
