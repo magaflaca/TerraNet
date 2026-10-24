@@ -16,6 +16,7 @@ public sealed record PackTarget(
     IReadOnlyDictionary<string, string> Environment)
 {
     public const string RuntimeDirectoryToken = "{runtime}";
+    public const string PackToken = "{pack}";
 
     public static readonly IReadOnlyList<PackTarget> All =
     [

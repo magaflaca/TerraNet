@@ -56,7 +56,7 @@ var manifest = new PackManifest(
     "server/TShock.Server.dll",
     host,
     "server/ServerPlugins/" + Path.GetFileName(agent),
-    target.Environment.ToDictionary(e => e.Key, e => e.Value.Replace(PackTarget.RuntimeDirectoryToken, relativeRuntime)));
+    target.Environment.ToDictionary(e => e.Key, e => e.Value.Replace(PackTarget.RuntimeDirectoryToken, PackTarget.PackToken + "/" + relativeRuntime)));
 
 File.WriteAllText(Path.Combine(output, "pack.json"), JsonSerializer.Serialize(manifest, new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
 Console.WriteLine("done");
