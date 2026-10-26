@@ -1,0 +1,97 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="using:TerraNet.App.Controls">
+
+  <Style Selector="TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource InkBrush}" />
+    <Setter Property="FontSize" Value="16" />
+  </Style>
+  <Style Selector="TextBlock.title">
+    <Setter Property="FontSize" Value="34" />
+    <Setter Property="FontWeight" Value="Bold" />
+  </Style>
+  <Style Selector="TextBlock.h1">
+    <Setter Property="FontSize" Value="24" />
+    <Setter Property="FontWeight" Value="Bold" />
+  </Style>
+  <Style Selector="TextBlock.h2">
+    <Setter Property="FontSize" Value="19" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+  <Style Selector="TextBlock.label">
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{DynamicResource InkMutedBrush}" />
+    <Setter Property="Margin" Value="2,0,0,6" />
+  </Style>
+  <Style Selector="TextBlock.muted">
+    <Setter Property="Foreground" Value="{DynamicResource InkMutedBrush}" />
+    <Setter Property="FontSize" Value="14" />
+  </Style>
+  <Style Selector="TextBlock.address">
+    <Setter Property="FontSize" Value="26" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+  </Style>
+
+  <Style Selector="c|PixelSprite">
+    <Setter Property="Tint" Value="{DynamicResource InkBrush}" />
+  </Style>
+  <Style Selector="Button.primary c|PixelSprite, Button.danger c|PixelSprite">
+    <Setter Property="Tint" Value="{DynamicResource OnPrimaryBrush}" />
+  </Style>
+
+  <Style Selector="c|PixelFrame.card">
+    <Setter Property="Fill" Value="{DynamicResource SurfaceBrush}" />
+    <Setter Property="Stroke" Value="{DynamicResource OutlineBrush}" />
+    <Setter Property="Shadow" Value="{DynamicResource ShadowBrush}" />
+    <Setter Property="Highlight" Value="{DynamicResource HighlightBrush}" />
+    <Setter Property="Depth" Value="2" />
+    <Setter Property="Padding" Value="16,14" />
+  </Style>
+  <Style Selector="c|PixelFrame.field">
+    <Setter Property="Fill" Value="{DynamicResource FieldBrush}" />
+    <Setter Property="Stroke" Value="{DynamicResource OutlineBrush}" />
+    <Setter Property="Shadow" Value="{x:Null}" />
+    <Setter Property="Depth" Value="0" />
+    <Setter Property="Padding" Value="4,0" />
+  </Style>
+  <Style Selector="c|PixelFrame.chip">
+    <Setter Property="Fill" Value="{DynamicResource AccentSoftBrush}" />
+    <Setter Property="Stroke" Value="{DynamicResource OutlineBrush}" />
+    <Setter Property="Depth" Value="0" />
+    <Setter Property="Unit" Value="2" />
+    <Setter Property="Padding" Value="8,3" />
+  </Style>
+  <Style Selector="c|PixelFrame.toast">
+    <Setter Property="Fill" Value="{DynamicResource InkBrush}" />
+    <Setter Property="Stroke" Value="{DynamicResource OutlineBrush}" />
+    <Setter Property="Depth" Value="0" />
+    <Setter Property="Padding" Value="14,8" />
+  </Style>
+  <Style Selector="c|PixelFrame.toast TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource PageBrush}" />
+  </Style>
+
+  <Style Selector="TextBox">
+    <Setter Property="FontSize" Value="17" />
+    <Setter Property="Foreground" Value="{DynamicResource InkBrush}" />
+    <Setter Property="CaretBrush" Value="{DynamicResource InkBrush}" />
+    <Setter Property="SelectionBrush" Value="{DynamicResource AccentBrush}" />
+    <Setter Property="Padding" Value="8,9" />
+    <Setter Property="MinHeight" Value="0" />
+  </Style>
+
+  <Style Selector="c|PixelProgress">
+    <Setter Property="Fill" Value="{DynamicResource PrimaryBrush}" />
+    <Setter Property="Track" Value="{DynamicResource TrackBrush}" />
+    <Setter Property="Stroke" Value="{DynamicResource OutlineBrush}" />
+  </Style>
+
+  <Style Selector="c|PixelSwitch">
+    <Setter Property="OnBrush" Value="{DynamicResource PrimaryBrush}" />
+    <Setter Property="OffBrush" Value="{DynamicResource TrackBrush}" />
+    <Setter Property="KnobBrush" Value="{DynamicResource SurfaceBrush}" />
+    <Setter Property="Stroke" Value="{DynamicResource OutlineBrush}" />
+  </Style>
+</Styles>

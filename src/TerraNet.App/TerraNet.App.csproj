@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="..\..\art\fonts\*.ttf" Link="Assets\Fonts\%(Filename)%(Extension)" />
+    <EmbeddedResource Include="..\..\art\sprites.json" Link="Assets\sprites.json" LogicalName="TerraNet.Sprites.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Avalonia.Themes.Fluent" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TerraNet.Core\TerraNet.Core.csproj" />
+  </ItemGroup>
+</Project>

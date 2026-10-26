@@ -1,0 +1,64 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="TerraNet.App.App"
+             RequestedThemeVariant="Default">
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://TerraNet.App/Styles/Themes.axaml" />
+      </ResourceDictionary.MergedDictionaries>
+      <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+          <Color x:Key="SkyTopColor">#8FD0FF</Color>
+          <Color x:Key="SkyBottomColor">#EAF7FF</Color>
+          <SolidColorBrush x:Key="PageBrush" Color="#EEF8FF" />
+          <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFBF3" />
+          <SolidColorBrush x:Key="SurfaceAltBrush" Color="#FFF0DC" />
+          <SolidColorBrush x:Key="FieldBrush" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="InkBrush" Color="#3B2F4A" />
+          <SolidColorBrush x:Key="InkMutedBrush" Color="#857898" />
+          <SolidColorBrush x:Key="OutlineBrush" Color="#3B2F4A" />
+          <SolidColorBrush x:Key="ShadowBrush" Color="#C9BEDF" />
+          <SolidColorBrush x:Key="HighlightBrush" Color="#66FFFFFF" />
+          <SolidColorBrush x:Key="PrimaryBrush" Color="#5FC970" />
+          <SolidColorBrush x:Key="PrimarySoftBrush" Color="#D9F5D2" />
+          <SolidColorBrush x:Key="OnPrimaryBrush" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="AccentBrush" Color="#7CC4F7" />
+          <SolidColorBrush x:Key="AccentSoftBrush" Color="#DDF0FF" />
+          <SolidColorBrush x:Key="DangerBrush" Color="#FF8AAE" />
+          <SolidColorBrush x:Key="DangerSoftBrush" Color="#FFE1EA" />
+          <SolidColorBrush x:Key="GoldBrush" Color="#FFCF5C" />
+          <SolidColorBrush x:Key="TrackBrush" Color="#EDE6F7" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+          <Color x:Key="SkyTopColor">#16132E</Color>
+          <Color x:Key="SkyBottomColor">#4A3F86</Color>
+          <SolidColorBrush x:Key="PageBrush" Color="#1D1934" />
+          <SolidColorBrush x:Key="SurfaceBrush" Color="#2A2447" />
+          <SolidColorBrush x:Key="SurfaceAltBrush" Color="#352D59" />
+          <SolidColorBrush x:Key="FieldBrush" Color="#221D3C" />
+          <SolidColorBrush x:Key="InkBrush" Color="#F4ECFF" />
+          <SolidColorBrush x:Key="InkMutedBrush" Color="#A89BCB" />
+          <SolidColorBrush x:Key="OutlineBrush" Color="#0E0B1D" />
+          <SolidColorBrush x:Key="ShadowBrush" Color="#120F24" />
+          <SolidColorBrush x:Key="HighlightBrush" Color="#26FFFFFF" />
+          <SolidColorBrush x:Key="PrimaryBrush" Color="#45BFA0" />
+          <SolidColorBrush x:Key="PrimarySoftBrush" Color="#21453F" />
+          <SolidColorBrush x:Key="OnPrimaryBrush" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="AccentBrush" Color="#A77BEA" />
+          <SolidColorBrush x:Key="AccentSoftBrush" Color="#3A2F66" />
+          <SolidColorBrush x:Key="DangerBrush" Color="#E5536A" />
+          <SolidColorBrush x:Key="DangerSoftBrush" Color="#4A2337" />
+          <SolidColorBrush x:Key="GoldBrush" Color="#FFCF5C" />
+          <SolidColorBrush x:Key="TrackBrush" Color="#1A1630" />
+        </ResourceDictionary>
+      </ResourceDictionary.ThemeDictionaries>
+      <FontFamily x:Key="PixelFont">avares://TerraNet.App/Assets/Fonts#Pixelify Sans</FontFamily>
+    </ResourceDictionary>
+  </Application.Resources>
+
+  <Application.Styles>
+    <FluentTheme />
+    <StyleInclude Source="avares://TerraNet.App/Styles/Pixel.axaml" />
+  </Application.Styles>
+</Application>
