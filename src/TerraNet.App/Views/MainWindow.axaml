@@ -1,0 +1,12 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v="using:TerraNet.App.Views"
+        x:Class="TerraNet.App.Views.MainWindow"
+        Title="TerraNet"
+        Width="1120"
+        Height="700"
+        MinWidth="400"
+        MinHeight="520"
+        Background="{DynamicResource PageBrush}">
+  <v:MainView />
+</Window>

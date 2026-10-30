@@ -1,0 +1,50 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:TerraNet.App.ViewModels"
+             xmlns:v="using:TerraNet.App.Views"
+             xmlns:c="using:TerraNet.App.Controls"
+             x:Class="TerraNet.App.Views.MainView"
+             x:DataType="vm:MainViewModel"
+             Background="{DynamicResource PageBrush}"
+             FontFamily="{StaticResource PixelFont}">
+  <UserControl.Resources>
+    <Thickness x:Key="SafeAreaTop">0</Thickness>
+    <Thickness x:Key="SafeAreaBottom">0</Thickness>
+  </UserControl.Resources>
+  <UserControl.DataTemplates>
+    <DataTemplate DataType="vm:HomeViewModel"><v:HomeView /></DataTemplate>
+    <DataTemplate DataType="vm:WorldEditorViewModel"><v:WorldEditorView /></DataTemplate>
+    <DataTemplate DataType="vm:SettingsViewModel"><v:SettingsView /></DataTemplate>
+    <DataTemplate DataType="vm:ConsoleViewModel"><v:ConsoleView /></DataTemplate>
+    <DataTemplate DataType="vm:UpdateViewModel"><v:UpdateView /></DataTemplate>
+    <DataTemplate DataType="vm:ConfirmViewModel"><v:ConfirmView /></DataTemplate>
+  </UserControl.DataTemplates>
+
+  <Panel>
+    <TransitioningContentControl Content="{Binding Page}">
+      <TransitioningContentControl.PageTransition>
+        <CrossFade Duration="0:0:0.18" />
+      </TransitioningContentControl.PageTransition>
+    </TransitioningContentControl>
+
+    <Panel IsVisible="{Binding Dialog, Converter={x:Static ObjectConverters.IsNotNull}}">
+      <Border Background="#8C120F24" PointerPressed="OnBackdropPressed" />
+      <TransitioningContentControl Content="{Binding Dialog}"
+                                   MaxWidth="440"
+                                   Margin="20"
+                                   VerticalAlignment="Center">
+        <TransitioningContentControl.PageTransition>
+          <CrossFade Duration="0:0:0.14" />
+        </TransitioningContentControl.PageTransition>
+      </TransitioningContentControl>
+    </Panel>
+
+    <c:PixelFrame Classes="toast"
+                  IsVisible="{Binding Toast, Converter={x:Static ObjectConverters.IsNotNull}}"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Bottom"
+                  Margin="0,0,0,40">
+      <TextBlock Text="{Binding Toast}" FontWeight="SemiBold" />
+    </c:PixelFrame>
+  </Panel>
+</UserControl>

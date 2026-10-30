@@ -1,0 +1,19 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="using:TerraNet.App.Controls"
+             xmlns:v="using:TerraNet.App.Views"
+             xmlns:vm="using:TerraNet.App.ViewModels"
+             x:Class="TerraNet.App.Views.PageHeader"
+             x:DataType="v:PageHeader">
+  <Grid Margin="{DynamicResource SafeAreaTop}" ColumnDefinitions="Auto,*">
+    <Button Classes="soft icon"
+            Margin="16,14,12,10"
+            Command="{Binding $parent[v:MainView].((vm:MainViewModel)DataContext).GoBackCommand}">
+      <c:PixelSprite Sprite="back" Unit="2" />
+    </Button>
+    <TextBlock Grid.Column="1"
+               Classes="h1"
+               VerticalAlignment="Center"
+               Text="{Binding $parent[v:PageHeader].Title}" />
+  </Grid>
+</UserControl>
