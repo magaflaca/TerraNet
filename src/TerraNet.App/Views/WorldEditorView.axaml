@@ -1,0 +1,81 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:TerraNet.App.ViewModels"
+             xmlns:v="using:TerraNet.App.Views"
+             xmlns:c="using:TerraNet.App.Controls"
+             xmlns:app="using:TerraNet.App"
+             x:Class="TerraNet.App.Views.WorldEditorView"
+             x:DataType="vm:WorldEditorViewModel">
+  <UserControl.Resources>
+    <DataTemplate x:Key="ChoiceTemplate" x:DataType="vm:Choice">
+      <StackPanel Spacing="8">
+        <c:PixelSprite Sprite="{Binding Sprite}" Unit="{Binding Unit}" Height="64" />
+        <TextBlock Text="{Binding Label}" FontSize="14" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" />
+      </StackPanel>
+    </DataTemplate>
+  </UserControl.Resources>
+
+  <Grid RowDefinitions="Auto,*,Auto">
+    <v:PageHeader Title="{app:Tr newWorld}" />
+
+    <ScrollViewer Grid.Row="1">
+      <StackPanel MaxWidth="560" Margin="16,8,16,16" Spacing="20">
+        <StackPanel>
+          <TextBlock Classes="label" Text="{app:Tr name}" />
+          <Grid ColumnDefinitions="*,Auto">
+            <c:PixelFrame Classes="field">
+              <TextBox Text="{Binding Name}" MaxLength="27" />
+            </c:PixelFrame>
+            <Button Grid.Column="1" Classes="soft icon" Margin="10,0,0,0" Command="{Binding RandomizeCommand}">
+              <c:PixelSprite Sprite="dice" Unit="2" />
+            </Button>
+          </Grid>
+        </StackPanel>
+
+        <StackPanel>
+          <TextBlock Classes="label" Text="{app:Tr size}" />
+          <ListBox Theme="{StaticResource ChoiceList}"
+                   ItemsSource="{Binding Sizes}"
+                   SelectedItem="{Binding Size}"
+                   ItemTemplate="{StaticResource ChoiceTemplate}" />
+        </StackPanel>
+
+        <StackPanel>
+          <TextBlock Classes="label" Text="{app:Tr difficulty}" />
+          <ListBox Theme="{StaticResource ChoiceList}"
+                   ItemsSource="{Binding Difficulties}"
+                   SelectedItem="{Binding Difficulty}"
+                   ItemTemplate="{StaticResource ChoiceTemplate}" />
+        </StackPanel>
+
+        <StackPanel>
+          <TextBlock Classes="label" Text="{app:Tr evil}" />
+          <ListBox Theme="{StaticResource ChoiceList}"
+                   ItemsSource="{Binding Evils}"
+                   SelectedItem="{Binding Evil}"
+                   ItemTemplate="{StaticResource ChoiceTemplate}" />
+        </StackPanel>
+
+        <StackPanel>
+          <TextBlock Classes="label" Text="{app:Tr seed}" />
+          <c:PixelFrame Classes="field">
+            <TextBox Text="{Binding Seed}" PlaceholderText="{app:Tr optional}" />
+          </c:PixelFrame>
+        </StackPanel>
+      </StackPanel>
+    </ScrollViewer>
+
+    <Border Grid.Row="2" Padding="{DynamicResource SafeAreaBottom}">
+      <Button Classes="primary"
+              MaxWidth="560"
+              Margin="16,8,16,16"
+              HorizontalAlignment="Stretch"
+              Command="{Binding CreateCommand}">
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <c:PixelSprite Sprite="sparkle" Unit="2" />
+          <TextBlock Text="{app:Tr create}" Foreground="{DynamicResource OnPrimaryBrush}" FontSize="18" />
+        </StackPanel>
+      </Button>
+    </Border>
+  </Grid>
+</UserControl>
