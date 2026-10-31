@@ -1,0 +1,35 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:TerraNet.App.ViewModels"
+             xmlns:v="using:TerraNet.App.Views"
+             xmlns:c="using:TerraNet.App.Controls"
+             xmlns:app="using:TerraNet.App"
+             x:Class="TerraNet.App.Views.ConsoleView"
+             x:DataType="vm:ConsoleViewModel">
+  <Grid RowDefinitions="Auto,*,Auto">
+    <v:PageHeader Title="{app:Tr console}" />
+
+    <c:PixelFrame Grid.Row="1" Classes="card" Margin="16,4,16,8" Padding="12,10" Fill="{DynamicResource FieldBrush}">
+      <ScrollViewer Name="Scroller">
+        <ItemsControl ItemsSource="{Binding Lines}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="x:String">
+              <SelectableTextBlock Text="{Binding}" FontSize="13" TextWrapping="Wrap" Foreground="{DynamicResource InkBrush}" Margin="0,1" />
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+    </c:PixelFrame>
+
+    <Border Grid.Row="2" Padding="{DynamicResource SafeAreaBottom}">
+      <Grid Margin="16,4,16,16" ColumnDefinitions="*,Auto">
+        <c:PixelFrame Classes="field">
+          <TextBox Name="Input" Text="{Binding Input}" PlaceholderText="{app:Tr command}" KeyDown="OnInputKeyDown" />
+        </c:PixelFrame>
+        <Button Grid.Column="1" Classes="primary icon" Margin="10,0,0,0" Command="{Binding SendCommand}">
+          <c:PixelSprite Sprite="play" Unit="2" />
+        </Button>
+      </Grid>
+    </Border>
+  </Grid>
+</UserControl>
