@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:TerraNet.App.ViewModels"
+             xmlns:c="using:TerraNet.App.Controls"
+             xmlns:app="using:TerraNet.App"
+             x:Class="TerraNet.App.Views.UpdateView"
+             x:DataType="vm:UpdateViewModel">
+  <c:PixelFrame Classes="card" Padding="20,18">
+    <StackPanel Spacing="14">
+      <StackPanel Orientation="Horizontal" Spacing="12">
+        <c:PixelSprite Sprite="chest" Unit="3" />
+        <StackPanel VerticalAlignment="Center">
+          <TextBlock Classes="h2" Text="{app:Tr newVersion}" />
+          <TextBlock Classes="muted" Text="{Binding Version}" />
+        </StackPanel>
+      </StackPanel>
+      <ItemsControl ItemsSource="{Binding Notes}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="x:String">
+            <Grid ColumnDefinitions="Auto,*" Margin="0,3">
+              <c:PixelSprite Sprite="sparkle" Unit="1" VerticalAlignment="Top" Margin="0,5,10,0" />
+              <TextBlock Grid.Column="1" Text="{Binding}" TextWrapping="Wrap" FontSize="15" />
+            </Grid>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+      <c:PixelProgress Value="{Binding Progress}" IsVisible="{Binding IsDownloading}" />
+      <Grid ColumnDefinitions="*,12,*" IsVisible="{Binding IsIdle}">
+        <Button Classes="soft" HorizontalAlignment="Stretch" Command="{Binding LaterCommand}">
+          <TextBlock Text="{app:Tr later}" />
+        </Button>
+        <Button Grid.Column="2" Classes="primary" HorizontalAlignment="Stretch" Command="{Binding UpdateCommand}">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <c:PixelSprite Sprite="download" Unit="2" />
+            <TextBlock Text="{app:Tr update}" Foreground="{DynamicResource OnPrimaryBrush}" />
+          </StackPanel>
+        </Button>
+      </Grid>
+    </StackPanel>
+  </c:PixelFrame>
+</UserControl>
