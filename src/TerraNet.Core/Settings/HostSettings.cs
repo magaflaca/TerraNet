@@ -1,5 +1,12 @@
 namespace TerraNet.Core.Settings;
 
+public enum AppTheme
+{
+    Auto,
+    Light,
+    Dark
+}
+
 public sealed record HostSettings
 {
     public int MaxPlayers { get; init; } = 8;
@@ -10,5 +17,5 @@ public sealed record HostSettings
     public bool KeepAwake { get; init; } = true;
     public bool ResumeAfterRestart { get; init; } = true;
     public int AutoSaveMinutes { get; init; } = 10;
-    public string? SkippedVersion { get; init; }
+    public AppTheme Theme { get; init; } = AppTheme.Auto;
 }

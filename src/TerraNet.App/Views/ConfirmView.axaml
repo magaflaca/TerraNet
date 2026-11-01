@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:TerraNet.App.ViewModels"
+             xmlns:c="using:TerraNet.App.Controls"
+             xmlns:app="using:TerraNet.App"
+             x:Class="TerraNet.App.Views.ConfirmView"
+             x:DataType="vm:ConfirmViewModel">
+  <c:PixelFrame Classes="card" Padding="20,18">
+    <StackPanel Spacing="18">
+      <StackPanel Orientation="Horizontal" Spacing="12">
+        <c:PixelSprite Sprite="slimePink" Unit="3" />
+        <TextBlock Classes="h2" Text="{Binding Message}" TextWrapping="Wrap" VerticalAlignment="Center" MaxWidth="280" />
+      </StackPanel>
+      <Grid ColumnDefinitions="*,12,*">
+        <Button Classes="soft" HorizontalAlignment="Stretch" Command="{Binding CancelCommand}">
+          <TextBlock Text="{app:Tr cancel}" />
+        </Button>
+        <Button Grid.Column="2" Classes="danger" HorizontalAlignment="Stretch" Command="{Binding AcceptCommand}">
+          <TextBlock Text="{Binding ConfirmText}" Foreground="{DynamicResource OnPrimaryBrush}" />
+        </Button>
+      </Grid>
+    </StackPanel>
+  </c:PixelFrame>
+</UserControl>
