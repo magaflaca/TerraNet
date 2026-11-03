@@ -350,6 +350,170 @@
       "....kok....",
       "...kkokk...",
       "..kooooook."
+    ],
+    "house": [
+      "..........kkkk...kk.....",
+      "........krrrrrrk.ee.....",
+      "......krrrrrrrrrree.....",
+      "....krPrrPrrPrrPrPrk....",
+      "..krPrrrPrrrrPrrrrrPrk..",
+      "krrrrrrrrrrrrrrrrrrrrrrk",
+      "kxxxxxxxxxxxxxxxxxxxxxxk",
+      ".kddddddddddddddddddddk.",
+      ".kDDDDDDDDDDDDDDDDDDDDk.",
+      ".kddkkkkkkddddddddddddk.",
+      ".kDDkbkwbkDDDDkkkkkkDDk.",
+      ".kddkkkkkkddddkDeeekddk.",
+      ".kDDkbkbbkDDDDkeeeekDDk.",
+      ".kddkkkkkkddddkeeeekddk.",
+      ".kDDhGGGGhDDDDkeeeekDDk.",
+      ".kddddddddddddkeeYekddk.",
+      ".kDDDDDDDDDDDDkeeeekDDk.",
+      ".kddddddddddddkeeeekddk.",
+      ".kDDDDDDDDDDDDkeeeekDDk.",
+      ".kddddddddddddkeeeekddk.",
+      ".kkkkkkkkkkkkkkkkkkkkkk."
+    ],
+    "houseLit": [
+      "..........kkkk...kk.....",
+      "........krrrrrrk.ee.....",
+      "......krrrrrrrrrree.....",
+      "....krPrrPrrPrrPrPrk....",
+      "..krPrrrPrrrrPrrrrrPrk..",
+      "krrrrrrrrrrrrrrrrrrrrrrk",
+      "kxxxxxxxxxxxxxxxxxxxxxxk",
+      ".kddddddddddddddddddddk.",
+      ".kDDDDDDDDDDDDDDDDDDDDk.",
+      ".kddkkkkkkddddddddddddk.",
+      ".kDDkykyykDDDDkkkkkkDDk.",
+      ".kddkkkkkkddddkDeeekddk.",
+      ".kDDkykyykDDDDkeeeekDDk.",
+      ".kddkkkkkkddddkeeeekddk.",
+      ".kDDhGGGGhDDDDkeeeekDDk.",
+      ".kddddddddddddkeeYekddk.",
+      ".kDDDDDDDDDDDDkeeeekDDk.",
+      ".kddddddddddddkeeeekddk.",
+      ".kDDDDDDDDDDDDkeeeekDDk.",
+      ".kddddddddddddkeeeekddk.",
+      ".kkkkkkkkkkkkkkkkkkkkkk."
+    ],
+    "treeBig": [
+      "........kk.kkk........",
+      ".......kGGkhGkkG......",
+      "....kkkhgggggGGGk.....",
+      "...kkkggggggghGGkkk...",
+      "..kGkgggggggGGhGGGk...",
+      "..kGgggggggGGGGhGGk...",
+      ".kGGgggPgggGGGGGhGkkk.",
+      ".kkGggggggGGGGGGGhGGk.",
+      ".kkgggggggGGGGPGGGhG..",
+      "..kggggggGGGGGGGGGGh..",
+      "..kGgPggGGGGGGGGGGGk..",
+      "..GGggggGGGGGGGGhGG...",
+      "..kGgggGGPGGGGGGGhk...",
+      "..kkGggGGGGGGGGPGG....",
+      "....hGGGGhGGGGhGGk....",
+      "....kkkGGGhGGGGhk.....",
+      ".......GGkGhGkGk......",
+      ".......kkDDeekk.......",
+      "........kDDeekkk......",
+      "........kDDeeke.......",
+      "........kDDeek........",
+      "........kDDeek........",
+      "........kDDeek........",
+      "........kDDeek........",
+      "........kDDeek........",
+      "........kDDeek........",
+      "........kDDeek........",
+      ".......kkkkkkkk......."
+    ],
+    "bush": [
+      "..kkk.kkkk..",
+      ".kGGgkGgGGk.",
+      "kgGGPGGgGGgk",
+      "kGGGGGGGPGGk",
+      "kGGGGGGGGGGk",
+      "kGGGGGGGGGGk"
+    ],
+    "lamp": [
+      ".kkk.",
+      "kWWWk",
+      "kWWWk",
+      ".kkk.",
+      "..K..",
+      "..K..",
+      "..K..",
+      "..K..",
+      "..K..",
+      "..K..",
+      ".kKk.",
+      "kkkkk"
+    ],
+    "lampLit": [
+      ".kkk.",
+      "kyYyk",
+      "kYwYk",
+      ".kkk.",
+      "..K..",
+      "..K..",
+      "..K..",
+      "..K..",
+      "..K..",
+      "..K..",
+      ".kKk.",
+      "kkkkk"
+    ],
+    "mushroom": [
+      "..kkk..",
+      ".kCwCk.",
+      "kCCCwCk",
+      "kwCCCCk",
+      ".kkWkk.",
+      "..kWk..",
+      "..kkk.."
+    ],
+    "bunny": [
+      ".k.k....",
+      "kpkpk...",
+      "kWkWk...",
+      "kWWWWkk.",
+      "kWkWWWWk",
+      "kWWPWWWk",
+      ".kkkkkk."
+    ],
+    "butterfly": [
+      "PP.vv",
+      "PPkvv",
+      ".Pkv.",
+      "..k.."
+    ],
+    "butterflyUp": [
+      ".P.v.",
+      "PPkvv",
+      "PPkvv",
+      "..k.."
+    ],
+    "bird": [
+      "k...k",
+      ".k.k.",
+      "..k.."
+    ],
+    "birdUp": [
+      ".....",
+      "kk.kk",
+      "..k.."
+    ],
+    "slimeIcon": [
+      "....kkkk....",
+      "..kkSSSSkk..",
+      ".kSwwSSSSSk.",
+      ".kSwSSSSSSk.",
+      "kSSSSSSSSSSk",
+      "kSSkSSSSkSSk",
+      "kSPSSkkSSPSk",
+      "kzSSSSSSSSzk",
+      "kzzSSSSSSzzk",
+      ".kkkkkkkkkk."
     ]
   },
   "glyphs": {
@@ -474,17 +638,6 @@
       "..##.....",
       "........."
     ],
-    "dice": [
-      "#########",
-      "#.......#",
-      "#.##....#",
-      "#.##....#",
-      "#...##..#",
-      "#...##..#",
-      "#.....#.#",
-      "#.......#",
-      "#########"
-    ],
     "person": [
       "...###...",
       "..#####..",
@@ -551,28 +704,6 @@
       "..##.....",
       "..#......"
     ],
-    "sun": [
-      "....#....",
-      ".#.....#.",
-      "...###...",
-      "..#####..",
-      "#.#####.#",
-      "..#####..",
-      "...###...",
-      ".#.....#.",
-      "....#...."
-    ],
-    "moon": [
-      "...####..",
-      "..##.....",
-      ".##......",
-      "##.......",
-      "##.......",
-      "##.......",
-      ".##......",
-      "..##...#.",
-      "...####.."
-    ],
     "globe": [
       "..#####..",
       ".#..#..#.",
@@ -583,6 +714,39 @@
       "#..#.#..#",
       ".#..#..#.",
       "..#####.."
+    ],
+    "sunIcon": [
+      "....#....",
+      ".#.....#.",
+      "...###...",
+      "..#####..",
+      "#.#####.#",
+      "..#####..",
+      "...###...",
+      ".#.....#.",
+      "....#...."
+    ],
+    "moonIcon": [
+      "...####..",
+      "..##.....",
+      ".##......",
+      "##.......",
+      "##.......",
+      "##.......",
+      ".##......",
+      "..##...#.",
+      "...####.."
+    ],
+    "diceIcon": [
+      "#########",
+      "#.......#",
+      "#.##....#",
+      "#.##....#",
+      "#...##..#",
+      "#...##..#",
+      "#.....#.#",
+      "#.......#",
+      "#########"
     ]
   }
 }

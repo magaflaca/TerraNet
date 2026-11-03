@@ -49,6 +49,25 @@
     <Setter Property="Depth" Value="2" />
     <Setter Property="Padding" Value="16,14" />
   </Style>
+  <Style Selector="c|PixelFrame.sheet">
+    <Setter Property="Fill" Value="{DynamicResource SurfaceBrush}" />
+    <Setter Property="Stroke" Value="{DynamicResource OutlineBrush}" />
+    <Setter Property="Shadow" Value="{DynamicResource SheetShadowBrush}" />
+    <Setter Property="Highlight" Value="{DynamicResource HighlightBrush}" />
+    <Setter Property="Depth" Value="3" />
+    <Setter Property="Padding" Value="6" />
+    <Setter Property="Margin" Value="{DynamicResource SheetMargin}" />
+    <Setter Property="HorizontalAlignment" Value="{DynamicResource SheetHorizontal}" />
+    <Setter Property="VerticalAlignment" Value="{DynamicResource SheetVertical}" />
+    <Setter Property="Width" Value="{DynamicResource SheetWidth}" />
+    <Setter Property="MaxHeight" Value="{DynamicResource SheetMaxHeight}" />
+  </Style>
+  <Style Selector="c|PixelTitle.hero">
+    <Setter Property="Margin" Value="{DynamicResource TitleMargin}" />
+    <Setter Property="FontSize" Value="{DynamicResource TitleSize}" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Top" />
+  </Style>
   <Style Selector="c|PixelFrame.field">
     <Setter Property="Fill" Value="{DynamicResource FieldBrush}" />
     <Setter Property="Stroke" Value="{DynamicResource OutlineBrush}" />

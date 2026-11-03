@@ -29,6 +29,7 @@
           <SolidColorBrush x:Key="DangerSoftBrush" Color="#FFE1EA" />
           <SolidColorBrush x:Key="GoldBrush" Color="#FFCF5C" />
           <SolidColorBrush x:Key="TrackBrush" Color="#EDE6F7" />
+          <SolidColorBrush x:Key="SheetShadowBrush" Color="#663B2F4A" />
         </ResourceDictionary>
         <ResourceDictionary x:Key="Dark">
           <Color x:Key="SkyTopColor">#16132E</Color>
@@ -51,6 +52,7 @@
           <SolidColorBrush x:Key="DangerSoftBrush" Color="#4A2337" />
           <SolidColorBrush x:Key="GoldBrush" Color="#FFCF5C" />
           <SolidColorBrush x:Key="TrackBrush" Color="#1A1630" />
+          <SolidColorBrush x:Key="SheetShadowBrush" Color="#990B0918" />
         </ResourceDictionary>
       </ResourceDictionary.ThemeDictionaries>
       <FontFamily x:Key="PixelFont">avares://TerraNet.App/Assets/Fonts#Pixelify Sans</FontFamily>
