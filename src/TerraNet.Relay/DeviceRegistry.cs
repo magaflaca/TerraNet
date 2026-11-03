@@ -17,9 +17,12 @@ public sealed class DeviceRegistry
         _options = options;
         _path = Path.Combine(options.DataDirectory, "devices.json");
         Directory.CreateDirectory(options.DataDirectory);
-        _devices = File.Exists(_path)
+        var stored = File.Exists(_path)
             ? JsonSerializer.Deserialize<Dictionary<string, DeviceRecord>>(File.ReadAllText(_path)) ?? []
             : [];
+        _devices = stored
+            .Where(d => d.Value.Port >= options.PortRangeStart && d.Value.Port <= options.PortRangeEnd)
+            .ToDictionary();
     }
 
     public RegistrationResult Register(DeviceId device, ReadOnlySpan<byte> secret)

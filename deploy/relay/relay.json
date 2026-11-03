@@ -1,7 +1,7 @@
 {
   "listenPort": 9990,
-  "portRangeStart": 10000,
-  "portRangeEnd": 10999,
+  "portRangeStart": 2000,
+  "portRangeEnd": 2999,
   "publicHost": "play.hacks.win",
   "dataDirectory": "/var/lib/terranet",
   "certificatePath": "/etc/terranet/relay.pfx",

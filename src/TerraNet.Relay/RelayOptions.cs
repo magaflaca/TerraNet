@@ -5,8 +5,8 @@ namespace TerraNet.Relay;
 public sealed record RelayOptions
 {
     public int ListenPort { get; init; } = 9990;
-    public int PortRangeStart { get; init; } = 10000;
-    public int PortRangeEnd { get; init; } = 10999;
+    public int PortRangeStart { get; init; } = 2000;
+    public int PortRangeEnd { get; init; } = 2999;
     public string PublicHost { get; init; } = "play.hacks.win";
     public string DataDirectory { get; init; } = "/var/lib/terranet";
     public string CertificatePath { get; init; } = "/etc/terranet/relay.pfx";
