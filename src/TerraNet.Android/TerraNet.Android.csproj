@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-android</TargetFramework>
+    <SupportedOSPlatformVersion>26</SupportedOSPlatformVersion>
+    <RuntimeIdentifier>android-arm64</RuntimeIdentifier>
+    <ApplicationId>win.hacks.terranet</ApplicationId>
+    <ApplicationTitle>TerraNet</ApplicationTitle>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>$(Version)</ApplicationDisplayVersion>
+    <AndroidPackageFormat>apk</AndroidPackageFormat>
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+    <AndroidStoreUncompressedFileExtensions>.zip</AndroidStoreUncompressedFileExtensions>
+    <ServerPackDir>$(MSBuildThisFileDirectory)..\..\artifacts\server\android-arm64</ServerPackDir>
+    <ServerPackZip>$(IntermediateOutputPath)server.zip</ServerPackZip>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Android" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TerraNet.App\TerraNet.App.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="Exists('$(ServerPackDir)\pack.json')">
+    <AndroidNativeLibrary Include="$(ServerPackDir)\libtnhost.so" Abi="arm64-v8a" />
+  </ItemGroup>
+  <Target Name="PackServer" BeforeTargets="_ComputeAndroidAssetsPaths;UpdateAndroidAssets;_GenerateAndroidAssetsDir" Condition="Exists('$(ServerPackDir)\pack.json')">
+    <ItemGroup>
+      <ServerPackFile Include="$(ServerPackDir)\**" Exclude="$(ServerPackDir)\libtnhost.so" />
+    </ItemGroup>
+    <MakeDir Directories="$(IntermediateOutputPath)serverpack" />
+    <Copy SourceFiles="@(ServerPackFile)" DestinationFiles="@(ServerPackFile->'$(IntermediateOutputPath)serverpack\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <ZipDirectory SourceDirectory="$(IntermediateOutputPath)serverpack" DestinationFile="$(ServerPackZip)" Overwrite="true" />
+    <ItemGroup>
+      <AndroidAsset Include="$(ServerPackZip)" LogicalName="server.zip" />
+    </ItemGroup>
+  </Target>
+</Project>
