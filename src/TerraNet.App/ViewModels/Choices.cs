@@ -29,8 +29,8 @@ public static class Choices
     public static IReadOnlyList<Choice> Themes { get; } =
     [
         new(AppTheme.Auto, Loc.Get("themeAuto"), "globe"),
-        new(AppTheme.Light, Loc.Get("themeLight"), "sun"),
-        new(AppTheme.Dark, Loc.Get("themeDark"), "moon")
+        new(AppTheme.Light, Loc.Get("themeLight"), "sunIcon"),
+        new(AppTheme.Dark, Loc.Get("themeDark"), "moonIcon")
     ];
 
     public static Choice Find(IReadOnlyList<Choice> choices, object value) =>

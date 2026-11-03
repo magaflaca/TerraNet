@@ -15,6 +15,7 @@
     </DataTemplate>
   </UserControl.Resources>
 
+  <c:PixelFrame Classes="sheet">
   <Grid RowDefinitions="Auto,*,Auto">
     <v:PageHeader Title="{app:Tr newWorld}" />
 
@@ -27,7 +28,7 @@
               <TextBox Text="{Binding Name}" MaxLength="27" />
             </c:PixelFrame>
             <Button Grid.Column="1" Classes="soft icon" Margin="10,0,0,0" Command="{Binding RandomizeCommand}">
-              <c:PixelSprite Sprite="dice" Unit="2" />
+              <c:PixelSprite Sprite="diceIcon" Unit="2" />
             </Button>
           </Grid>
         </StackPanel>
@@ -65,7 +66,7 @@
       </StackPanel>
     </ScrollViewer>
 
-    <Border Grid.Row="2" Padding="{DynamicResource SafeAreaBottom}">
+    <Border Grid.Row="2">
       <Button Classes="primary"
               MaxWidth="560"
               Margin="16,8,16,16"
@@ -78,4 +79,5 @@
       </Button>
     </Border>
   </Grid>
+  </c:PixelFrame>
 </UserControl>

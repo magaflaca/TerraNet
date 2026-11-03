@@ -6,10 +6,18 @@
              x:Class="TerraNet.App.Views.MainView"
              x:DataType="vm:MainViewModel"
              Background="{DynamicResource PageBrush}"
+             SizeChanged="OnSizeChanged"
              FontFamily="{StaticResource PixelFont}">
   <UserControl.Resources>
     <Thickness x:Key="SafeAreaTop">0</Thickness>
     <Thickness x:Key="SafeAreaBottom">0</Thickness>
+    <Thickness x:Key="SheetMargin">24</Thickness>
+    <HorizontalAlignment x:Key="SheetHorizontal">Right</HorizontalAlignment>
+    <VerticalAlignment x:Key="SheetVertical">Center</VerticalAlignment>
+    <x:Double x:Key="SheetWidth">560</x:Double>
+    <x:Double x:Key="SheetMaxHeight">640</x:Double>
+    <Thickness x:Key="TitleMargin">28</Thickness>
+    <x:Double x:Key="TitleSize">48</x:Double>
   </UserControl.Resources>
   <UserControl.DataTemplates>
     <DataTemplate DataType="vm:HomeViewModel"><v:HomeView /></DataTemplate>
@@ -21,6 +29,7 @@
   </UserControl.DataTemplates>
 
   <Panel>
+    <c:SkyScene Name="Scene" Mood="{Binding Home.Session.Mood}" />
     <TransitioningContentControl Content="{Binding Page}">
       <TransitioningContentControl.PageTransition>
         <CrossFade Duration="0:0:0.18" />

@@ -6,6 +6,7 @@
              xmlns:app="using:TerraNet.App"
              x:Class="TerraNet.App.Views.ConsoleView"
              x:DataType="vm:ConsoleViewModel">
+  <c:PixelFrame Classes="sheet" VerticalAlignment="Stretch">
   <Grid RowDefinitions="Auto,*,Auto">
     <v:PageHeader Title="{app:Tr console}" />
 
@@ -21,7 +22,7 @@
       </ScrollViewer>
     </c:PixelFrame>
 
-    <Border Grid.Row="2" Padding="{DynamicResource SafeAreaBottom}">
+    <Border Grid.Row="2">
       <Grid Margin="16,4,16,16" ColumnDefinitions="*,Auto">
         <c:PixelFrame Classes="field">
           <TextBox Name="Input" Text="{Binding Input}" PlaceholderText="{app:Tr command}" KeyDown="OnInputKeyDown" />
@@ -32,4 +33,5 @@
       </Grid>
     </Border>
   </Grid>
+  </c:PixelFrame>
 </UserControl>
