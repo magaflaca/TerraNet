@@ -92,6 +92,17 @@ def floating(size, palette, sprites):
     return canvas
 
 
+def badge(palette, sprites):
+    size = 16
+    canvas = sky(size, bands=4)
+    for x in range(size):
+        canvas.putpixel((x, 14), palette["g" if x % 3 else "G"])
+        canvas.putpixel((x, 15), palette["G" if x % 4 else "h"])
+    stamp(canvas, sprites["slimeIcon"], palette, 2, 5)
+    stamp(canvas, ["..y..", ".yYy.", "..y.."], {**palette}, 11, 1)
+    return notch(canvas, 1)
+
+
 def notch(image, radius):
     mask = Image.new("L", image.size, 255)
     w, h = image.size
@@ -114,7 +125,10 @@ def main():
 
     icon = notch(emblem(32, palette, sprites, True), 3)
     scaled(icon, 512).save(OUT / "icon-512.png")
-    scaled(icon, 256).save(OUT / "terranet.ico", sizes=[(s, s) for s in (16, 24, 32, 48, 64, 128, 256)])
+    small = badge(palette, sprites)
+    frames = [scaled(small, side) for side in (16, 32, 48, 64, 128, 256)]
+    frames[-1].save(OUT / "terranet.ico", sizes=[f.size for f in frames], append_images=frames[:-1])
+    scaled(small, 256).save(OUT / "badge-256.png")
 
     foreground = floating(54, palette, sprites)
     background = sky(54)
