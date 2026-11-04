@@ -20,4 +20,6 @@ public interface IPlatform
     Task<bool> ShareAsync(string text);
 
     Task InstallUpdateAsync(ReleaseInfo release, IProgress<double> progress);
+
+    void PlaySound(string name, byte[] wave);
 }

@@ -67,7 +67,14 @@ public sealed partial class HomeViewModel : ObservableObject
 
     private void Refresh()
     {
+        var previous = Session;
         Session = SessionView.From(_snapshot, _preparing);
+        if (Session.IsRunning && !previous.IsRunning)
+            Sfx.Play(Sound.Online);
+        else if (Session.IsCrashed && !previous.IsCrashed)
+            Sfx.Play(Sound.Error);
+        else if (!Session.IsActive && previous.IsActive && !Session.IsCrashed)
+            Sfx.Play(Sound.Stop);
         var live = Session.IsActive ? _snapshot.World?.Profile.Id : null;
         foreach (var world in Worlds)
             world.IsLive = world.Id == live;
@@ -124,6 +131,7 @@ public sealed partial class HomeViewModel : ObservableObject
         if (Session.Address is not { } address || _main.CopyText is not { } copy)
             return;
         await copy(address);
+        Sfx.Play(Sound.Copy);
         _main.ShowToast(Loc.Get("copied"));
     }
 

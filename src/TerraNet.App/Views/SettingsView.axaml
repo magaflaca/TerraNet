@@ -51,6 +51,10 @@
         <c:PixelFrame Classes="card">
           <StackPanel Spacing="10">
             <Grid Classes="row" ColumnDefinitions="*,Auto">
+              <TextBlock Text="{app:Tr sounds}" />
+              <c:PixelSwitch Grid.Column="1" IsChecked="{Binding Sounds}" />
+            </Grid>
+            <Grid Classes="row" ColumnDefinitions="*,Auto">
               <TextBlock Text="{app:Tr keepAwake}" />
               <c:PixelSwitch Grid.Column="1" IsChecked="{Binding KeepAwake}" />
             </Grid>

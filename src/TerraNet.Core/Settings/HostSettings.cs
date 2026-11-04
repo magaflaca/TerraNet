@@ -18,4 +18,5 @@ public sealed record HostSettings
     public bool ResumeAfterRestart { get; init; } = true;
     public int AutoSaveMinutes { get; init; } = 10;
     public AppTheme Theme { get; init; } = AppTheme.Auto;
+    public bool Sounds { get; init; } = true;
 }

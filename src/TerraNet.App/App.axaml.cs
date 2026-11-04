@@ -17,6 +17,7 @@ public partial class App : Application
     {
         var host = AppHost.Initialize(PlatformFactory?.Invoke() ?? throw new InvalidOperationException("platform not configured"));
         SettingsViewModel.ApplyTheme(host.Settings.Current.Theme);
+        SoundHooks.Install();
 
         switch (ApplicationLifetime)
         {

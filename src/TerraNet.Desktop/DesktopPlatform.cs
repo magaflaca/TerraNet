@@ -60,6 +60,26 @@ public sealed partial class DesktopPlatform : IPlatform
         _updates.ApplyUpdatesAndRestart(update);
     }
 
+    private readonly Dictionary<string, GCHandle> _sounds = [];
+
+    public void PlaySound(string name, byte[] wave)
+    {
+        lock (_sounds)
+        {
+            if (!_sounds.TryGetValue(name, out var handle))
+                _sounds[name] = handle = GCHandle.Alloc(wave, GCHandleType.Pinned);
+            PlaySoundMemory(handle.AddrOfPinnedObject(), IntPtr.Zero, SoundMemory | SoundAsync | SoundNoDefault);
+        }
+    }
+
+    private const uint SoundAsync = 0x0001;
+    private const uint SoundNoDefault = 0x0002;
+    private const uint SoundMemory = 0x0004;
+
+    [LibraryImport("winmm.dll", EntryPoint = "PlaySoundW")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool PlaySoundMemory(IntPtr sound, IntPtr module, uint flags);
+
     [LibraryImport("kernel32.dll")]
     private static partial uint SetThreadExecutionState(uint flags);
 }

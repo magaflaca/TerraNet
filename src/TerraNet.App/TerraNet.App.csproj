@@ -6,6 +6,7 @@
   <ItemGroup>
     <AvaloniaResource Include="..\..\art\fonts\*.ttf" Link="Assets\Fonts\%(Filename)%(Extension)" />
     <EmbeddedResource Include="..\..\art\sprites.json" Link="Assets\sprites.json" LogicalName="TerraNet.Sprites.json" />
+    <EmbeddedResource Include="..\..\art\sounds\*.wav" Link="Assets\Sounds\%(Filename)%(Extension)" LogicalName="TerraNet.Sounds.%(Filename).wav" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" />

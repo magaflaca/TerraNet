@@ -23,6 +23,8 @@ public sealed class AppHost
 
     public static AppHost Current => _current ?? throw new InvalidOperationException("host not initialized");
 
+    public static AppHost? TryCurrent => _current;
+
     public static AppHost Initialize(IPlatform platform) => _current ??= new AppHost(platform);
 
     public IPlatform Platform { get; }

@@ -47,6 +47,7 @@ public sealed partial class WorldEditorViewModel(AppHost host, MainViewModel mai
             Evil = (WorldEvil)Evil.Value,
             Seed = Seed.Trim()
         });
+        Sfx.Play(Sound.Create);
         main.Back();
     }
 }

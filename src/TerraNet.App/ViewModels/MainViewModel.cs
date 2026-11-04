@@ -27,6 +27,12 @@ public sealed partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private ObservableObject? _dialog;
 
+    partial void OnDialogChanged(ObservableObject? value)
+    {
+        if (value is not null)
+            Sfx.Play(Sound.Pop);
+    }
+
     [ObservableProperty]
     private string? _toast;
 

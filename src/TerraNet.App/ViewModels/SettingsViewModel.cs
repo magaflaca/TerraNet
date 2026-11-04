@@ -25,6 +25,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         _keepAwake = current.KeepAwake;
         _restartOnCrash = current.RestartOnCrash;
         _startOnBoot = current.StartOnBoot;
+        _sounds = current.Sounds;
         _theme = Choices.Find(Choices.Themes, current.Theme);
     }
 
@@ -51,6 +52,9 @@ public sealed partial class SettingsViewModel : ObservableObject
     private Choice _theme;
 
     [ObservableProperty]
+    private bool _sounds;
+
+    [ObservableProperty]
     private bool _isChecking;
 
     partial void OnMaxPlayersChanged(int value) => _settings.Update(s => s with { MaxPlayers = value });
@@ -58,6 +62,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     partial void OnKeepAwakeChanged(bool value) => _settings.Update(s => s with { KeepAwake = value });
     partial void OnRestartOnCrashChanged(bool value) => _settings.Update(s => s with { RestartOnCrash = value });
     partial void OnStartOnBootChanged(bool value) => _settings.Update(s => s with { StartOnBoot = value });
+    partial void OnSoundsChanged(bool value) => _settings.Update(s => s with { Sounds = value });
 
     partial void OnThemeChanged(Choice value)
     {
