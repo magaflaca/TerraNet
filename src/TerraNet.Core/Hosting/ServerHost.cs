@@ -35,6 +35,7 @@ public sealed class ServerHost(IProcessLauncher launcher)
             _stopRequested = false;
             _console.Clear();
             Publish(new ServerState.Starting());
+            Diagnostics.AppLog.Write("start " + spec.FileName + " " + string.Join(' ', spec.Arguments));
             _process = launcher.Start(spec);
             _process.Output += OnOutput;
             return WatchAsync(_process);
@@ -71,9 +72,18 @@ public sealed class ServerHost(IProcessLauncher launcher)
         await process.Exited;
     }
 
+    public void ReportFailure(Exception error)
+    {
+        Append(error.GetType().Name + ": " + error.Message);
+        Diagnostics.AppLog.Error("server", error);
+        lock (_gate)
+            Publish(new ServerState.Crashed(-1));
+    }
+
     private async Task<int> WatchAsync(IServerProcess process)
     {
         var code = await process.Exited;
+        Diagnostics.AppLog.Write($"server exited {code}");
         lock (_gate)
         {
             process.Output -= OnOutput;
@@ -92,6 +102,8 @@ public sealed class ServerHost(IProcessLauncher launcher)
             return;
         }
         Append(line);
+        if (State is ServerState.Starting)
+            Diagnostics.AppLog.Write("out " + line);
     }
 
     private void Apply(AgentEvent value)

@@ -44,6 +44,5 @@ public sealed class ServerPack
         return new ServerPack(root, manifest);
     }
 
-    private string Resolve(string relative) =>
-        relative.Contains('/') || relative.Contains('\\') ? Path.GetFullPath(Path.Combine(Root, relative)) : relative;
+    private string Resolve(string relative) => Path.GetFullPath(Path.Combine(Root, relative));
 }

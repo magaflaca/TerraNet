@@ -121,9 +121,14 @@ public sealed class HostSession
         catch (OperationCanceledException)
         {
         }
+        catch (Exception ex)
+        {
+            Server.ReportFailure(ex);
+            return;
+        }
         finally
         {
-            if (!_stopping)
+            if (!_stopping && Server.State is not ServerState.Crashed)
                 await StopAsync();
         }
     }
