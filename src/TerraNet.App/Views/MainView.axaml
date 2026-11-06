@@ -16,6 +16,9 @@
     <VerticalAlignment x:Key="SheetVertical">Center</VerticalAlignment>
     <x:Double x:Key="SheetWidth">560</x:Double>
     <x:Double x:Key="SheetMaxHeight">640</x:Double>
+    <Thickness x:Key="TallSheetMargin">24</Thickness>
+    <VerticalAlignment x:Key="TallSheetVertical">Center</VerticalAlignment>
+    <x:Double x:Key="TallSheetMaxHeight">640</x:Double>
     <Thickness x:Key="TitleMargin">28</Thickness>
     <x:Double x:Key="TitleSize">48</x:Double>
   </UserControl.Resources>

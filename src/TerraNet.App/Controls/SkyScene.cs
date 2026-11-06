@@ -96,7 +96,8 @@ public sealed class SkyScene : Control
     {
         var width = Bounds.Width;
         var height = Bounds.Height;
-        var unit = Math.Clamp(Math.Round(Math.Min(width, height) / 170), 2, 4);
+        var scale = TopLevel.GetTopLevel(this)?.RenderScaling ?? 1;
+        var unit = Math.Round(Math.Clamp(Math.Round(Math.Min(width, height) / 170), 2, 4) * scale) / scale;
         var horizon = Math.Round(height * Horizon / unit) * unit;
         return new SceneGeometry(width, height, unit, horizon, Math.Round(width * FocusX / unit) * unit);
     }
@@ -377,7 +378,7 @@ public sealed class SkyScene : Control
             var hop = Math.Abs(Math.Sin(t * 6)) * u * 3;
             var x = g.Focus + u * 22 + travel * range;
             var origin = Snap(new Point(x, ground - bunny.Height * u - hop + u), u);
-            var flip = forward ? Matrix.Identity : Matrix.CreateTranslation(-origin.X - bunny.Width * u / 2, 0) * Matrix.CreateScale(-1, 1) * Matrix.CreateTranslation(origin.X + bunny.Width * u / 2, 0);
+            var flip = !forward ? Matrix.Identity : Matrix.CreateTranslation(-origin.X - bunny.Width * u / 2, 0) * Matrix.CreateScale(-1, 1) * Matrix.CreateTranslation(origin.X + bunny.Width * u / 2, 0);
             using (context.PushTransform(flip))
                 SpriteAtlas.Draw(context, bunny, origin, u, null);
         }

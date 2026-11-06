@@ -9,13 +9,13 @@
   <UserControl.Resources>
     <DataTemplate x:Key="ChoiceTemplate" x:DataType="vm:Choice">
       <StackPanel Spacing="8">
-        <c:PixelSprite Sprite="{Binding Sprite}" Unit="{Binding Unit}" Height="64" />
+        <c:PixelSprite Sprite="{Binding Sprite}" Unit="{Binding Unit}" Height="56" />
         <TextBlock Text="{Binding Label}" FontSize="14" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" />
       </StackPanel>
     </DataTemplate>
   </UserControl.Resources>
 
-  <c:PixelFrame Classes="sheet">
+  <c:PixelFrame Classes="sheet tall">
   <Grid RowDefinitions="Auto,*,Auto">
     <v:PageHeader Title="{app:Tr newWorld}" />
 
@@ -46,7 +46,11 @@
           <ListBox Theme="{StaticResource ChoiceList}"
                    ItemsSource="{Binding Difficulties}"
                    SelectedItem="{Binding Difficulty}"
-                   ItemTemplate="{StaticResource ChoiceTemplate}" />
+                   ItemTemplate="{StaticResource ChoiceTemplate}">
+            <ListBox.ItemsPanel>
+              <ItemsPanelTemplate><UniformGrid Columns="2" /></ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+          </ListBox>
         </StackPanel>
 
         <StackPanel>

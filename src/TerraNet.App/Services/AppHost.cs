@@ -48,14 +48,17 @@ public sealed class AppHost
     {
         try
         {
+            Core.Diagnostics.AppLog.Write("preparing pack");
             var pack = await Task.Run(() => Platform.PreparePackAsync(new Progress<double>(p => PrepareProgress?.Invoke(p))));
             var environment = new HostEnvironment(Paths, pack, Platform.Launcher, Platform.NativeLauncher, Platform.AppVersion.ToString(3), Worlds, Settings);
             var session = new HostSession(environment);
             session.Changed += Platform.OnSessionChanged;
+            Core.Diagnostics.AppLog.Write("pack ready " + pack.Root);
             _session.TrySetResult(session);
         }
         catch (Exception ex)
         {
+            Core.Diagnostics.AppLog.Error("prepare", ex);
             _session.TrySetException(ex);
         }
     }

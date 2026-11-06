@@ -62,6 +62,11 @@
     <Setter Property="Width" Value="{DynamicResource SheetWidth}" />
     <Setter Property="MaxHeight" Value="{DynamicResource SheetMaxHeight}" />
   </Style>
+  <Style Selector="c|PixelFrame.sheet.tall">
+    <Setter Property="Margin" Value="{DynamicResource TallSheetMargin}" />
+    <Setter Property="VerticalAlignment" Value="{DynamicResource TallSheetVertical}" />
+    <Setter Property="MaxHeight" Value="{DynamicResource TallSheetMaxHeight}" />
+  </Style>
   <Style Selector="c|PixelTitle.hero">
     <Setter Property="Margin" Value="{DynamicResource TitleMargin}" />
     <Setter Property="FontSize" Value="{DynamicResource TitleSize}" />

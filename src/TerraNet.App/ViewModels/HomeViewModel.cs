@@ -100,12 +100,14 @@ public sealed partial class HomeViewModel : ObservableObject
         Refresh();
         try
         {
+            Core.Diagnostics.AppLog.Write("host requested " + world.Id);
             var session = await _host.SessionAsync();
             Bind(session);
-            session.Start(world.Id);
+            Core.Diagnostics.AppLog.Write("session started " + session.Start(world.Id));
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Core.Diagnostics.AppLog.Error("host", ex);
             _snapshot = SessionSnapshot.Idle with { Server = new Core.Hosting.ServerState.Crashed(-1) };
             Refresh();
         }

@@ -15,7 +15,7 @@
     </Style>
   </UserControl.Styles>
 
-  <c:PixelFrame Classes="sheet">
+  <c:PixelFrame Classes="sheet tall">
   <Grid RowDefinitions="Auto,*">
     <v:PageHeader Title="{app:Tr settings}" />
 

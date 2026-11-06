@@ -6,7 +6,7 @@
              xmlns:app="using:TerraNet.App"
              x:Class="TerraNet.App.Views.ConsoleView"
              x:DataType="vm:ConsoleViewModel">
-  <c:PixelFrame Classes="sheet" VerticalAlignment="Stretch">
+  <c:PixelFrame Classes="sheet tall">
   <Grid RowDefinitions="Auto,*,Auto">
     <v:PageHeader Title="{app:Tr console}" />
 
