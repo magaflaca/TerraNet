@@ -3,7 +3,10 @@ using TerraNet.Desktop;
 using Velopack;
 
 VelopackApp.Build().Run();
-TerraNet.App.App.PlatformFactory = () => new DesktopPlatform();
+var platform = new DesktopPlatform();
+Directory.CreateDirectory(platform.DataDirectory);
+TerraNet.Core.Diagnostics.AppLog.Path = Path.Combine(platform.DataDirectory, "terranet.log");
+TerraNet.App.App.PlatformFactory = () => platform;
 
 AppBuilder.Configure<TerraNet.App.App>()
     .UsePlatformDetect()
