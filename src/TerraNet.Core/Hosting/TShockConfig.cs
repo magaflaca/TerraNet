@@ -30,6 +30,15 @@ public static class TShockConfig
         values["ShowBackupAutosaveMessages"] = false;
         values["BackupInterval"] = Math.Max(5, settings.AutoSaveMinutes);
         values["BackupKeepFor"] = Math.Max(30, settings.AutoSaveMinutes * 6);
+        values["DisableLoginBeforeJoin"] = true;
+        values["PreventDeadModification"] = false;
+        values["PreventInvalidPlaceStyle"] = false;
+        values["DisableCustomDeathMessages"] = true;
+        values["SuppressPermissionFailureNotices"] = true;
+        values["DisplayIPToAdmins"] = false;
+
+        File.WriteAllText(Path.Combine(directory, "motd.txt"), "");
+        File.WriteAllText(Path.Combine(directory, "rules.txt"), "");
 
         File.WriteAllText(path, root.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
     }

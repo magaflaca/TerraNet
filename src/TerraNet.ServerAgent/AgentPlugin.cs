@@ -44,6 +44,7 @@ public sealed class AgentPlugin(Main game) : TerrariaPlugin(game)
     {
         _progress?.Dispose();
         _progress = null;
+        VanillaPermissions.Apply();
         Emit(new AgentEvent(AgentEventKind.Ready, Main.worldName, Netplay.ListenPort, TShock.Config.Settings.MaxSlots));
     }
 
