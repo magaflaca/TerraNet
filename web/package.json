@@ -1,0 +1,8 @@
+{
+  "name": "terranet-web",
+  "private": true,
+  "scripts": {
+    "prepare-assets": "node scripts/prepare.mjs",
+    "deploy": "npm run prepare-assets && wrangler deploy"
+  }
+}

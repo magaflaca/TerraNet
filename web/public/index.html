@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>TerraNet</title>
+  <meta name="description" content="Host Terraria worlds from your phone or PC and play with friends anywhere.">
+  <meta property="og:title" content="TerraNet">
+  <meta property="og:image" content="/og.png">
+  <meta name="theme-color" content="#86CBFF">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/style.css">
+  <script>window.TERRANET = __TERRANET__;</script>
+</head>
+<body>
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <main>
+    <header class="hero">
+      <h1 class="title"><span class="terra">Terra</span><span class="net">Net</span></h1>
+      <p class="tagline" data-i18n="tagline"></p>
+    </header>
+    <section class="downloads">
+      <a class="sign" href="/download/android" data-platform="android" data-sound="download">
+        <canvas class="device" data-sprite="phone" width="11" height="13"></canvas>
+        <span class="sign-text">
+          <strong>Android</strong>
+          <small data-meta="android"></small>
+        </span>
+        <span class="cta" data-i18n="download"></span>
+      </a>
+      <a class="sign" href="/download/windows" data-platform="windows" data-sound="download">
+        <canvas class="device" data-sprite="monitor" width="16" height="13"></canvas>
+        <span class="sign-text">
+          <strong>Windows</strong>
+          <small data-meta="windows"></small>
+        </span>
+        <span class="cta" data-i18n="download"></span>
+      </a>
+    </section>
+    <section class="address">
+      <span data-i18n="join"></span>
+      <code>play.hacks.win</code>
+    </section>
+  </main>
+  <button class="sound-toggle" type="button" aria-label="sound" data-sound="toggle"><span></span></button>
+  <script src="/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+name = "terranet"
+main = "src/worker.js"
+compatibility_date = "2026-10-01"
+workers_dev = false
+routes = [{ pattern = "terra.hacks.win", custom_domain = true }]
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = true
+
+[[kv_namespaces]]
+binding = "RELEASES"
+id = "__RELEASES_KV__"
