@@ -13,7 +13,7 @@ public enum SceneMood
     Online
 }
 
-public sealed class SkyScene : Control
+public sealed class SkyScene : Control, Avalonia.Rendering.ICustomHitTest
 {
     public static readonly StyledProperty<SceneMood> MoodProperty =
         AvaloniaProperty.Register<SkyScene, SceneMood>(nameof(Mood));
@@ -56,7 +56,6 @@ public sealed class SkyScene : Control
     public SkyScene()
     {
         ClipToBounds = true;
-        IsHitTestVisible = false;
     }
 
     public SceneMood Mood { get => GetValue(MoodProperty); set => SetValue(MoodProperty, value); }
@@ -64,6 +63,21 @@ public sealed class SkyScene : Control
     public double FocusX { get => GetValue(FocusXProperty); set => SetValue(FocusXProperty, value); }
 
     private bool IsNight => ActualThemeVariant == ThemeVariant.Dark;
+
+    private Rect _celestial;
+
+    public event Action<bool>? CelestialTapped;
+
+    public bool HitTest(Point point) => new Rect(Bounds.Size).Contains(point);
+
+    protected override void OnPointerPressed(Avalonia.Input.PointerPressedEventArgs e)
+    {
+        base.OnPointerPressed(e);
+        if (!_celestial.Contains(e.GetPosition(this)))
+            return;
+        e.Handled = true;
+        CelestialTapped?.Invoke(IsNight);
+    }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
@@ -87,7 +101,7 @@ public sealed class SkyScene : Control
         if (!_animating)
             return;
         _time = time;
-        if (++_frame % 2 == 0)
+        if (++_frame % 3 == 0 && IsEffectivelyVisible)
             InvalidateVisual();
         RequestFrame();
     }
@@ -302,7 +316,9 @@ public sealed class SkyScene : Control
         var u = g.Unit;
         var bob = Math.Round(Math.Sin(t * 0.5) * 1.5) * u;
         var x = Math.Min(g.Focus + u * 46, g.Width - body.Width * u - u * 10);
-        SpriteAtlas.Draw(context, body, Snap(new Point(x, g.Horizon * 0.12 + bob), u), u, null);
+        var origin = Snap(new Point(x, g.Horizon * 0.12 + bob), u);
+        _celestial = new Rect(origin, new Size(body.Width * u, body.Height * u)).Inflate(u * 4);
+        SpriteAtlas.Draw(context, body, origin, u, null);
     }
 
     private void DrawClouds(DrawingContext context, SceneGeometry g, double t)

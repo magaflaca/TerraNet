@@ -11,3 +11,5 @@ secrets/
 *.keystore
 *.jks
 local.env
+web/public/sprites.json
+web/public/fonts/

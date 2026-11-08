@@ -62,7 +62,8 @@ public sealed class PixelProgress : Control
         if (!_animating)
             return;
         _time = time;
-        InvalidateVisual();
+        if (IsEffectivelyVisible)
+            InvalidateVisual();
         TopLevel.GetTopLevel(this)?.RequestAnimationFrame(OnFrame);
     }
 

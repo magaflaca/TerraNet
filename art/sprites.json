@@ -514,6 +514,65 @@
       "kzSSSSSSSSzk",
       "kzzSSSSSSzzk",
       ".kkkkkkkkkk."
+    ],
+    "phone": [
+      ".kkkkkkkkk.",
+      "kKKKKKKKKKk",
+      "kKsssssssKk",
+      "kKsssssyyKk",
+      "kKsssssyyKk",
+      "kKsssssssKk",
+      "kKsssSsssKk",
+      "kKssSSSssKk",
+      "kKgGgGgGgKk",
+      "kKDdDdDdDKk",
+      "kKKKKKKKKKk",
+      "kKKKKwKKKKk",
+      ".kkkkkkkkk."
+    ],
+    "monitor": [
+      "kkkkkkkkkkkkkkkk",
+      "kKKKKKKKKKKKKKKk",
+      "kKssssssssssyyKk",
+      "kKsswwssssssyyKk",
+      "kKssssssssssssKk",
+      "kKssssssSSssssKk",
+      "kKsssssSSSSsssKk",
+      "kKgGgGgGgGgGgGKk",
+      "kKDdDdDdDdDdDdKk",
+      "kKKKKKKKKKKKKKKk",
+      "kkkkkkkkkkkkkkkk",
+      "......kKKk......",
+      "....kkkkkkkk...."
+    ],
+    "cursor": [
+      "k........",
+      "kk.......",
+      "kwk......",
+      "kwPk.....",
+      "kwPPk....",
+      "kPPPPk...",
+      "kPPPPPk..",
+      "kPPPPPPk.",
+      "kPPPPkkkk",
+      "kPPkPk...",
+      "kPk.kPk..",
+      "kk..kPk..",
+      ".....kk.."
+    ],
+    "cursorHand": [
+      "....kk......",
+      "...kwPk.....",
+      "...kwPk.....",
+      "...kwPk.k...",
+      "...kwPkkPk.k",
+      ".kkkPPkPkkPk",
+      "kPkkPPPPPPPk",
+      "kPPkPPPPPPPk",
+      ".kPPPPPPPPPk",
+      "..kPPPPPPPk.",
+      "...kPPPPPPk.",
+      "....kkkkkk.."
     ]
   },
   "glyphs": {
@@ -747,6 +806,28 @@
       "#.....#.#",
       "#.......#",
       "#########"
+    ],
+    "speaker": [
+      "....#....",
+      "...##....",
+      "####.#...",
+      "####..#.#",
+      "####..#.#",
+      "####..#.#",
+      "####.#...",
+      "...##....",
+      "....#...."
+    ],
+    "speakerMute": [
+      "....#....",
+      "...##....",
+      "####.....",
+      "####.#..#",
+      "####..##.",
+      "####..##.",
+      "####.#..#",
+      "...##....",
+      "....#...."
     ]
   }
 }
