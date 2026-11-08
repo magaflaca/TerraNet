@@ -25,6 +25,8 @@ public sealed record SessionView(
     public static readonly SessionView Idle = From(SessionSnapshot.Idle, null);
 
     public bool HasAddress => Address is not null;
+    public string Host => Address?.Split(':')[0] ?? "";
+    public string Port => Address?.Split(':').ElementAtOrDefault(1) ?? "";
     public bool HasPlayers => Players.Count > 0;
 
     public static SessionView From(SessionSnapshot snapshot, double? preparing)

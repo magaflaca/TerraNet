@@ -15,6 +15,7 @@ public partial class MainView : UserControl
     public MainView()
     {
         InitializeComponent();
+        Scene.CelestialTapped += night => ViewModel?.SetTheme(night ? Core.Settings.AppTheme.Light : Core.Settings.AppTheme.Dark);
     }
 
     private MainViewModel? ViewModel => DataContext as MainViewModel;
@@ -104,7 +105,7 @@ public partial class MainView : UserControl
         }
 
         var bottom = Math.Max(_insets.Bottom, _keyboard);
-        var horizon = Math.Round(Math.Max(210 + _insets.Top, size.Height * 0.32));
+        var horizon = Math.Round(Math.Max(172 + _insets.Top, size.Height * 0.25));
         Scene.Horizon = horizon / size.Height;
         Scene.FocusX = 0.5;
         var top = horizon + 22;
@@ -117,8 +118,8 @@ public partial class MainView : UserControl
         Resources["TallSheetMargin"] = new Thickness(10, tallTop, 10, bottom + 10);
         Resources["TallSheetVertical"] = VerticalAlignment.Stretch;
         Resources["TallSheetMaxHeight"] = Math.Max(120, size.Height - tallTop - bottom - 10);
-        Resources["TitleMargin"] = new Thickness(20, _insets.Top + 18, 0, 0);
-        Resources["TitleSize"] = 40.0;
+        Resources["TitleMargin"] = new Thickness(18, _insets.Top + 14, 0, 0);
+        Resources["TitleSize"] = 36.0;
     }
 
     private void OnBackRequested(object? sender, RoutedEventArgs e)

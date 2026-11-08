@@ -128,11 +128,16 @@ public sealed partial class HomeViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task Copy()
+    private Task CopyHost() => CopyAsync(Session.Host);
+
+    [RelayCommand]
+    private Task CopyPort() => CopyAsync(Session.Port);
+
+    private async Task CopyAsync(string text)
     {
-        if (Session.Address is not { } address || _main.CopyText is not { } copy)
+        if (string.IsNullOrEmpty(text) || _main.CopyText is not { } copy)
             return;
-        await copy(address);
+        await copy(text);
         Sfx.Play(Sound.Copy);
         _main.ShowToast(Loc.Get("copied"));
     }
@@ -140,9 +145,9 @@ public sealed partial class HomeViewModel : ObservableObject
     [RelayCommand]
     private async Task Share()
     {
-        if (Session.Address is not { } address)
+        if (!Session.HasAddress)
             return;
-        var text = Loc.Format("shareText", Session.WorldName, address);
+        var text = Loc.Format("shareText", Session.WorldName, Session.Host, Session.Port);
         if (await _host.Platform.ShareAsync(text) || _main.CopyText is not { } copy)
             return;
         await copy(text);

@@ -78,6 +78,13 @@ public sealed partial class MainViewModel : ObservableObject
             Toast = null;
     }
 
+    public void SetTheme(Core.Settings.AppTheme theme)
+    {
+        Host.Settings.Update(s => s with { Theme = theme });
+        SettingsViewModel.ApplyTheme(theme);
+        Sfx.Play(Sound.Toggle);
+    }
+
     public Task<bool> ConfirmAsync(string message, string confirm)
     {
         var dialog = new ConfirmViewModel(message, confirm, () => Dialog = null);

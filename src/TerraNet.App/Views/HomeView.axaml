@@ -46,23 +46,40 @@
                                  Value="{Binding Session.Progress}"
                                  IsIndeterminate="{Binding Session.IsIndeterminate}" />
 
-                <c:PixelFrame Classes="field" Padding="12,10" IsVisible="{Binding Session.HasAddress}">
-                  <Grid ColumnDefinitions="Auto,*,Auto,Auto">
-                    <c:PixelSprite Sprite="signal" Unit="2" Tint="{DynamicResource PrimaryBrush}" Margin="0,0,10,0" />
-                    <SelectableTextBlock Grid.Column="1"
-                                         Text="{Binding Session.Address}"
-                                         FontSize="22"
-                                         FontWeight="Bold"
-                                         Foreground="{DynamicResource InkBrush}"
-                                         VerticalAlignment="Center" />
-                    <Button Grid.Column="2" Classes="soft icon" Margin="8,0,0,0" Command="{Binding CopyCommand}">
-                      <c:PixelSprite Sprite="copy" Unit="2" />
-                    </Button>
-                    <Button Grid.Column="3" Classes="primary icon" Margin="8,0,0,0" Command="{Binding ShareCommand}">
-                      <c:PixelSprite Sprite="share" Unit="2" />
-                    </Button>
+                <StackPanel Spacing="10" IsVisible="{Binding Session.HasAddress}">
+                  <Grid ColumnDefinitions="*,10,Auto">
+                    <StackPanel>
+                      <TextBlock Classes="label" Text="{app:Tr ip}" />
+                      <c:PixelFrame Classes="field" Padding="10,6">
+                        <Grid ColumnDefinitions="*,Auto">
+                          <SelectableTextBlock Text="{Binding Session.Host}" FontSize="19" FontWeight="Bold"
+                                               Foreground="{DynamicResource InkBrush}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                          <Button Grid.Column="1" Classes="ghost" Command="{Binding CopyHostCommand}">
+                            <c:PixelSprite Sprite="copy" Unit="2" />
+                          </Button>
+                        </Grid>
+                      </c:PixelFrame>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                      <TextBlock Classes="label" Text="{app:Tr port}" />
+                      <c:PixelFrame Classes="field" Padding="10,6">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                          <SelectableTextBlock Text="{Binding Session.Port}" FontSize="19" FontWeight="Bold"
+                                               Foreground="{DynamicResource GoldBrush}" VerticalAlignment="Center" />
+                          <Button Classes="ghost" Command="{Binding CopyPortCommand}">
+                            <c:PixelSprite Sprite="copy" Unit="2" />
+                          </Button>
+                        </StackPanel>
+                      </c:PixelFrame>
+                    </StackPanel>
                   </Grid>
-                </c:PixelFrame>
+                  <Button Classes="primary" HorizontalAlignment="Stretch" Command="{Binding ShareCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                      <c:PixelSprite Sprite="share" Unit="2" />
+                      <TextBlock Text="{app:Tr share}" Foreground="{DynamicResource OnPrimaryBrush}" />
+                    </StackPanel>
+                  </Button>
+                </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding Session.IsConnecting}">
                   <c:PixelSprite Sprite="signal" Unit="2" Tint="{DynamicResource InkMutedBrush}" />
