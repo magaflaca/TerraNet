@@ -89,6 +89,7 @@ function scene() {
   let backdrop = null;
   let backdropKey = "";
   let celestial = { x: 0, y: 0, w: 0, h: 0 };
+  let layout = null;
 
   const resize = () => {
     const ratio = Math.min(window.devicePixelRatio || 1, 2);
@@ -97,10 +98,44 @@ function scene() {
     canvas.width = width;
     canvas.height = height;
     unit = Math.max(3, Math.round(Math.min(width, height) / 150));
+    layout = null;
   };
 
-  const horizon = () => Math.round((height * (width > height ? 0.8 : 0.78)) / unit) * unit;
-  const focus = () => Math.round((width * 0.5) / unit) * unit;
+  const snap = (v) => Math.round(v / unit) * unit;
+
+  const contentBox = () => {
+    const ratio = width / window.innerWidth;
+    const rects = [...document.querySelectorAll(".sign, .address")].map((el) => el.getBoundingClientRect());
+    if (!rects.length) return null;
+    return {
+      left: Math.min(...rects.map((r) => r.left)) * ratio,
+      right: Math.max(...rects.map((r) => r.right)) * ratio,
+      bottom: Math.max(...rects.map((r) => r.bottom)) * ratio,
+    };
+  };
+
+  const computeLayout = () => {
+    const u = unit;
+    const landscape = width > height;
+    const box = contentBox();
+    let h = snap(height * (landscape ? 0.8 : 0.78));
+    if (!landscape && box) h = snap(Math.min(Math.max(height - 60 * u, box.bottom + 32 * u), height - 26 * u));
+    const ground = h + u * 2;
+    const blocked = !!box && box.bottom > ground - 30 * u && box.right - box.left < width - 60 * u;
+    const center = snap(width * 0.5);
+    return {
+      h,
+      ground,
+      blocked,
+      center,
+      left: blocked ? snap(box.left - 6 * u) : center - 12 * u,
+      right: blocked ? snap(box.right + 6 * u) : center + 12 * u,
+    };
+  };
+
+  const current = () => (layout ??= computeLayout());
+  const horizon = () => current().h;
+  const slimeX = () => (current().blocked ? current().right : current().center - 8 * unit);
 
   const buildBackdrop = () => {
     const key = `${width}x${height}:${night()}`;
@@ -143,10 +178,10 @@ function scene() {
     const tile = night() ? "grassNight" : "grass";
     for (let x = 0; x < width; x += 16 * u) drawSprite(g, tile, x, h, u);
     const dirtTop = h + 16 * u;
-    const layers = [p.dirt, p.deep, p.stone];
-    const layerHeight = Math.max(u * 12, Math.round((height - dirtTop) / 2.5 / u) * u);
-    layers.forEach((color, i) => {
-      const top = dirtTop + i * layerHeight;
+    const depth = Math.max(height - dirtTop, u * 6);
+    const layers = [[p.dirt, 0], [p.deep, 0.62], [p.stone, 0.88]];
+    layers.forEach(([color, at], i) => {
+      const top = dirtTop + snap(depth * at);
       for (let x = 0; x < width; x += u) {
         const jag = i === 0 ? 0 : Math.round(Math.sin(x * 0.05 + i) * 1.5 + hash(x / u + i * 977) * 2) * u;
         g.fillStyle = color;
@@ -154,10 +189,10 @@ function scene() {
       }
     });
     const gems = ["#FFD56B", "#7CC4F7", "#FF8AAE", "#B98BFF"];
-    const count = Math.floor((width * (height - dirtTop)) / (u * u * 500));
+    const count = Math.max(6, Math.floor((width * depth) / (u * u * 420)));
     for (let i = 0; i < count; i++) {
       const x = Math.floor((hash(i * 31 + 5) * width) / u) * u;
-      const y = dirtTop + u * 6 + Math.floor((hash(i * 17 + 9) * (height - dirtTop)) / u) * u;
+      const y = h + u * 8 + Math.floor((hash(i * 17 + 9) * Math.max(depth * 0.62 + u * 3, u)) / u) * u;
       g.fillStyle = gems[i % gems.length];
       g.fillRect(x, y, u * 3, u);
       g.fillRect(x + u, y - u, u, u * 3);
@@ -170,13 +205,20 @@ function scene() {
       const rows = atlas.sprites[name];
       if (rows) drawSprite(g, name, Math.round(x / u) * u, ground - rows.length * u + u, u);
     };
-    const f = focus();
-    const props = [
-      [-0.46, "treeBig"], [-0.38, "bush"], [-0.31, night() ? "houseLit" : "house"], [-0.2, night() ? "lampLit" : "lamp"],
-      [-0.12, "flower"], [0.12, "tuft"], [0.2, "mushroom"], [0.27, "tree"], [0.36, "bush"], [0.44, "treeBig"], [-0.6, "tree"], [0.56, "tree"], [-0.7, "bush"], [0.66, "mushroom"],
-    ];
-    for (const [offset, name] of props) place(name, f + offset * Math.max(width * 0.6, 220 * u) * 0.5);
+    const lit = night();
+    const row = (items, start, direction) => {
+      let x = start;
+      for (const [name, gap] of items) {
+        const w = (name ? atlas.sprites[name][0].length : 0) * u;
+        if (direction < 0) x -= w;
+        if (name && x > -w && x < width) place(name, x);
+        x = direction > 0 ? x + w + gap * u : x - gap * u;
+      }
+    };
+    const { left, right, blocked } = current();
     for (let i = 0; i < 18; i++) place(hash(i * 3) > 0.5 ? "flower" : "tuft", hash(i * 7 + 1) * width);
+    row([[lit ? "lampLit" : "lamp", 3], [lit ? "houseLit" : "house", 3], ["bush", 2], ["treeBig", 4], ["flower", 6], ["tree", 3], ["bush", 5], ["treeBig", 3], ["mushroom", 4], ["tree", 3]], left, -1);
+    row([[null, blocked ? 22 : 0], ["mushroom", 3], ["tree", 3], ["bush", 4], ["treeBig", 4], ["tuft", 6], ["tree", 3], ["bush", 5], ["treeBig", 3], ["mushroom", 4]], right, 1);
 
     backdrop = off;
     backdropKey = key;
@@ -230,19 +272,19 @@ function scene() {
         drawSprite(ctx, Math.floor(t * 5 + i) % 2 ? "bird" : "birdUp", Math.round((cycle * (width + 200) - 100) / u) * u, Math.round((h * (0.2 + i * 0.07) + Math.sin(t * 1.5 + i) * u * 3) / u) * u, u, { alpha: 0.75 });
       }
 
-    const ground = h + u * 2;
-    const f = focus();
+    const { ground } = current();
+    const sx = slimeX();
     const period = 2.4;
     const phase = (t % period) / period;
     const lift = phase < 0.35 ? Math.sin((phase / 0.35) * Math.PI) * 5 : 0;
     const slime = t % 4.7 < 0.14 ? "slimeBlink" : "slime";
-    drawSprite(ctx, slime, f - 8 * u, ground - 14 * u - Math.round(lift) * u, u);
+    drawSprite(ctx, slime, sx, ground - 14 * u - Math.round(lift) * u, u);
 
-    const bunnyPhase = (t * 0.06) % 2;
+    const bunnyPhase = (t * 0.025) % 2;
     const forward = bunnyPhase < 1;
     const travel = forward ? bunnyPhase : 2 - bunnyPhase;
     const hop = Math.abs(Math.sin(t * 6)) * 3;
-    drawSprite(ctx, "bunny", Math.round((f + 20 * u + travel * 60 * u) / u) * u, ground - 7 * u - Math.round(hop) * u + u, u, { flip: forward });
+    drawSprite(ctx, "bunny", snap(u * 6 + travel * (width - u * 20)), ground - 7 * u - Math.round(hop) * u + u, u, { flip: forward });
 
     if (isNight)
       for (let i = 0; i < 14; i++) {
@@ -258,7 +300,7 @@ function scene() {
     else
       for (let i = 0; i < 3; i++) {
         const name = Math.floor(t * 6 + i) % 2 ? "butterfly" : "butterflyUp";
-        drawSprite(ctx, name, Math.round((f + (i - 1) * 60 * u + Math.sin(t * 0.4 + i * 2) * u * 30) / u) * u, Math.round((ground - u * (18 + i * 7) + Math.sin(t * 1.3 + i) * u * 6) / u) * u, u);
+        drawSprite(ctx, name, Math.round((sx + 8 * u + (i - 1) * 60 * u + Math.sin(t * 0.4 + i * 2) * u * 30) / u) * u, Math.round((ground - u * (18 + i * 7) + Math.sin(t * 1.3 + i) * u * 6) / u) * u, u);
       }
 
     requestAnimationFrame(frame);
@@ -270,19 +312,22 @@ function scene() {
     const x = event.clientX * ratio;
     const y = event.clientY * ratio;
     if (x < celestial.x || y < celestial.y || x > celestial.x + celestial.w || y > celestial.y + celestial.h) return;
-    const next = night() ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
-    localStorageSet("terranet-theme", next);
-    backdrop = null;
-    audio.play("toggle");
+    toggleTheme();
   });
 
+  const invalidate = () => {
+    layout = null;
+    backdrop = null;
+  };
   resize();
   window.addEventListener("resize", () => {
     resize();
-    backdrop = null;
+    invalidate();
   });
-  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => (backdrop = null));
+  document.addEventListener("themechange", invalidate);
+  document.fonts?.ready.then(invalidate);
+  new ResizeObserver(invalidate).observe(document.querySelector("main"));
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => document.dispatchEvent(new Event("themechange")));
   requestAnimationFrame(frame);
 }
 
@@ -370,18 +415,38 @@ function setupDevices() {
   });
 }
 
+function toggleTheme() {
+  const next = night() ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
+  localStorageSet("terranet-theme", next);
+  audio.play("toggle");
+  document.dispatchEvent(new Event("themechange"));
+}
+
+const iconUrl = (name) => `url(${spriteToDataUrl(name, 3, getComputedStyle(document.body).color)})`;
+
+function setupTheme() {
+  const button = document.querySelector(".theme-toggle");
+  const icon = button.querySelector("span");
+  const paint = () => (icon.style.backgroundImage = iconUrl(night() ? "moonIcon" : "sunIcon"));
+  paint();
+  button.addEventListener("click", toggleTheme);
+  document.addEventListener("themechange", () => requestAnimationFrame(paint));
+}
+
 function setupSound() {
   const toggle = document.querySelector(".sound-toggle");
   const icon = toggle.querySelector("span");
-  const paint = () => (icon.style.backgroundImage = `url(${spriteToDataUrl(audio.enabled ? "speaker" : "speakerMute", 3, getComputedStyle(document.body).color)})`);
+  const paint = () => (icon.style.backgroundImage = iconUrl(audio.enabled ? "speaker" : "speakerMute"));
   paint();
+  document.addEventListener("themechange", () => requestAnimationFrame(paint));
   toggle.addEventListener("click", () => {
     audio.enabled = !audio.enabled;
     localStorageSet("terranet-sound", audio.enabled ? "on" : "off");
     paint();
     audio.play("toggle");
   });
-  document.querySelectorAll("a, button:not(.sound-toggle)").forEach((el) => {
+  document.querySelectorAll("a, button:not(.toggle)").forEach((el) => {
     el.addEventListener("pointerenter", () => audio.context && audio.play("hover"));
     el.addEventListener("click", () => audio.play(el.dataset.sound || "click"));
   });
@@ -395,5 +460,6 @@ function setupSound() {
   setupCursor();
   setupDevices();
   setupSound();
+  setupTheme();
   scene();
 })();

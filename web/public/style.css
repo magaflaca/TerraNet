@@ -266,11 +266,16 @@ main {
   color: var(--primary-dark);
 }
 
-.sound-toggle {
+.toggles {
   position: fixed;
   top: 16px;
   right: 16px;
   z-index: 2;
+  display: flex;
+  gap: 10px;
+}
+
+.toggle {
   width: 48px;
   height: 48px;
   padding: 0;
@@ -279,7 +284,7 @@ main {
   box-shadow: 0 4px 0 var(--shadow);
 }
 
-.sound-toggle span {
+.toggle span {
   display: block;
   width: 100%;
   height: 100%;
@@ -287,14 +292,48 @@ main {
   image-rendering: pixelated;
 }
 
-.sound-toggle:active {
+.toggle:active {
   transform: translateY(3px);
   box-shadow: none;
 }
 
+.toggle:hover span {
+  animation: wiggle 0.4s steps(4);
+}
+
+@keyframes wiggle {
+  33% {
+    transform: rotate(-10deg);
+  }
+  66% {
+    transform: rotate(10deg);
+  }
+}
+
 @media (max-width: 520px) {
+  main {
+    gap: 16px;
+    padding-top: 68px;
+  }
+
   .sign {
     flex-basis: 100%;
+    padding: 14px 16px 18px;
+    row-gap: 10px;
+  }
+
+  .device {
+    width: 54px;
+  }
+
+  .toggles {
+    top: 12px;
+    right: 12px;
+  }
+
+  .toggle {
+    width: 42px;
+    height: 42px;
   }
 }
 
