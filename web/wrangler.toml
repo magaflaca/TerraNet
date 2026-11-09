@@ -11,4 +11,4 @@ run_worker_first = true
 
 [[kv_namespaces]]
 binding = "RELEASES"
-id = "__RELEASES_KV__"
+id = "39b86451d9914ad38e574194ddce9d15"

@@ -88,6 +88,7 @@ function scene() {
   let unit = 3;
   let backdrop = null;
   let backdropKey = "";
+  let celestial = { x: 0, y: 0, w: 0, h: 0 };
 
   const resize = () => {
     const ratio = Math.min(window.devicePixelRatio || 1, 2);
@@ -200,7 +201,10 @@ function scene() {
       }
 
     const body = isNight ? "moon" : "sun";
-    drawSprite(ctx, body, Math.round((width * 0.8) / u) * u, Math.round((h * 0.1 + Math.sin(t * 0.5) * u * 1.5) / u) * u, u);
+    const bodyX = Math.round((width * 0.8) / u) * u;
+    const bodyY = Math.round((h * 0.1 + Math.sin(t * 0.5) * u * 1.5) / u) * u;
+    celestial = { x: bodyX - u * 4, y: bodyY - u * 4, w: (atlas.sprites[body][0].length + 8) * u, h: (atlas.sprites[body].length + 8) * u };
+    drawSprite(ctx, body, bodyX, bodyY, u);
 
     for (const [x, y, speed, name] of clouds) {
       const span = width + 30 * u;
@@ -259,6 +263,19 @@ function scene() {
 
     requestAnimationFrame(frame);
   };
+
+  document.addEventListener("pointerdown", (event) => {
+    if (event.target.closest("a, button")) return;
+    const ratio = canvas.width / window.innerWidth;
+    const x = event.clientX * ratio;
+    const y = event.clientY * ratio;
+    if (x < celestial.x || y < celestial.y || x > celestial.x + celestial.w || y > celestial.y + celestial.h) return;
+    const next = night() ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    localStorageSet("terranet-theme", next);
+    backdrop = null;
+    audio.play("toggle");
+  });
 
   resize();
   window.addEventListener("resize", () => {
@@ -371,6 +388,8 @@ function setupSound() {
 }
 
 (async () => {
+  const theme = localStorageGet("terranet-theme");
+  if (theme) document.documentElement.dataset.theme = theme;
   applyText();
   atlas = await loadAtlas();
   setupCursor();
