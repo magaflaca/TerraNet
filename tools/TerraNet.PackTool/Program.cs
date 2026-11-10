@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using System.Text.Json;
 using TerraNet.PackTool;
 
@@ -5,7 +6,8 @@ var options = PackOptions.Parse(args);
 var target = PackTarget.Find(options.Target);
 var repo = RepoRoot.Find();
 var cache = Path.Combine(repo, ".cache");
-var output = Path.Combine(options.Output ?? Path.Combine(repo, "artifacts", "server"), target.Name);
+var artifacts = options.Output ?? Path.Combine(repo, "artifacts", "server");
+var output = Path.Combine(artifacts, target.Name);
 
 Console.WriteLine($"pack {target.Name} -> {output}");
 if (Directory.Exists(output))
@@ -14,51 +16,69 @@ Directory.CreateDirectory(output);
 
 var nuget = new NugetStore(cache);
 var tshock = await new TShockSource(cache).PublishAsync(options.TShockTag);
-
-var runtimePack = await nuget.ExtractAsync($"microsoft.netcore.app.runtime.{target.RuntimeRid}", options.RuntimeVersion);
-var dotnetRoot = Path.Combine(output, "dotnet");
-var runtimeDirectory = RuntimeRoot.Build(runtimePack, target, options.RuntimeVersion, dotnetRoot);
-
-if (target.OpenSslFiles.Count > 0)
-{
-    var openssl = await new TermuxPackage(cache).ExtractAsync("openssl", target.OpenSslFiles);
-    foreach (var file in target.OpenSslFiles)
-        File.Copy(Path.Combine(openssl, Path.GetFileName(file)), Path.Combine(runtimeDirectory, Path.GetFileName(file)), true);
-}
-
 var sqlite = await nuget.ResolveAssetAsync(target.Sqlite, options.SqliteVersion);
 var server = Path.Combine(output, "server");
 ServerStager.Stage(tshock, server, target, sqlite, options.RuntimeVersion);
 
 var agent = await AgentBuilder.BuildAsync(repo, tshock, cache);
-File.Copy(agent, Path.Combine(server, "ServerPlugins", Path.GetFileName(agent)), true);
+var agentPath = Path.Combine(server, "ServerPlugins", Path.GetFileName(agent));
+File.Copy(agent, agentPath, true);
 
-string? host = null;
-if (target.Host == HostKind.AppHost)
+string? dotnetRoot = null;
+var environment = new Dictionary<string, string>();
+if (target.Host == HostKind.NativeLauncher)
 {
-    var hostPack = await nuget.ExtractAsync($"microsoft.netcore.app.host.{target.RuntimeRid}", options.RuntimeVersion);
-    var template = Path.Combine(hostPack, "runtimes", target.RuntimeRid, "native", "apphost" + target.ExecutableSuffix);
-    host = "server/TShock.Server" + target.ExecutableSuffix;
-    AppHostWriter.Write(template, Path.Combine(output, host), "TShock.Server.dll");
+    var runtimePack = await nuget.ExtractAsync($"microsoft.netcore.app.runtime.{target.RuntimeRid}", options.RuntimeVersion);
+    var runtimeDirectory = RuntimeRoot.Build(runtimePack, target, options.RuntimeVersion, Path.Combine(output, "dotnet"));
+    dotnetRoot = "dotnet";
+
+    var openssl = await new TermuxPackage(cache).ExtractAsync("openssl", target.OpenSslFiles);
+    foreach (var file in target.OpenSslFiles)
+        File.Copy(Path.Combine(openssl, Path.GetFileName(file)), Path.Combine(runtimeDirectory, Path.GetFileName(file)), true);
+
+    var bin = Path.Combine(server, "bin");
+    var plugins = Path.Combine(server, "ServerPlugins");
+    string[] hot =
+    [
+        Path.Combine(bin, "OTAPI.dll"),
+        Path.Combine(bin, "TerrariaServer.dll"),
+        Path.Combine(plugins, "TShockAPI.dll"),
+        Path.Combine(runtimeDirectory, "System.Private.CoreLib.dll"),
+        Path.Combine(runtimeDirectory, "System.Collections.dll"),
+        Path.Combine(runtimeDirectory, "System.Linq.dll")
+    ];
+    await new AotCompiler(nuget, cache, options.RuntimeVersion).CompileAsync(hot, [runtimeDirectory, bin, server, plugins]);
+    await NativeLauncher.BuildAsync(Path.Combine(repo, "src", "native", "tnhost", "tnhost.c"), Path.Combine(output, "libtnhost.so"));
+
+    var relativeRuntime = Path.GetRelativePath(output, runtimeDirectory).Replace('\\', '/');
+    foreach (var (key, value) in target.Environment)
+        environment[key] = value.Replace(PackTarget.RuntimeDirectoryToken, PackTarget.PackToken + "/" + relativeRuntime);
 }
 else
 {
-    await NativeLauncher.BuildAsync(Path.Combine(repo, "src", "native", "tnhost", "tnhost.c"), Path.Combine(output, "libtnhost.so"));
+    File.Copy(sqlite, Path.Combine(server, "bin", target.Sqlite.FileName), true);
+    foreach (var (key, value) in target.Environment)
+        environment[key] = value;
 }
 
-var relativeRuntime = Path.GetRelativePath(output, runtimeDirectory).Replace('\\', '/');
 var manifest = new PackManifest(
     target.Name,
     options.TShockTag.TrimStart('v'),
     options.TerrariaVersion,
     options.RuntimeVersion,
-    "dotnet",
+    dotnetRoot,
     "server/TShock.Server.dll",
-    host,
-    "server/ServerPlugins/" + Path.GetFileName(agent),
-    target.Environment.ToDictionary(e => e.Key, e => e.Value.Replace(PackTarget.RuntimeDirectoryToken, PackTarget.PackToken + "/" + relativeRuntime)));
-
+    target.Host == HostKind.NativeLauncher ? Path.GetRelativePath(output, agentPath).Replace('\\', '/') : null,
+    environment);
 File.WriteAllText(Path.Combine(output, "pack.json"), JsonSerializer.Serialize(manifest, new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
+
+if (target.Host == HostKind.SelfHosted)
+{
+    var zip = Path.Combine(artifacts, target.Name + ".zip");
+    File.Delete(zip);
+    ZipFile.CreateFromDirectory(output, zip, CompressionLevel.SmallestSize, false);
+    Console.WriteLine($"  zip {new FileInfo(zip).Length / 1048576.0:0.0} MB");
+}
 Console.WriteLine("done");
 
 internal sealed record PackManifest(
@@ -66,10 +86,9 @@ internal sealed record PackManifest(
     string Tshock,
     string Terraria,
     string Runtime,
-    string DotnetRoot,
+    string? DotnetRoot,
     string Entry,
-    string? Host,
-    string StartupHook,
+    string? StartupHook,
     IReadOnlyDictionary<string, string> Environment);
 
 internal sealed record PackOptions(string Target, string? Output, string TShockTag, string TerrariaVersion, string RuntimeVersion, string SqliteVersion)

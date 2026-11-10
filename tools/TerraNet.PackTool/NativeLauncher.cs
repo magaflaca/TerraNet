@@ -10,7 +10,7 @@ public static class NativeLauncher
         await Shell.RunAsync(clang, $"-O2 -fPIE -pie -Wall -Wextra -s -o \"{destination}\" \"{sourceFile}\" -ldl");
     }
 
-    private static string FindClang()
+    public static string FindClang()
     {
         var roots = new[] { Environment.GetEnvironmentVariable("ANDROID_NDK_ROOT"), Environment.GetEnvironmentVariable("ANDROID_NDK_HOME") }
             .Concat(SdkNdkDirectories())

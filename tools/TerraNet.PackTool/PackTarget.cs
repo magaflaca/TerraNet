@@ -2,8 +2,8 @@ namespace TerraNet.PackTool;
 
 public enum HostKind
 {
-    AppHost,
-    NativeLauncher
+    NativeLauncher,
+    SelfHosted
 }
 
 public sealed record PackTarget(
@@ -26,19 +26,17 @@ public sealed record PackTarget(
             new Dictionary<string, string>
             {
                 ["LD_LIBRARY_PATH"] = RuntimeDirectoryToken,
-                ["DOTNET_OPENSSL_VERSION_OVERRIDE"] = "3"
+                ["DOTNET_OPENSSL_VERSION_OVERRIDE"] = "3",
+                ["MONO_GC_PARAMS"] = "nursery-size=64m"
             }),
-        new("win-x64", "win-x64", "win-x64", HostKind.AppHost,
+        new("win-x64", "win-x64", "win-x64", HostKind.SelfHosted,
             new NativeAsset("sqlitepclraw.lib.e_sqlite3", "runtimes/win-x64/native/e_sqlite3.dll", null, "e_sqlite3.dll"),
             [],
-            new Dictionary<string, string>()),
-        new("linux-x64", "linux-x64", "linux-x64", HostKind.AppHost,
-            new NativeAsset("sqlitepclraw.lib.e_sqlite3", "runtimes/linux-x64/native/libe_sqlite3.so", null, "libe_sqlite3.so"),
-            [],
-            new Dictionary<string, string>())
+            new Dictionary<string, string>
+            {
+                ["DOTNET_DefaultStackSize"] = "1000000"
+            })
     ];
-
-    public string ExecutableSuffix => RuntimeRid.StartsWith("win", StringComparison.Ordinal) ? ".exe" : "";
 
     public static PackTarget Find(string name) =>
         All.FirstOrDefault(t => t.Name.Equals(name, StringComparison.OrdinalIgnoreCase))

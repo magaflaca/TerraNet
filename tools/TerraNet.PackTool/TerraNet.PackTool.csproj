@@ -6,5 +6,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="SharpCompress" />
+    <PackageReference Include="Mono.Cecil" />
   </ItemGroup>
 </Project>
