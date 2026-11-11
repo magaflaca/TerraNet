@@ -5,6 +5,8 @@ namespace TerraNet.PackTool;
 public static class ServerStager
 {
     private static readonly string[] JunkExtensions = [".pdb", ".xml"];
+    private static readonly string[] SatelliteCultures = ["cs", "de", "es", "fr", "it", "ja", "ko", "pl", "pt-BR", "ru", "tr", "zh-Hans", "zh-Hant"];
+    private static readonly string[] UnusedPrefixes = ["NuGet."];
 
     public static void Stage(string tshock, string destination, PackTarget target, string sqlitePath, string runtimeVersion)
     {
@@ -21,6 +23,13 @@ public static class ServerStager
                      .Where(f => JunkExtensions.Contains(Path.GetExtension(f), StringComparer.OrdinalIgnoreCase))
                      .ToList())
             File.Delete(junk);
+
+        foreach (var culture in SatelliteCultures.Select(c => Path.Combine(destination, c)).Where(Directory.Exists))
+            Directory.Delete(culture, true);
+        foreach (var unused in Directory.EnumerateFiles(Path.Combine(destination, "bin"), "*.dll")
+                     .Where(f => UnusedPrefixes.Any(p => Path.GetFileName(f).StartsWith(p, StringComparison.Ordinal)))
+                     .ToList())
+            File.Delete(unused);
 
         PinRuntime(Path.Combine(destination, "TShock.Server.runtimeconfig.json"), runtimeVersion);
     }
