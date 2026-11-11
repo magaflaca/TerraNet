@@ -35,8 +35,18 @@ public sealed class AndroidPlatform(AndroidApp context) : IPlatform
 
     public string DataDirectory => context.FilesDir!.AbsolutePath;
     public IProcessLauncher Launcher { get; } = new SystemProcessLauncher();
-    public string? NativeLauncher => Path.Combine(context.ApplicationInfo!.NativeLibraryDir!, "libtnhost.so");
+    public ServerCommand ServerCommand(ServerPack pack) =>
+        new(Path.Combine(context.ApplicationInfo!.NativeLibraryDir!, "libtnhost.so"), [pack.DotnetRoot!, pack.Entry]);
     public bool SupportsStartOnBoot => true;
+
+    public Core.Worlds.DeviceTier Tier => Core.Worlds.DeviceTiers.Measure(TotalMemory(), Environment.ProcessorCount, true);
+
+    private long TotalMemory()
+    {
+        var info = new global::Android.App.ActivityManager.MemoryInfo();
+        (context.GetSystemService(global::Android.Content.Context.ActivityService) as global::Android.App.ActivityManager)?.GetMemoryInfo(info);
+        return info.TotalMem;
+    }
 
     public async Task<ServerPack> PreparePackAsync(IProgress<double> progress)
     {

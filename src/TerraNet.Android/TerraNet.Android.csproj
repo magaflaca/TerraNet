@@ -12,7 +12,6 @@
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     <AndroidStoreUncompressedFileExtensions>.zip</AndroidStoreUncompressedFileExtensions>
     <ServerPackDir>$(MSBuildThisFileDirectory)..\..\artifacts\server\android-arm64</ServerPackDir>
-    <ServerPackZip>$(IntermediateOutputPath)server.zip</ServerPackZip>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia.Android" />
@@ -24,12 +23,16 @@
     <AndroidNativeLibrary Include="$(ServerPackDir)\libtnhost.so" Abi="arm64-v8a" />
   </ItemGroup>
   <Target Name="PackServer" BeforeTargets="_ComputeAndroidAssetsPaths;UpdateAndroidAssets;_GenerateAndroidAssetsDir" Condition="Exists('$(ServerPackDir)\pack.json')">
+    <PropertyGroup>
+      <ServerPackStage>$(IntermediateOutputPath)serverpack</ServerPackStage>
+      <ServerPackZip>$(IntermediateOutputPath)server.zip</ServerPackZip>
+    </PropertyGroup>
     <ItemGroup>
       <ServerPackFile Include="$(ServerPackDir)\**" Exclude="$(ServerPackDir)\libtnhost.so" />
     </ItemGroup>
-    <MakeDir Directories="$(IntermediateOutputPath)serverpack" />
-    <Copy SourceFiles="@(ServerPackFile)" DestinationFiles="@(ServerPackFile->'$(IntermediateOutputPath)serverpack\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
-    <ZipDirectory SourceDirectory="$(IntermediateOutputPath)serverpack" DestinationFile="$(ServerPackZip)" Overwrite="true" />
+    <RemoveDir Directories="$(ServerPackStage)" />
+    <Copy SourceFiles="@(ServerPackFile)" DestinationFiles="@(ServerPackFile->'$(ServerPackStage)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <ZipDirectory SourceDirectory="$(ServerPackStage)" DestinationFile="$(ServerPackZip)" Overwrite="true" />
     <ItemGroup>
       <AndroidAsset Include="$(ServerPackZip)" LogicalName="server.zip" />
     </ItemGroup>
