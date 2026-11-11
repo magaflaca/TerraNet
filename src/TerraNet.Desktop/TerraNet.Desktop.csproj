@@ -7,15 +7,20 @@
     <ApplicationIcon>..\..\art\build\terranet.ico</ApplicationIcon>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>none</DebugType>
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+    <AllowedReferenceRelatedFileExtensions>none</AllowedReferenceRelatedFileExtensions>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <ServerPackDir>..\..\artifacts\server\win-x64</ServerPackDir>
+    <ServerPackZip>$(MSBuildThisFileDirectory)..\..\artifacts\server\win-x64.zip</ServerPackZip>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia.Desktop" />
-    <PackageReference Include="Velopack" />
   </ItemGroup>
-  <ItemGroup Condition="Exists('$(ServerPackDir)\pack.json')">
-    <None Include="$(ServerPackDir)\**" LinkBase="server-pack" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  <ItemGroup Condition="Exists('$(ServerPackZip)')">
+    <EmbeddedResource Include="$(ServerPackZip)" LogicalName="TerraNet.ServerPack.zip" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TerraNet.App\TerraNet.App.csproj" />

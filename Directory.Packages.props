@@ -11,5 +11,6 @@
     <PackageVersion Include="Xamarin.AndroidX.Core.SplashScreen" Version="1.0.1.15" />
     <PackageVersion Include="Velopack" Version="1.2.161" />
     <PackageVersion Include="SharpCompress" Version="0.50.10" />
+    <PackageVersion Include="Mono.Cecil" Version="0.11.6" />
   </ItemGroup>
 </Project>
