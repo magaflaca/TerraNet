@@ -19,7 +19,32 @@ public sealed partial class WorldEditorViewModel(AppHost host, MainViewModel mai
     private string _name = WorldNames.Random();
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowHeavyHint), nameof(HeavyHint))]
     private Choice _size = Choices.Find(Choices.Sizes, WorldSize.Small);
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowHeavyHint))]
+    private WorldSize? _acceptedSize;
+
+    private WorldSize SelectedSize => (WorldSize)Size.Value;
+
+    public bool ShowHeavyHint => host.Platform.Tier.IsHeavy(SelectedSize) && AcceptedSize != SelectedSize;
+
+    public string HeavyHint => Loc.Format("heavyHint", Size.Label.ToLowerInvariant());
+
+    [RelayCommand]
+    private void UseSmall()
+    {
+        Size = Choices.Find(Choices.Sizes, WorldSize.Small);
+        Sfx.Play(Sound.Select);
+    }
+
+    [RelayCommand]
+    private void KeepSize()
+    {
+        AcceptedSize = SelectedSize;
+        Sfx.Play(Sound.Click);
+    }
 
     [ObservableProperty]
     private Choice _difficulty = Choices.Find(Choices.Difficulties, WorldDifficulty.Classic);
@@ -42,7 +67,7 @@ public sealed partial class WorldEditorViewModel(AppHost host, MainViewModel mai
         host.Worlds.Create(new WorldProfile
         {
             Name = name.Length > MaxNameLength ? name[..MaxNameLength] : name,
-            Size = (WorldSize)Size.Value,
+            Size = SelectedSize,
             Difficulty = (WorldDifficulty)Difficulty.Value,
             Evil = (WorldEvil)Evil.Value,
             Seed = Seed.Trim()

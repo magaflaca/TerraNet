@@ -37,7 +37,7 @@ public static class TShockConfig
         values["SuppressPermissionFailureNotices"] = true;
         values["DisplayIPToAdmins"] = false;
 
-        File.WriteAllText(Path.Combine(directory, "motd.txt"), "");
+        File.WriteAllText(Path.Combine(directory, "motd.txt"), settings.WelcomeMessage ?? Welcome.Default);
         File.WriteAllText(Path.Combine(directory, "rules.txt"), "");
 
         File.WriteAllText(path, root.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
