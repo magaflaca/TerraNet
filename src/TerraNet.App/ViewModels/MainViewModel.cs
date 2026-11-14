@@ -1,6 +1,8 @@
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TerraNet.App.Services;
+using TerraNet.Core.Localization;
 
 namespace TerraNet.App.ViewModels;
 
@@ -39,6 +41,41 @@ public sealed partial class MainViewModel : ObservableObject
     public bool CanGoBack => _history.Count > 0;
 
     public Func<string, Task>? CopyText { get; set; }
+
+    public Func<Task<IReadOnlyList<IStorageFile>>>? PickWorlds { get; set; }
+
+    [ObservableProperty]
+    private bool _isDropping;
+
+    [RelayCommand]
+    private async Task Import()
+    {
+        if (PickWorlds is { } pick)
+            await ImportAsync(await pick());
+    }
+
+    public async Task ImportAsync(IEnumerable<IStorageItem> items)
+    {
+        var files = items.OfType<IStorageFile>().ToList();
+        if (files.Count == 0)
+            return;
+        var imported = 0;
+        foreach (var file in files)
+        {
+            try
+            {
+                await using var stream = await file.OpenReadAsync();
+                if (await Host.Worlds.ImportAsync(stream, file.Name) is not null)
+                    imported++;
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                Core.Diagnostics.AppLog.Error("import", ex);
+            }
+        }
+        Sfx.Play(imported > 0 ? Sound.Create : Sound.Error);
+        ShowToast(Loc.Get(imported > 0 ? "imported" : "importFailed"));
+    }
 
     public void Navigate(ObservableObject page)
     {

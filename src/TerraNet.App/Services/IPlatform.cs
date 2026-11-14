@@ -10,8 +10,9 @@ public interface IPlatform
     Version AppVersion { get; }
     string DataDirectory { get; }
     IProcessLauncher Launcher { get; }
-    string? NativeLauncher { get; }
+    ServerCommand ServerCommand(ServerPack pack);
     bool SupportsStartOnBoot { get; }
+    Core.Worlds.DeviceTier Tier { get; }
 
     Task<ServerPack> PreparePackAsync(IProgress<double> progress);
 

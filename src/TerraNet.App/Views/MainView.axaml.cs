@@ -5,6 +5,7 @@ using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Controls.Platform;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using TerraNet.App.ViewModels;
 
@@ -16,6 +17,33 @@ public partial class MainView : UserControl
     {
         InitializeComponent();
         Scene.CelestialTapped += night => ViewModel?.SetTheme(night ? Core.Settings.AppTheme.Light : Core.Settings.AppTheme.Dark);
+        DragDrop.SetAllowDrop(this, true);
+        AddHandler(DragDrop.DragOverEvent, OnDragOver);
+        AddHandler(DragDrop.DragLeaveEvent, (_, _) => SetDropping(false));
+        AddHandler(DragDrop.DropEvent, OnDrop);
+    }
+
+    private void SetDropping(bool value)
+    {
+        if (ViewModel is { } vm)
+            vm.IsDropping = value;
+    }
+
+    private static bool CarriesWorld(DragEventArgs e) =>
+        e.DataTransfer.TryGetFiles()?.Any(f => f.Name.EndsWith(".wld", StringComparison.OrdinalIgnoreCase)) == true;
+
+    private void OnDragOver(object? sender, DragEventArgs e)
+    {
+        var world = CarriesWorld(e);
+        e.DragEffects = world ? DragDropEffects.Copy : DragDropEffects.None;
+        SetDropping(world);
+    }
+
+    private async void OnDrop(object? sender, DragEventArgs e)
+    {
+        SetDropping(false);
+        if (ViewModel is { } vm && e.DataTransfer.TryGetFiles() is { } files)
+            await vm.ImportAsync(files.Where(f => f.Name.EndsWith(".wld", StringComparison.OrdinalIgnoreCase)));
     }
 
     private MainViewModel? ViewModel => DataContext as MainViewModel;
@@ -28,11 +56,18 @@ public partial class MainView : UserControl
             return;
 
         if (ViewModel is { } vm)
+        {
             vm.CopyText = async text =>
             {
                 if (top.Clipboard is { } clipboard)
                     await clipboard.SetTextAsync(text);
             };
+            vm.PickWorlds = () => top.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                AllowMultiple = true,
+                FileTypeFilter = [new FilePickerFileType("Terraria") { Patterns = ["*.wld"], MimeTypes = ["application/octet-stream"] }]
+            });
+        }
 
         top.BackRequested += OnBackRequested;
         if (top.InputPane is { } pane)

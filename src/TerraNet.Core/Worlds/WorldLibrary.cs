@@ -23,6 +23,30 @@ public sealed class WorldLibrary(AppPaths paths)
         return ToEntry(profile);
     }
 
+    public async Task<WorldEntry?> ImportAsync(Stream source, string fileName)
+    {
+        var profile = new WorldProfile();
+        var target = WorldFile(profile.Id);
+        await using (var file = File.Create(target))
+            await source.CopyToAsync(file);
+
+        WorldFileInfo? info;
+        await using (var file = File.OpenRead(target))
+            info = WorldFileReader.TryRead(file);
+        if (info is null)
+        {
+            File.Delete(target);
+            return null;
+        }
+
+        return Create(profile with
+        {
+            Name = string.IsNullOrWhiteSpace(info.Name) ? Path.GetFileNameWithoutExtension(fileName) : info.Name,
+            Size = info.Size,
+            Difficulty = info.Difficulty
+        });
+    }
+
     public WorldEntry? Find(string id) => List().FirstOrDefault(w => w.Profile.Id == id);
 
     public void MarkPlayed(string id)

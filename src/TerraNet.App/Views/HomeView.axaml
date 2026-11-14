@@ -11,14 +11,18 @@
 
     <c:PixelFrame Classes="sheet">
       <Grid RowDefinitions="Auto,*">
-        <Grid Margin="14,12,12,6" ColumnDefinitions="Auto,*,Auto,Auto">
+        <Grid Margin="14,12,12,6" ColumnDefinitions="Auto,*,Auto,Auto,Auto">
           <c:PixelSprite Sprite="world" Unit="2" VerticalAlignment="Center" Margin="0,0,10,0" />
           <TextBlock Grid.Column="1" Classes="h1" Text="{app:Tr worlds}" VerticalAlignment="Center" />
           <Button Grid.Column="2" Classes="soft icon" Margin="0,0,10,0"
                   Command="{Binding $parent[v:MainView].((vm:MainViewModel)DataContext).OpenSettingsCommand}">
             <c:PixelSprite Sprite="gear" Unit="2" />
           </Button>
-          <Button Grid.Column="3" Classes="primary icon" Command="{Binding NewWorldCommand}">
+          <Button Grid.Column="3" Classes="soft icon" Margin="0,0,10,0"
+                  Command="{Binding $parent[v:MainView].((vm:MainViewModel)DataContext).ImportCommand}">
+            <c:PixelSprite Sprite="download" Unit="2" />
+          </Button>
+          <Button Grid.Column="4" Classes="primary icon" Command="{Binding NewWorldCommand}">
             <c:PixelSprite Sprite="plus" Unit="2" />
           </Button>
         </Grid>
@@ -133,6 +137,13 @@
                   <StackPanel Orientation="Horizontal" Spacing="10">
                     <c:PixelSprite Sprite="plus" Unit="2" />
                     <TextBlock Text="{app:Tr firstWorld}" Foreground="{DynamicResource OnPrimaryBrush}" />
+                  </StackPanel>
+                </Button>
+                <Button Classes="soft" HorizontalAlignment="Center"
+                        Command="{Binding $parent[v:MainView].((vm:MainViewModel)DataContext).ImportCommand}">
+                  <StackPanel Orientation="Horizontal" Spacing="10">
+                    <c:PixelSprite Sprite="download" Unit="2" />
+                    <TextBlock Text="{app:Tr import}" />
                   </StackPanel>
                 </Button>
               </StackPanel>

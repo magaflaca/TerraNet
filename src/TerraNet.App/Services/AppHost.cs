@@ -50,7 +50,7 @@ public sealed class AppHost
         {
             Core.Diagnostics.AppLog.Write("preparing pack");
             var pack = await Task.Run(() => Platform.PreparePackAsync(new Progress<double>(p => PrepareProgress?.Invoke(p))));
-            var environment = new HostEnvironment(Paths, pack, Platform.Launcher, Platform.NativeLauncher, Platform.AppVersion.ToString(3), Worlds, Settings);
+            var environment = new HostEnvironment(Paths, pack, Platform.Launcher, Platform.ServerCommand(pack), Platform.AppVersion.ToString(3), Worlds, Settings);
             var session = new HostSession(environment);
             session.Changed += Platform.OnSessionChanged;
             Core.Diagnostics.AppLog.Write("pack ready " + pack.Root);

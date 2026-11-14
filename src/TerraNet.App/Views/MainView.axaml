@@ -3,6 +3,7 @@
              xmlns:vm="using:TerraNet.App.ViewModels"
              xmlns:v="using:TerraNet.App.Views"
              xmlns:c="using:TerraNet.App.Controls"
+             xmlns:app="using:TerraNet.App"
              x:Class="TerraNet.App.Views.MainView"
              x:DataType="vm:MainViewModel"
              Background="{DynamicResource PageBrush}"
@@ -49,6 +50,22 @@
           <CrossFade Duration="0:0:0.14" />
         </TransitioningContentControl.PageTransition>
       </TransitioningContentControl>
+    </Panel>
+
+    <Panel IsVisible="{Binding IsDropping}" IsHitTestVisible="False">
+      <Border Background="#66120F24" />
+      <c:PixelFrame Classes="card pop" Fill="{DynamicResource AccentSoftBrush}" Padding="34,26"
+                    HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel Spacing="16" HorizontalAlignment="Center">
+          <Grid ColumnDefinitions="Auto,Auto,Auto" HorizontalAlignment="Center">
+            <c:PixelSprite Classes="twinkle" Sprite="sparkle" Unit="2" VerticalAlignment="Top" />
+            <c:PixelSprite Grid.Column="1" Classes="bob" Sprite="world" Unit="6" Margin="12,0" />
+            <c:PixelSprite Grid.Column="2" Classes="twinkle" Sprite="sparkle" Unit="3" VerticalAlignment="Bottom" />
+          </Grid>
+          <c:PixelSprite Sprite="download" Unit="3" HorizontalAlignment="Center" Classes="bob" />
+          <TextBlock Classes="h2" Text="{app:Tr dropWorld}" HorizontalAlignment="Center" />
+        </StackPanel>
+      </c:PixelFrame>
     </Panel>
 
     <c:PixelFrame Classes="toast"
