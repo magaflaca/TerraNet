@@ -41,6 +41,33 @@
     <Setter Property="Tint" Value="{DynamicResource OnPrimaryBrush}" />
   </Style>
 
+  <Style Selector=":is(Control).bob">
+    <Setter Property="RenderTransform"><TranslateTransform /></Setter>
+    <Style.Animations>
+      <Animation Duration="0:0:1.6" IterationCount="Infinite" PlaybackDirection="Alternate" Easing="SineEaseInOut">
+        <KeyFrame Cue="0%"><Setter Property="TranslateTransform.Y" Value="0" /></KeyFrame>
+        <KeyFrame Cue="100%"><Setter Property="TranslateTransform.Y" Value="-8" /></KeyFrame>
+      </Animation>
+    </Style.Animations>
+  </Style>
+  <Style Selector=":is(Control).twinkle">
+    <Style.Animations>
+      <Animation Duration="0:0:0.9" IterationCount="Infinite" PlaybackDirection="Alternate">
+        <KeyFrame Cue="0%"><Setter Property="Opacity" Value="1" /></KeyFrame>
+        <KeyFrame Cue="100%"><Setter Property="Opacity" Value="0.2" /></KeyFrame>
+      </Animation>
+    </Style.Animations>
+  </Style>
+  <Style Selector=":is(Control).pop">
+    <Setter Property="RenderTransform"><ScaleTransform /></Setter>
+    <Style.Animations>
+      <Animation Duration="0:0:0.28" Easing="BackEaseOut" FillMode="Forward">
+        <KeyFrame Cue="0%"><Setter Property="ScaleTransform.ScaleX" Value="0.6" /><Setter Property="ScaleTransform.ScaleY" Value="0.6" /><Setter Property="Opacity" Value="0" /></KeyFrame>
+        <KeyFrame Cue="100%"><Setter Property="ScaleTransform.ScaleX" Value="1" /><Setter Property="ScaleTransform.ScaleY" Value="1" /><Setter Property="Opacity" Value="1" /></KeyFrame>
+      </Animation>
+    </Style.Animations>
+  </Style>
+
   <Style Selector="c|PixelFrame.card">
     <Setter Property="Fill" Value="{DynamicResource SurfaceBrush}" />
     <Setter Property="Stroke" Value="{DynamicResource OutlineBrush}" />

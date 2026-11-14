@@ -19,4 +19,5 @@ public sealed record HostSettings
     public int AutoSaveMinutes { get; init; } = 10;
     public AppTheme Theme { get; init; } = AppTheme.Auto;
     public bool Sounds { get; init; } = true;
+    public string? WelcomeMessage { get; init; }
 }

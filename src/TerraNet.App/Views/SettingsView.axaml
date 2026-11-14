@@ -69,6 +69,24 @@
           </StackPanel>
         </c:PixelFrame>
 
+        <c:PixelFrame Classes="card">
+          <StackPanel Spacing="10">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <c:PixelSprite Sprite="sparkle" Unit="2" Margin="0,0,10,0" />
+              <TextBlock Grid.Column="1" Text="{app:Tr welcome}" VerticalAlignment="Center" />
+              <Button Grid.Column="2" Classes="ghost" Command="{Binding ResetWelcomeCommand}">
+                <c:PixelSprite Sprite="diceIcon" Unit="2" Tint="{DynamicResource InkMutedBrush}" />
+              </Button>
+            </Grid>
+            <c:PixelFrame Classes="field">
+              <TextBox Text="{Binding Welcome}" TextWrapping="Wrap" AcceptsReturn="False" MaxLength="200" FontSize="15" />
+            </c:PixelFrame>
+            <c:PixelFrame Classes="chip" Padding="10,8" Fill="#2A2447">
+              <c:ChatPreview Markup="{Binding Welcome}" TextWrapping="Wrap" FontSize="15" Foreground="#FFFFFF" />
+            </c:PixelFrame>
+          </StackPanel>
+        </c:PixelFrame>
+
         <StackPanel>
           <TextBlock Classes="label" Text="{app:Tr theme}" />
           <ListBox Theme="{StaticResource ChoiceList}" ItemsSource="{Binding Themes}" SelectedItem="{Binding Theme}">

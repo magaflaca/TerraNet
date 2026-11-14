@@ -26,6 +26,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         _restartOnCrash = current.RestartOnCrash;
         _startOnBoot = current.StartOnBoot;
         _sounds = current.Sounds;
+        _welcome = current.WelcomeMessage ?? Core.Hosting.Welcome.Default;
         _theme = Choices.Find(Choices.Themes, current.Theme);
     }
 
@@ -55,6 +56,9 @@ public sealed partial class SettingsViewModel : ObservableObject
     private bool _sounds;
 
     [ObservableProperty]
+    private string _welcome;
+
+    [ObservableProperty]
     private bool _isChecking;
 
     partial void OnMaxPlayersChanged(int value) => _settings.Update(s => s with { MaxPlayers = value });
@@ -63,6 +67,10 @@ public sealed partial class SettingsViewModel : ObservableObject
     partial void OnRestartOnCrashChanged(bool value) => _settings.Update(s => s with { RestartOnCrash = value });
     partial void OnStartOnBootChanged(bool value) => _settings.Update(s => s with { StartOnBoot = value });
     partial void OnSoundsChanged(bool value) => _settings.Update(s => s with { Sounds = value });
+    partial void OnWelcomeChanged(string value) => _settings.Update(s => s with { WelcomeMessage = value });
+
+    [RelayCommand]
+    private void ResetWelcome() => Welcome = Core.Hosting.Welcome.Default;
 
     partial void OnThemeChanged(Choice value)
     {

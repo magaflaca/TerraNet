@@ -10,7 +10,7 @@ public sealed class HostEnvironment(
     AppPaths paths,
     ServerPack pack,
     IProcessLauncher launcher,
-    string? nativeLauncher,
+    ServerCommand command,
     string appVersion,
     WorldLibrary worlds,
     SettingsService settings)
@@ -18,7 +18,7 @@ public sealed class HostEnvironment(
     public AppPaths Paths { get; } = paths;
     public ServerPack Pack { get; } = pack;
     public IProcessLauncher Launcher { get; } = launcher;
-    public string? NativeLauncher { get; } = nativeLauncher;
+    public ServerCommand Command { get; } = command;
     public string AppVersion { get; } = appVersion;
     public WorldLibrary Worlds { get; } = worlds;
     public SettingsService Settings { get; } = settings;

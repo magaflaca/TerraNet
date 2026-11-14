@@ -34,7 +34,7 @@ public sealed class HostSession
     public HostSession(HostEnvironment environment)
     {
         _environment = environment;
-        Server = new ServerHost(environment.Launcher);
+        Server = new ServerHost(environment.Launcher, Path.Combine(environment.Paths.ServerWorkspace, "server.pid"));
         Server.StateChanged += _ => Refresh();
     }
 
@@ -53,6 +53,13 @@ public sealed class HostSession
         CancellationTokenSource run;
         lock (_gate)
         {
+            if (_run is not null && !Server.State.IsActive)
+            {
+                _run.Cancel();
+                _run.Dispose();
+                _run = null;
+                _tunnel = null;
+            }
             if (_run is not null)
                 return false;
             _stopping = false;
@@ -102,7 +109,7 @@ public sealed class HostSession
     private ProcessSpec BuildSpec(WorldEntry world, int port)
     {
         var current = _environment.Worlds.Find(world.Profile.Id) ?? world;
-        return LaunchPlan.Build(_environment.Pack, _environment.Paths, new ServerLaunch(current, _environment.Settings.Current, port), _environment.NativeLauncher);
+        return LaunchPlan.Build(_environment.Pack, _environment.Paths, new ServerLaunch(current, _environment.Settings.Current, port), _environment.Command);
     }
 
     private async Task RunServerAsync(WorldEntry world, int port, ProcessSpec spec, CancellationToken cancellation)
