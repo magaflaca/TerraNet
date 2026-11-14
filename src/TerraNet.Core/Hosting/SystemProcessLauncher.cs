@@ -49,6 +49,8 @@ public sealed class SystemProcessLauncher : IProcessLauncher
 
         public event Action<string>? Output;
 
+        public int Id => _process.Id;
+
         public Task<int> Exited => _exited.Task;
 
         public void Send(string line)

@@ -2,7 +2,7 @@ using TerraNet.Agent;
 
 namespace TerraNet.Core.Hosting;
 
-public sealed class ServerHost(IProcessLauncher launcher)
+public sealed class ServerHost(IProcessLauncher launcher, string pidFile)
 {
     private const int ConsoleCapacity = 400;
     private static readonly TimeSpan StopTimeout = TimeSpan.FromSeconds(45);
@@ -36,8 +36,10 @@ public sealed class ServerHost(IProcessLauncher launcher)
             _console.Clear();
             Publish(new ServerState.Starting());
             Diagnostics.AppLog.Write("start " + spec.FileName + " " + string.Join(' ', spec.Arguments));
+            OrphanReaper.Reap(pidFile);
             _process = launcher.Start(spec);
             _process.Output += OnOutput;
+            File.WriteAllText(pidFile, _process.Id.ToString());
             return WatchAsync(_process);
         }
     }
@@ -88,6 +90,7 @@ public sealed class ServerHost(IProcessLauncher launcher)
         {
             process.Output -= OnOutput;
             process.Dispose();
+            File.Delete(pidFile);
             _process = null;
             Publish(_stopRequested || code == 0 ? ServerState.Idle : new ServerState.Crashed(code));
         }

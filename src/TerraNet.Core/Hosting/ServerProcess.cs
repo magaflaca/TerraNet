@@ -6,8 +6,12 @@ public sealed record ProcessSpec(
     string WorkingDirectory,
     IReadOnlyDictionary<string, string> Environment);
 
+public sealed record ServerCommand(string FileName, IReadOnlyList<string> Prefix);
+
 public interface IServerProcess : IDisposable
 {
+    int Id { get; }
+
     event Action<string>? Output;
 
     Task<int> Exited { get; }

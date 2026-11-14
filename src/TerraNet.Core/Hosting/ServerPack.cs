@@ -7,10 +7,9 @@ public sealed record PackManifest(
     string Tshock,
     string Terraria,
     string Runtime,
-    string DotnetRoot,
+    string? DotnetRoot,
     string Entry,
-    string? Host,
-    string StartupHook,
+    string? StartupHook,
     Dictionary<string, string> Environment);
 
 public sealed class ServerPack
@@ -27,10 +26,9 @@ public sealed class ServerPack
     public string Root { get; }
     public PackManifest Manifest { get; }
 
-    public string DotnetRoot => Resolve(Manifest.DotnetRoot);
+    public string? DotnetRoot => Manifest.DotnetRoot is null ? null : Resolve(Manifest.DotnetRoot);
     public string Entry => Resolve(Manifest.Entry);
-    public string? Host => Manifest.Host is null ? null : Resolve(Manifest.Host);
-    public string StartupHook => Resolve(Manifest.StartupHook);
+    public string? StartupHook => Manifest.StartupHook is null ? null : Resolve(Manifest.StartupHook);
     public string ServerDirectory => Path.GetDirectoryName(Entry)!;
 
     public IReadOnlyDictionary<string, string> Environment =>

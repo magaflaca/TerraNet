@@ -8,7 +8,7 @@ public sealed record ServerLaunch(WorldEntry World, HostSettings Settings, int P
 
 public static class LaunchPlan
 {
-    public static ProcessSpec Build(ServerPack pack, AppPaths paths, ServerLaunch launch, string? nativeLauncher)
+    public static ProcessSpec Build(ServerPack pack, AppPaths paths, ServerLaunch launch, ServerCommand command)
     {
         var workspace = paths.ServerWorkspace;
         var configDirectory = Path.Combine(workspace, "tshock");
@@ -30,21 +30,13 @@ public static class LaunchPlan
         var environment = new Dictionary<string, string>(pack.Environment)
         {
             [AgentWire.SaveDirectoryVariable] = paths.TerrariaSave,
-            ["DOTNET_STARTUP_HOOKS"] = pack.StartupHook,
             ["HOME"] = paths.TerrariaSave,
-            ["DOTNET_gcServer"] = "0",
-            ["DOTNET_CLI_TELEMETRY_OPTOUT"] = "1"
+            ["DOTNET_gcServer"] = "0"
         };
+        if (pack.StartupHook is { } hook)
+            environment["DOTNET_STARTUP_HOOKS"] = hook;
 
-        if (pack.Host is { } host)
-        {
-            environment["DOTNET_ROOT"] = pack.DotnetRoot;
-            return new ProcessSpec(host, arguments, workspace, environment);
-        }
-
-        if (nativeLauncher is null)
-            throw new InvalidOperationException("this server pack requires a native launcher");
-        return new ProcessSpec(nativeLauncher, [pack.DotnetRoot, pack.Entry, .. arguments], workspace, environment);
+        return new ProcessSpec(command.FileName, [.. command.Prefix, .. arguments], workspace, environment);
     }
 
     private static IEnumerable<string> WorldArguments(ServerLaunch launch)
