@@ -24,7 +24,6 @@ dotnet publish "$root/src/TerraNet.Android" -c Release -o "$out/android" \
 cp "$out/android/win.hacks.terranet-Signed.apk" "$out/TerraNet-$version.apk"
 
 dotnet publish "$root/src/TerraNet.Desktop" -c Release -o "$out/desktop" -p:Version="$version"
-vpk pack --packId TerraNet --packVersion "$version" --packDir "$out/desktop" --mainExe TerraNet.exe \
-  --packTitle TerraNet --icon "$root/art/build/terranet.ico" --outputDir "$out/velopack"
+cp "$out/desktop/TerraNet.exe" "$out/TerraNet.exe"
 
 python "$root/tools/release/publish.py" "$version" "$out"

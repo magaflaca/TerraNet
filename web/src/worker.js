@@ -1,6 +1,6 @@
 const PLATFORMS = ["android", "windows"];
 const SPANISH = new Set(["ES", "MX", "AR", "CO", "CL", "PE", "VE", "EC", "GT", "CU", "BO", "DO", "HN", "PY", "SV", "NI", "CR", "PA", "UY", "PR", "GQ"]);
-const FILENAMES = { android: "TerraNet.apk", windows: "TerraNet-Setup.exe" };
+const FILENAMES = { android: "TerraNet.apk", windows: "TerraNet.exe" };
 const CORS = { "access-control-allow-origin": "*" };
 
 export default {
@@ -12,8 +12,6 @@ export default {
       return latest(env, url.searchParams.get("platform"), url.origin);
     if (path.startsWith("/download/"))
       return download(env, path.slice("/download/".length));
-    if (path.startsWith("/feed/windows/"))
-      return feed(env, path.slice("/feed/windows/".length));
     if (path === "/" || path === "/index.html")
       return page(request, env);
     return env.ASSETS.fetch(request);
@@ -42,17 +40,6 @@ async function download(env, platform) {
   const info = await release(env, platform);
   if (!info) return new Response("Not found", { status: 404 });
   return proxy(info.asset, FILENAMES[platform]);
-}
-
-async function feed(env, file) {
-  if (!/^[\w.\-]+$/.test(file)) return new Response("Not found", { status: 404 });
-  if (file.startsWith("releases.") && file.endsWith(".json")) {
-    const body = await env.RELEASES.get("feed:windows");
-    return body ? new Response(body, { headers: { "content-type": "application/json", ...CORS } }) : new Response("Not found", { status: 404 });
-  }
-  const assets = await env.RELEASES.get("feed:assets", "json");
-  const asset = assets?.[file];
-  return asset ? proxy(asset, file) : new Response("Not found", { status: 404 });
 }
 
 async function proxy(asset, filename) {

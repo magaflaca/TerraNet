@@ -68,16 +68,6 @@ def kv_put(key, value):
         assert json.loads(response.read())["success"]
 
 
-def kv_get(key):
-    account, namespace = os.environ["CLOUDFLARE_ACCOUNT_ID"], os.environ["TERRANET_KV_ID"]
-    url = f"https://api.cloudflare.com/client/v4/accounts/{account}/storage/kv/namespaces/{namespace}/values/{urllib.request.quote(key, safe='')}"
-    req = urllib.request.Request(url, headers={"X-Auth-Email": os.environ["CLOUDFLARE_EMAIL"], "X-Auth-Key": os.environ["CLOUDFLARE_API_KEY"]})
-    try:
-        with urllib.request.urlopen(req) as response:
-            return response.read().decode()
-    except urllib.error.HTTPError:
-        return None
-
 
 def manifest(version, notes, asset_url, path):
     return json.dumps({
@@ -101,18 +91,9 @@ def main():
     apk_url = upload(token, rel, apk)
     kv_put("latest:android", manifest(version, notes, apk_url, apk))
 
-    velopack = out / "velopack"
-    setup = next(velopack.glob("*Setup.exe"))
-    setup_url = upload(token, rel, setup, "TerraNet-Setup.exe")
-    kv_put("latest:windows", manifest(version, notes, setup_url, setup))
-
-    assets = json.loads(kv_get("feed:assets") or "{}")
-    for package in velopack.glob("*.nupkg"):
-        assets[package.name] = upload(token, rel, package)
-    feed = next(velopack.glob("releases.*.json"))
-    upload(token, rel, feed)
-    kv_put("feed:assets", json.dumps(assets))
-    kv_put("feed:windows", feed.read_text(encoding="utf-8"))
+    exe = out / "TerraNet.exe"
+    exe_url = upload(token, rel, exe)
+    kv_put("latest:windows", manifest(version, notes, exe_url, exe))
     print("published", version)
 
 
