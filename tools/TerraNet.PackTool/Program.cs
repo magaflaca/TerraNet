@@ -38,6 +38,9 @@ if (target.Host == HostKind.NativeLauncher)
 
     var bin = Path.Combine(server, "bin");
     var plugins = Path.Combine(server, "ServerPlugins");
+    foreach (var assembly in Directory.EnumerateFiles(bin, "*.dll").Concat(Directory.EnumerateFiles(plugins, "*.dll")))
+        if (MetadataRepair.RepairDefaults(assembly) is var count and > 0)
+            Console.WriteLine($"  repair {Path.GetFileName(assembly)} ({count} parameters)");
     string[] hot =
     [
         Path.Combine(bin, "OTAPI.dll"),
