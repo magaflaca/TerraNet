@@ -1,4 +1,22 @@
 {
+  "0.1.1": {
+    "en": [
+      "Faster world generation on phones",
+      "Fixed the phone server closing when a friend joins",
+      "Import worlds, or drag them onto the PC window",
+      "Windows is now a single light TerraNet.exe",
+      "Custom welcome message with colors",
+      "Separate IP and port, and easier sharing"
+    ],
+    "es": [
+      "Generación de mundos más rápida en el móvil",
+      "Arreglado el servidor del móvil que se cerraba al entrar un amigo",
+      "Importa mundos, o arrástralos a la ventana en PC",
+      "Windows ahora es un solo TerraNet.exe ligero",
+      "Mensaje de bienvenida personalizable con colores",
+      "IP y puerto separados, y compartir más fácil"
+    ]
+  },
   "0.1.0": {
     "en": [
       "Host Terraria 1.4.5 worlds from your phone or PC",
