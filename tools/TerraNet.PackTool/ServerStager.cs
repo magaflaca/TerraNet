@@ -13,6 +13,7 @@ public static class ServerStager
         CopyDirectory(tshock, destination);
 
         var runtimes = Path.Combine(destination, "runtimes");
+        PromoteManagedAssets(Path.Combine(runtimes, target.AssetRid, "lib"), Path.Combine(destination, "bin"));
         if (Directory.Exists(runtimes))
             Directory.Delete(runtimes, true);
         var native = Path.Combine(runtimes, target.AssetRid, "native");
@@ -32,6 +33,14 @@ public static class ServerStager
             File.Delete(unused);
 
         PinRuntime(Path.Combine(destination, "TShock.Server.runtimeconfig.json"), runtimeVersion);
+    }
+
+    private static void PromoteManagedAssets(string libraries, string bin)
+    {
+        if (!Directory.Exists(libraries))
+            return;
+        foreach (var assembly in Directory.EnumerateFiles(libraries, "*.dll", SearchOption.AllDirectories))
+            File.Copy(assembly, Path.Combine(bin, Path.GetFileName(assembly)), true);
     }
 
     private static void PinRuntime(string runtimeConfig, string runtimeVersion)
