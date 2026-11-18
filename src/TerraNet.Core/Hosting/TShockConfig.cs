@@ -7,6 +7,7 @@ namespace TerraNet.Core.Hosting;
 public static class TShockConfig
 {
     private const string FileName = "config.json";
+    private const int Unlimited = 1_000_000;
 
     public static void Write(string directory, HostSettings settings)
     {
@@ -36,6 +37,25 @@ public static class TShockConfig
         values["DisableCustomDeathMessages"] = true;
         values["SuppressPermissionFailureNotices"] = true;
         values["DisplayIPToAdmins"] = false;
+        values["DisableUUIDLogin"] = true;
+        values["EnableChatAboveHeads"] = true;
+        values["RangeChecks"] = false;
+        values["KickOnDamageThresholdBroken"] = false;
+        values["MaxDamage"] = Unlimited;
+        values["MaxProjDamage"] = Unlimited;
+        values["TileKillThreshold"] = Unlimited;
+        values["TilePlaceThreshold"] = Unlimited;
+        values["TileLiquidThreshold"] = Unlimited;
+        values["TilePaintThreshold"] = Unlimited;
+        values["ProjectileThreshold"] = Unlimited;
+        values["HealOtherThreshold"] = Unlimited;
+        values["KickOnTileKillThresholdBroken"] = false;
+        values["KickOnTilePlaceThresholdBroken"] = false;
+        values["KickOnTileLiquidThresholdBroken"] = false;
+        values["KickOnTilePaintThresholdBroken"] = false;
+        values["KickOnProjectileThresholdBroken"] = false;
+        values["KickOnHealOtherThresholdBroken"] = false;
+        values["AnonymousBossInvasions"] = true;
 
         File.WriteAllText(Path.Combine(directory, "motd.txt"), settings.WelcomeMessage ?? Welcome.Default);
         File.WriteAllText(Path.Combine(directory, "rules.txt"), "");
