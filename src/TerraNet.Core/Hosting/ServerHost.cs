@@ -40,7 +40,7 @@ public sealed class ServerHost(IProcessLauncher launcher, string pidFile)
             _process = launcher.Start(spec);
             _process.Output += OnOutput;
             File.WriteAllText(pidFile, _process.Id.ToString());
-            return WatchAsync(_process);
+            return WatchAsync(_process, Path.Combine(spec.WorkingDirectory, "logs"));
         }
     }
 
@@ -82,10 +82,12 @@ public sealed class ServerHost(IProcessLauncher launcher, string pidFile)
             Publish(new ServerState.Crashed(-1));
     }
 
-    private async Task<int> WatchAsync(IServerProcess process)
+    private async Task<int> WatchAsync(IServerProcess process, string logDirectory)
     {
         var code = await process.Exited;
         Diagnostics.AppLog.Write($"server exited {code}");
+        if (code != 0 && !_stopRequested)
+            DumpServerLog(logDirectory);
         lock (_gate)
         {
             process.Output -= OnOutput;
@@ -97,6 +99,22 @@ public sealed class ServerHost(IProcessLauncher launcher, string pidFile)
         return code;
     }
 
+    private static void DumpServerLog(string directory)
+    {
+        try
+        {
+            var latest = new DirectoryInfo(directory).EnumerateFiles("*.log", SearchOption.AllDirectories)
+                .MaxBy(f => f.LastWriteTimeUtc);
+            if (latest is null)
+                return;
+            foreach (var line in File.ReadLines(latest.FullName).TakeLast(60))
+                Diagnostics.AppLog.Write("log " + line);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+        }
+    }
+
     private void OnOutput(string line)
     {
         if (AgentWire.TryDecode(line) is { } agentEvent)
@@ -105,8 +123,7 @@ public sealed class ServerHost(IProcessLauncher launcher, string pidFile)
             return;
         }
         Append(line);
-        if (State is ServerState.Starting)
-            Diagnostics.AppLog.Write("out " + line);
+        Diagnostics.AppLog.Write("out " + line);
     }
 
     private void Apply(AgentEvent value)

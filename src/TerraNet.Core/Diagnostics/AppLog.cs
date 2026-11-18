@@ -2,7 +2,7 @@ namespace TerraNet.Core.Diagnostics;
 
 public static class AppLog
 {
-    private const long MaxSize = 512 * 1024;
+    private const long MaxSize = 1024 * 1024;
     private static readonly Lock Gate = new();
 
     public static string? Path { get; set; }
@@ -16,7 +16,7 @@ public static class AppLog
             try
             {
                 if (File.Exists(path) && new FileInfo(path).Length > MaxSize)
-                    File.Delete(path);
+                    File.Move(path, path + ".old", true);
                 File.AppendAllText(path, $"{DateTime.Now:HH:mm:ss.fff} {message}{Environment.NewLine}");
             }
             catch (IOException)
