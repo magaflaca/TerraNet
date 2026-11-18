@@ -59,8 +59,15 @@ public partial class MainView : UserControl
         {
             vm.CopyText = async text =>
             {
-                if (top.Clipboard is { } clipboard)
-                    await clipboard.SetTextAsync(text);
+                try
+                {
+                    if (top.Clipboard is { } clipboard)
+                        await clipboard.SetTextAsync(text);
+                }
+                catch (Exception ex)
+                {
+                    Core.Diagnostics.AppLog.Error("clipboard", ex);
+                }
             };
             vm.PickWorlds = () => top.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
