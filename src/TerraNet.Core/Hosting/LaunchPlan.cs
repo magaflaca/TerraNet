@@ -23,13 +23,15 @@ public static class LaunchPlan
                 "-noupnp",
                 "-configpath", configDirectory,
                 "-logpath", Path.Combine(workspace, "logs"),
-                "-savedirectory", paths.TerrariaSave
+                "-savedirectory", paths.TerrariaSave,
+                "-additionalplugins", paths.Plugins
             ])
             .ToList();
 
         var environment = new Dictionary<string, string>(pack.Environment)
         {
             [AgentWire.SaveDirectoryVariable] = paths.TerrariaSave,
+            [AgentWire.PlayerCommandsVariable] = launch.Settings.PlayerCommands ? "1" : "0",
             ["HOME"] = paths.TerrariaSave,
             ["DOTNET_gcServer"] = "0"
         };
