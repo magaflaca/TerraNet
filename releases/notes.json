@@ -5,14 +5,20 @@
       "Fixed joining worlds hosted on PC",
       "Fixed the PC app closing when copying the address",
       "No more broken local server entry in Terraria",
-      "Plays like vanilla: no TShock commands or anti-cheat kicks"
+      "Plays like vanilla: no TShock commands or anti-cheat kicks",
+      "Play from Terraria: share a world you host in the game",
+      "Server page: PvP, spawn protection, anti-cheat, TShock commands and plugins",
+      "Rename and export your worlds"
     ],
     "es": [
       "Arreglado el servidor del móvil que se cerraba cuando un jugador salía",
       "Arreglada la conexión a mundos abiertos en PC",
       "Arreglado el cierre de la app de PC al copiar la dirección",
       "Ya no aparece el servidor local roto en Terraria",
-      "Se juega como vanilla: sin comandos de TShock ni expulsiones del anti-trampas"
+      "Se juega como vanilla: sin comandos de TShock ni expulsiones del anti-trampas",
+      "Juega desde Terraria: comparte el mundo que hospedas en el juego",
+      "Página Servidor: PvP, protección del spawn, anti-trampas, comandos de TShock y plugins",
+      "Renombra y exporta tus mundos"
     ]
   },
   "0.1.1": {

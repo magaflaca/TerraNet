@@ -13,8 +13,10 @@ IFS=. read -r major minor patch <<< "$version"
 code=$((major * 10000 + minor * 100 + patch))
 rm -rf "$out" && mkdir -p "$out"
 
-dotnet run --project "$root/tools/TerraNet.PackTool" -c Release -- android-arm64
-dotnet run --project "$root/tools/TerraNet.PackTool" -c Release -- win-x64
+if [ "${REUSE_PACKS:-0}" != "1" ]; then
+  dotnet run --project "$root/tools/TerraNet.PackTool" -c Release -- android-arm64
+  dotnet run --project "$root/tools/TerraNet.PackTool" -c Release -- win-x64
+fi
 
 dotnet publish "$root/src/TerraNet.Android" -c Release -o "$out/android" \
   -p:Version="$version" -p:ApplicationDisplayVersion="$version" -p:ApplicationVersion="$code" \
