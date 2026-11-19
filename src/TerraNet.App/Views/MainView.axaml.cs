@@ -69,10 +69,16 @@ public partial class MainView : UserControl
                     Core.Diagnostics.AppLog.Error("clipboard", ex);
                 }
             };
-            vm.PickWorlds = () => top.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            vm.PickFiles = (label, pattern) => top.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
                 AllowMultiple = true,
-                FileTypeFilter = [new FilePickerFileType("Terraria") { Patterns = ["*.wld"], MimeTypes = ["application/octet-stream"] }]
+                FileTypeFilter = [new FilePickerFileType(label) { Patterns = [pattern], MimeTypes = ["application/octet-stream"] }]
+            });
+            vm.SaveFile = name => top.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+            {
+                SuggestedFileName = name,
+                DefaultExtension = Path.GetExtension(name).TrimStart('.'),
+                ShowOverwritePrompt = true
             });
         }
 

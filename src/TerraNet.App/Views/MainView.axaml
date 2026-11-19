@@ -30,6 +30,9 @@
     <DataTemplate DataType="vm:ConsoleViewModel"><v:ConsoleView /></DataTemplate>
     <DataTemplate DataType="vm:UpdateViewModel"><v:UpdateView /></DataTemplate>
     <DataTemplate DataType="vm:ConfirmViewModel"><v:ConfirmView /></DataTemplate>
+    <DataTemplate DataType="vm:PromptViewModel"><v:PromptView /></DataTemplate>
+    <DataTemplate DataType="vm:BridgeViewModel"><v:BridgeView /></DataTemplate>
+    <DataTemplate DataType="vm:ServerSettingsViewModel"><v:ServerSettingsView /></DataTemplate>
   </UserControl.DataTemplates>
 
   <Panel>

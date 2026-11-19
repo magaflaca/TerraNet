@@ -33,6 +33,13 @@ public static class Choices
         new(AppTheme.Dark, Loc.Get("themeDark"), "moonIcon")
     ];
 
+    public static IReadOnlyList<Choice> PvpModes { get; } =
+    [
+        new(PvpMode.Normal, Loc.Get("pvpNormal"), "heart"),
+        new(PvpMode.Always, Loc.Get("pvpAlways"), "flame"),
+        new(PvpMode.Disabled, Loc.Get("pvpDisabled"), "lock")
+    ];
+
     public static Choice Find(IReadOnlyList<Choice> choices, object value) =>
         choices.FirstOrDefault(c => c.Value.Equals(value)) ?? choices[0];
 

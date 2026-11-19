@@ -21,32 +21,16 @@
 
     <ScrollViewer Grid.Row="1">
       <StackPanel MaxWidth="560" Margin="16,8,16,28" Spacing="18">
-        <c:PixelFrame Classes="card">
-          <StackPanel Spacing="14">
-            <Grid Classes="row" ColumnDefinitions="Auto,*,Auto">
-              <c:PixelSprite Sprite="person" Unit="2" Margin="0,0,12,0" />
-              <TextBlock Grid.Column="1" Text="{app:Tr maxPlayers}" />
-              <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10">
-                <Button Classes="soft icon" Command="{Binding FewerPlayersCommand}">
-                  <c:PixelSprite Sprite="minus" Unit="1" />
-                </Button>
-                <TextBlock Text="{Binding MaxPlayers}" FontSize="20" FontWeight="Bold" MinWidth="28" TextAlignment="Center" VerticalAlignment="Center" />
-                <Button Classes="soft icon" Command="{Binding MorePlayersCommand}">
-                  <c:PixelSprite Sprite="plus" Unit="1" />
-                </Button>
+        <Button Classes="tile" Command="{Binding $parent[v:MainView].((vm:MainViewModel)DataContext).OpenServerCommand}">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <c:PixelSprite Sprite="sliders" Unit="3" VerticalAlignment="Center" Margin="0,0,14,0" />
+              <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <TextBlock Classes="h2" Text="{app:Tr server}" />
+                <TextBlock Classes="muted" Text="{app:Tr serverHint}" TextWrapping="Wrap" FontSize="13" />
               </StackPanel>
+              <c:PixelSprite Grid.Column="2" Sprite="chevron" Unit="2" VerticalAlignment="Center" />
             </Grid>
-            <StackPanel>
-              <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,6">
-                <c:PixelSprite Sprite="lock" Unit="2" />
-                <TextBlock Text="{app:Tr password}" VerticalAlignment="Center" />
-              </StackPanel>
-              <c:PixelFrame Classes="field">
-                <TextBox Text="{Binding Password}" PlaceholderText="{app:Tr none}" MaxLength="40" />
-              </c:PixelFrame>
-            </StackPanel>
-          </StackPanel>
-        </c:PixelFrame>
+        </Button>
 
         <c:PixelFrame Classes="card">
           <StackPanel Spacing="10">
@@ -66,24 +50,6 @@
               <TextBlock Text="{app:Tr startOnBoot}" />
               <c:PixelSwitch Grid.Column="1" IsChecked="{Binding StartOnBoot}" />
             </Grid>
-          </StackPanel>
-        </c:PixelFrame>
-
-        <c:PixelFrame Classes="card">
-          <StackPanel Spacing="10">
-            <Grid ColumnDefinitions="Auto,*,Auto">
-              <c:PixelSprite Sprite="sparkle" Unit="2" Margin="0,0,10,0" />
-              <TextBlock Grid.Column="1" Text="{app:Tr welcome}" VerticalAlignment="Center" />
-              <Button Grid.Column="2" Classes="ghost" Command="{Binding ResetWelcomeCommand}">
-                <c:PixelSprite Sprite="diceIcon" Unit="2" Tint="{DynamicResource InkMutedBrush}" />
-              </Button>
-            </Grid>
-            <c:PixelFrame Classes="field">
-              <TextBox Text="{Binding Welcome}" TextWrapping="Wrap" AcceptsReturn="False" MaxLength="200" FontSize="15" />
-            </c:PixelFrame>
-            <c:PixelFrame Classes="chip" Padding="10,8" Fill="#2A2447">
-              <c:ChatPreview Markup="{Binding Welcome}" TextWrapping="Wrap" FontSize="15" Foreground="#FFFFFF" />
-            </c:PixelFrame>
           </StackPanel>
         </c:PixelFrame>
 

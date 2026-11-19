@@ -9,6 +9,26 @@ public static class TShockConfig
     private const string FileName = "config.json";
     private const int Unlimited = 1_000_000;
 
+    private static readonly (string Key, JsonNode Value)[] Relaxed =
+    [
+        ("RangeChecks", false),
+        ("KickOnDamageThresholdBroken", false),
+        ("MaxDamage", Unlimited),
+        ("MaxProjDamage", Unlimited),
+        ("TileKillThreshold", Unlimited),
+        ("TilePlaceThreshold", Unlimited),
+        ("TileLiquidThreshold", Unlimited),
+        ("TilePaintThreshold", Unlimited),
+        ("ProjectileThreshold", Unlimited),
+        ("HealOtherThreshold", Unlimited),
+        ("KickOnTileKillThresholdBroken", false),
+        ("KickOnTilePlaceThresholdBroken", false),
+        ("KickOnTileLiquidThresholdBroken", false),
+        ("KickOnTilePaintThresholdBroken", false),
+        ("KickOnProjectileThresholdBroken", false),
+        ("KickOnHealOtherThresholdBroken", false)
+    ];
+
     public static void Write(string directory, HostSettings settings)
     {
         Directory.CreateDirectory(directory);
@@ -23,7 +43,9 @@ public static class TShockConfig
         values["EnableGeoIP"] = false;
         values["KickProxyUsers"] = false;
         values["RestApiEnabled"] = false;
-        values["SpawnProtection"] = false;
+        values["SpawnProtection"] = settings.SpawnProtection;
+        values["SpawnProtectionRadius"] = Math.Clamp(settings.SpawnProtectionRadius, 1, 100);
+        values["PvPMode"] = settings.Pvp.ToString().ToLowerInvariant();
         values["AutoSave"] = true;
         values["AnnounceSave"] = false;
         values["SaveWorldOnCrash"] = true;
@@ -39,23 +61,14 @@ public static class TShockConfig
         values["DisplayIPToAdmins"] = false;
         values["DisableUUIDLogin"] = true;
         values["EnableChatAboveHeads"] = true;
-        values["RangeChecks"] = false;
-        values["KickOnDamageThresholdBroken"] = false;
-        values["MaxDamage"] = Unlimited;
-        values["MaxProjDamage"] = Unlimited;
-        values["TileKillThreshold"] = Unlimited;
-        values["TilePlaceThreshold"] = Unlimited;
-        values["TileLiquidThreshold"] = Unlimited;
-        values["TilePaintThreshold"] = Unlimited;
-        values["ProjectileThreshold"] = Unlimited;
-        values["HealOtherThreshold"] = Unlimited;
-        values["KickOnTileKillThresholdBroken"] = false;
-        values["KickOnTilePlaceThresholdBroken"] = false;
-        values["KickOnTileLiquidThresholdBroken"] = false;
-        values["KickOnTilePaintThresholdBroken"] = false;
-        values["KickOnProjectileThresholdBroken"] = false;
-        values["KickOnHealOtherThresholdBroken"] = false;
         values["AnonymousBossInvasions"] = true;
+        foreach (var (key, relaxed) in Relaxed)
+        {
+            if (settings.AntiCheat)
+                values.Remove(key);
+            else
+                values[key] = relaxed.DeepClone();
+        }
 
         File.WriteAllText(Path.Combine(directory, "motd.txt"), settings.WelcomeMessage ?? Welcome.Default);
         File.WriteAllText(Path.Combine(directory, "rules.txt"), "");

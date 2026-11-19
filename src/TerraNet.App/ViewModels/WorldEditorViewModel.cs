@@ -8,8 +8,6 @@ namespace TerraNet.App.ViewModels;
 
 public sealed partial class WorldEditorViewModel(AppHost host, MainViewModel main) : ObservableObject
 {
-    private const int MaxNameLength = 27;
-
     public IReadOnlyList<Choice> Sizes => Choices.Sizes;
     public IReadOnlyList<Choice> Difficulties => Choices.Difficulties;
     public IReadOnlyList<Choice> Evils => Choices.Evils;
@@ -40,6 +38,20 @@ public sealed partial class WorldEditorViewModel(AppHost host, MainViewModel mai
     }
 
     [RelayCommand]
+    private void ImportInstead()
+    {
+        main.Back();
+        main.ImportCommand.Execute(null);
+    }
+
+    [RelayCommand]
+    private void BridgeInstead()
+    {
+        main.Back();
+        main.OpenBridgeCommand.Execute(null);
+    }
+
+    [RelayCommand]
     private void KeepSize()
     {
         AcceptedSize = SelectedSize;
@@ -66,7 +78,7 @@ public sealed partial class WorldEditorViewModel(AppHost host, MainViewModel mai
         var name = Name.Trim();
         host.Worlds.Create(new WorldProfile
         {
-            Name = name.Length > MaxNameLength ? name[..MaxNameLength] : name,
+            Name = name.Length > WorldNames.MaxLength ? name[..WorldNames.MaxLength] : name,
             Size = SelectedSize,
             Difficulty = (WorldDifficulty)Difficulty.Value,
             Evil = (WorldEvil)Evil.Value,
