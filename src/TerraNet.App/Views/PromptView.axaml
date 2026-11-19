@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:TerraNet.App.ViewModels"
+             xmlns:c="using:TerraNet.App.Controls"
+             xmlns:app="using:TerraNet.App"
+             x:Class="TerraNet.App.Views.PromptView"
+             x:DataType="vm:PromptViewModel">
+  <c:PixelFrame Classes="card" Padding="20,18">
+    <StackPanel Spacing="16">
+      <StackPanel Orientation="Horizontal" Spacing="12">
+        <c:PixelSprite Classes="bob" Sprite="slime" Unit="3" />
+        <TextBlock Classes="h2" Text="{Binding Title}" VerticalAlignment="Center" />
+      </StackPanel>
+      <c:PixelFrame Classes="field">
+        <TextBox Name="Input" Text="{Binding Text}" MaxLength="{Binding MaxLength}" />
+      </c:PixelFrame>
+      <Grid ColumnDefinitions="*,12,*">
+        <Button Classes="soft" HorizontalAlignment="Stretch" Command="{Binding CancelCommand}">
+          <TextBlock Text="{app:Tr cancel}" />
+        </Button>
+        <Button Grid.Column="2" Classes="primary" HorizontalAlignment="Stretch" Command="{Binding AcceptCommand}" IsDefault="True">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <c:PixelSprite Sprite="check" Unit="2" />
+            <TextBlock Text="{Binding ConfirmText}" Foreground="{DynamicResource OnPrimaryBrush}" />
+          </StackPanel>
+        </Button>
+      </Grid>
+    </StackPanel>
+  </c:PixelFrame>
+</UserControl>

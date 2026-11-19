@@ -50,6 +50,8 @@ public sealed partial class HomeViewModel : ObservableObject
         }
     }
 
+    public void Attach(HostSession session) => Bind(session);
+
     private void Bind(HostSession session)
     {
         session.Changed -= OnSessionChanged;
@@ -125,6 +127,37 @@ public sealed partial class HomeViewModel : ObservableObject
     {
         if (await _main.ConfirmAsync(Loc.Format("deleteWorld", world.Name), Loc.Get("delete")))
             _host.Worlds.Delete(world.Id);
+    }
+
+    [RelayCommand]
+    private async Task RenameWorld(WorldItemViewModel world)
+    {
+        var name = await _main.PromptAsync(Loc.Get("rename"), world.Name, Loc.Get("save"), WorldNames.MaxLength);
+        if (name is null || name == world.Name)
+            return;
+        var renamed = _host.Worlds.Rename(world.Id, name);
+        Sfx.Play(renamed ? Sound.Create : Sound.Error);
+        if (!renamed)
+            _main.ShowToast(Loc.Get("renameFailed"));
+    }
+
+    [RelayCommand]
+    private async Task ExportWorld(WorldItemViewModel world)
+    {
+        if (_main.SaveFile is not { } save || await save(world.Name + ".wld") is not { } file)
+            return;
+        var exported = false;
+        try
+        {
+            await using var stream = await file.OpenWriteAsync();
+            exported = await _host.Worlds.ExportAsync(world.Id, stream);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            Core.Diagnostics.AppLog.Error("export", ex);
+        }
+        Sfx.Play(exported ? Sound.Copy : Sound.Error);
+        _main.ShowToast(Loc.Get(exported ? "exported" : "exportFailed"));
     }
 
     [RelayCommand]

@@ -42,7 +42,9 @@ public sealed partial class MainViewModel : ObservableObject
 
     public Func<string, Task>? CopyText { get; set; }
 
-    public Func<Task<IReadOnlyList<IStorageFile>>>? PickWorlds { get; set; }
+    public Func<string, string, Task<IReadOnlyList<IStorageFile>>>? PickFiles { get; set; }
+
+    public Func<string, Task<IStorageFile?>>? SaveFile { get; set; }
 
     [ObservableProperty]
     private bool _isDropping;
@@ -50,8 +52,8 @@ public sealed partial class MainViewModel : ObservableObject
     [RelayCommand]
     private async Task Import()
     {
-        if (PickWorlds is { } pick)
-            await ImportAsync(await pick());
+        if (PickFiles is { } pick)
+            await ImportAsync(await pick("Terraria", "*.wld"));
     }
 
     public async Task ImportAsync(IEnumerable<IStorageItem> items)
@@ -93,6 +95,11 @@ public sealed partial class MainViewModel : ObservableObject
             confirm.CancelCommand.Execute(null);
             return true;
         }
+        if (Dialog is PromptViewModel prompt)
+        {
+            prompt.CancelCommand.Execute(null);
+            return true;
+        }
         if (Dialog is not null)
         {
             Dialog = null;
@@ -121,6 +128,19 @@ public sealed partial class MainViewModel : ObservableObject
         SettingsViewModel.ApplyTheme(theme);
         Sfx.Play(Sound.Toggle);
     }
+
+    public Task<string?> PromptAsync(string title, string initial, string confirm, int maxLength)
+    {
+        var dialog = new PromptViewModel(title, initial, confirm, maxLength, () => Dialog = null);
+        Dialog = dialog;
+        return dialog.Result;
+    }
+
+    [RelayCommand]
+    private void OpenServer() => Navigate(new ServerSettingsViewModel(this));
+
+    [RelayCommand]
+    private void OpenBridge() => Navigate(new BridgeViewModel(Host, this));
 
     public Task<bool> ConfirmAsync(string message, string confirm)
     {

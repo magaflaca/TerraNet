@@ -1,3 +1,4 @@
+using TerraNet.Core.Hosting;
 using TerraNet.Core;
 using TerraNet.Core.Session;
 using TerraNet.Core.Settings;
@@ -17,6 +18,7 @@ public sealed class AppHost
         Platform = platform;
         Paths = new AppPaths(platform.DataDirectory);
         Worlds = new WorldLibrary(Paths);
+        Plugins = new PluginLibrary(Paths);
         Settings = new SettingsService(Paths);
         Updates = new UpdateChecker(platform.Id, platform.AppVersion);
     }
@@ -30,6 +32,7 @@ public sealed class AppHost
     public IPlatform Platform { get; }
     public AppPaths Paths { get; }
     public WorldLibrary Worlds { get; }
+    public PluginLibrary Plugins { get; }
     public SettingsService Settings { get; }
     public UpdateChecker Updates { get; }
 

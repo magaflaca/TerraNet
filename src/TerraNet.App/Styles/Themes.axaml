@@ -55,6 +55,13 @@
     <Style Selector="^.soft">
       <Setter Property="Background" Value="{DynamicResource SurfaceAltBrush}" />
     </Style>
+    <Style Selector="^.tile">
+      <Setter Property="Background" Value="{DynamicResource AccentSoftBrush}" />
+      <Setter Property="Padding" Value="16,14" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="FontWeight" Value="Normal" />
+    </Style>
     <Style Selector="^.icon">
       <Setter Property="Padding" Value="9" />
     </Style>
