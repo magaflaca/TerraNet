@@ -49,6 +49,26 @@ public sealed class WorldLibrary(AppPaths paths)
 
     public WorldEntry? Find(string id) => List().FirstOrDefault(w => w.Profile.Id == id);
 
+    public bool Rename(string id, string name)
+    {
+        if (Find(id) is not { } entry || string.IsNullOrWhiteSpace(name))
+            return false;
+        var trimmed = name.Trim();
+        if (entry.Generated && !WorldFileWriter.TryRename(entry.FilePath, trimmed))
+            return false;
+        Write(entry.Profile with { Name = trimmed });
+        return true;
+    }
+
+    public async Task<bool> ExportAsync(string id, Stream target)
+    {
+        if (Find(id) is not { Generated: true } entry)
+            return false;
+        await using var source = File.OpenRead(entry.FilePath);
+        await source.CopyToAsync(target);
+        return true;
+    }
+
     public void MarkPlayed(string id)
     {
         if (Find(id) is { } entry)
