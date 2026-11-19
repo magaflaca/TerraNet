@@ -5,7 +5,7 @@ using TerraNet.Protocol;
 
 namespace TerraNet.Core.Tunnel;
 
-public sealed class TunnelClient(RelayEndpoint relay, DeviceCredentials credentials, string appVersion, int localPort)
+public sealed class TunnelClient(RelayEndpoint relay, DeviceCredentials credentials, string appVersion, string localHost, int localPort)
 {
     private static readonly TimeSpan[] Backoff = new[] { 1, 2, 4, 8, 15, 30 }.Select(s => TimeSpan.FromSeconds(s)).ToArray();
     private static readonly RejectReason[] Fatal = [RejectReason.InvalidCredentials, RejectReason.Banned, RejectReason.UnsupportedVersion];
@@ -96,7 +96,7 @@ public sealed class TunnelClient(RelayEndpoint relay, DeviceCredentials credenti
         try
         {
             using var local = new TcpClient { NoDelay = true };
-            await local.ConnectAsync(IPAddress.Loopback, localPort, cancellation);
+            await local.ConnectAsync(localHost, localPort, cancellation);
             await using var remote = await relay.ConnectAsync(cancellation);
             await new FrameChannel(remote).SendAsync(new Attach(token), cancellation);
             await StreamPipe.RunAsync(local.GetStream(), remote, cancellation);

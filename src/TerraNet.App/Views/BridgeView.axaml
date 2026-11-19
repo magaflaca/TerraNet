@@ -1,0 +1,105 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:TerraNet.App.ViewModels"
+             xmlns:v="using:TerraNet.App.Views"
+             xmlns:c="using:TerraNet.App.Controls"
+             xmlns:app="using:TerraNet.App"
+             x:Class="TerraNet.App.Views.BridgeView"
+             x:DataType="vm:BridgeViewModel">
+  <UserControl.Styles>
+    <Style Selector="c|PixelFrame.step">
+      <Setter Property="Fill" Value="{DynamicResource AccentSoftBrush}" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Width" Value="30" />
+      <Setter Property="Height" Value="30" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="c|PixelFrame.step > TextBlock">
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+  </UserControl.Styles>
+
+  <c:PixelFrame Classes="sheet tall">
+    <Grid RowDefinitions="Auto,*,Auto">
+      <v:PageHeader Title="{app:Tr fromTerraria}" />
+
+      <ScrollViewer Grid.Row="1">
+        <StackPanel MaxWidth="560" Margin="16,8,16,16" Spacing="16">
+          <c:PixelFrame Classes="card" Fill="{DynamicResource AccentSoftBrush}" Padding="16,18">
+            <Grid ColumnDefinitions="Auto,*">
+              <Grid ColumnDefinitions="Auto,Auto" VerticalAlignment="Center" Margin="0,0,14,0">
+                <c:PixelSprite Classes="bob" Sprite="gamepad" Unit="4" Tint="{DynamicResource InkBrush}" />
+                <c:PixelSprite Grid.Column="1" Classes="twinkle" Sprite="sparkle" Unit="2" VerticalAlignment="Top" />
+              </Grid>
+              <TextBlock Grid.Column="1" Text="{app:Tr bridgeHint}" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="15" />
+            </Grid>
+          </c:PixelFrame>
+
+          <c:PixelFrame Classes="card">
+            <StackPanel Spacing="12">
+              <Grid ColumnDefinitions="Auto,*">
+                <c:PixelFrame Classes="step"><TextBlock Text="1" /></c:PixelFrame>
+                <TextBlock Grid.Column="1" Margin="12,0,0,0" Text="{app:Tr bridgeStep1}" TextWrapping="Wrap" VerticalAlignment="Center" />
+              </Grid>
+              <Grid ColumnDefinitions="Auto,*">
+                <c:PixelFrame Classes="step"><TextBlock Text="2" /></c:PixelFrame>
+                <TextBlock Grid.Column="1" Margin="12,0,0,0" Text="{app:Tr bridgeStep2}" TextWrapping="Wrap" VerticalAlignment="Center" />
+              </Grid>
+              <Grid ColumnDefinitions="Auto,*">
+                <c:PixelFrame Classes="step"><TextBlock Text="3" /></c:PixelFrame>
+                <TextBlock Grid.Column="1" Margin="12,0,0,0" Text="{app:Tr bridgeStep3}" TextWrapping="Wrap" VerticalAlignment="Center" />
+              </Grid>
+            </StackPanel>
+          </c:PixelFrame>
+
+          <c:PixelFrame Classes="card" Padding="14,12">
+            <Panel>
+              <StackPanel Orientation="Horizontal" Spacing="12" IsVisible="{Binding Detected}" Classes.pop="{Binding Detected}">
+                <c:PixelSprite Classes="bob" Sprite="heart" Unit="3" VerticalAlignment="Center" />
+                <TextBlock Classes="h2" Text="{app:Tr bridgeDetected}" VerticalAlignment="Center" />
+              </StackPanel>
+              <StackPanel Orientation="Horizontal" Spacing="12" IsVisible="{Binding !Detected}">
+                <c:PixelSprite Classes="twinkle" Sprite="signal" Unit="2" Tint="{DynamicResource InkMutedBrush}" VerticalAlignment="Center" />
+                <TextBlock Classes="muted" Text="{app:Tr bridgeWaiting}" VerticalAlignment="Center" />
+              </StackPanel>
+            </Panel>
+          </c:PixelFrame>
+
+          <StackPanel Spacing="10">
+            <Button Classes="ghost" HorizontalAlignment="Left" Command="{Binding ToggleAdvancedCommand}">
+              <StackPanel Orientation="Horizontal" Spacing="8">
+                <c:PixelSprite Sprite="sliders" Unit="2" Tint="{DynamicResource InkMutedBrush}" />
+                <TextBlock Classes="muted" Text="{app:Tr advanced}" />
+              </StackPanel>
+            </Button>
+            <Grid ColumnDefinitions="*,10,110" IsVisible="{Binding ShowAdvanced}" Classes.pop="{Binding ShowAdvanced}">
+              <StackPanel>
+                <TextBlock Classes="label" Text="{app:Tr localAddress}" />
+                <c:PixelFrame Classes="field">
+                  <TextBox Text="{Binding Address}" MaxLength="60" />
+                </c:PixelFrame>
+              </StackPanel>
+              <StackPanel Grid.Column="2">
+                <TextBlock Classes="label" Text="{app:Tr port}" />
+                <c:PixelFrame Classes="field">
+                  <TextBox Text="{Binding Port}" MaxLength="5" />
+                </c:PixelFrame>
+              </StackPanel>
+            </Grid>
+          </StackPanel>
+        </StackPanel>
+      </ScrollViewer>
+
+      <Border Grid.Row="2">
+        <Button Classes="primary" MaxWidth="560" Margin="16,8,16,16" HorizontalAlignment="Stretch" Command="{Binding StartCommand}">
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <c:PixelSprite Sprite="share" Unit="2" />
+            <TextBlock Text="{app:Tr bridgeStart}" Foreground="{DynamicResource OnPrimaryBrush}" FontSize="18" />
+          </StackPanel>
+        </Button>
+      </Border>
+    </Grid>
+  </c:PixelFrame>
+</UserControl>

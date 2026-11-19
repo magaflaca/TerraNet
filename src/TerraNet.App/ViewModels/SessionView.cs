@@ -20,7 +20,8 @@ public sealed record SessionView(
     bool IsConnecting,
     string PlayersText,
     IReadOnlyList<string> Players,
-    SceneMood Mood)
+    SceneMood Mood,
+    bool IsBridge)
 {
     public static readonly SessionView Idle = From(SessionSnapshot.Idle, null);
 
@@ -28,6 +29,7 @@ public sealed record SessionView(
     public string Host => Address?.Split(':')[0] ?? "";
     public string Port => Address?.Split(':').ElementAtOrDefault(1) ?? "";
     public bool HasPlayers => Players.Count > 0;
+    public string Icon => IsBridge ? "gamepad" : "world";
 
     public static SessionView From(SessionSnapshot snapshot, double? preparing)
     {
@@ -40,6 +42,8 @@ public sealed record SessionView(
             ServerState.Running => (Loc.Get("online"), 1, false),
             ServerState.Stopping => (Loc.Get("stopping"), 0, true),
             ServerState.Crashed => (Loc.Get("crashed"), 0, false),
+            ServerState.Bridged { Reachable: true } => (Loc.Get("online"), 1, false),
+            ServerState.Bridged => (Loc.Get("bridgeOffline"), 0, false),
             _ => ("", 0, false)
         };
 
@@ -47,7 +51,7 @@ public sealed record SessionView(
         var players = running?.Players ?? [];
         var mood = server switch
         {
-            ServerState.Running => SceneMood.Online,
+            ServerState.Running or ServerState.Bridged { Reachable: true } => SceneMood.Online,
             ServerState.Starting or ServerState.Generating or ServerState.Stopping => SceneMood.Busy,
             _ => SceneMood.Idle
         };
@@ -61,11 +65,12 @@ public sealed record SessionView(
             server is ServerState.Starting or ServerState.Generating or ServerState.Stopping,
             indeterminate,
             progress,
-            snapshot.World?.Profile.Name ?? "",
+            server is ServerState.Bridged ? Loc.Get("bridgeName") : snapshot.World?.Profile.Name ?? "",
             snapshot.PublicAddress,
             server.IsActive && snapshot.Tunnel is TunnelState.Connecting or TunnelState.Refused,
             running is null ? "" : $"{players.Count}/{running.MaxPlayers}",
             players,
-            mood);
+            mood,
+            server is ServerState.Bridged);
     }
 }

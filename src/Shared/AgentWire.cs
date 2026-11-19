@@ -7,6 +7,7 @@ public static class AgentWire
 {
     public const string Prefix = "@terranet ";
     public const string SaveDirectoryVariable = "TERRANET_SAVE_DIR";
+    public const string PlayerCommandsVariable = "TERRANET_PLAYER_COMMANDS";
 
     private static readonly JsonSerializerOptions Options = new()
     {

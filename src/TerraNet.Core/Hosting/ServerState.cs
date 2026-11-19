@@ -14,7 +14,9 @@ public abstract record ServerState
 
     public sealed record Crashed(int ExitCode) : ServerState;
 
+    public sealed record Bridged(string Host, int Port, bool Reachable) : ServerState;
+
     public static readonly ServerState Idle = new Stopped();
 
-    public bool IsActive => this is Starting or Generating or Running or Stopping;
+    public bool IsActive => this is Starting or Generating or Running or Stopping or Bridged;
 }

@@ -20,6 +20,9 @@ public sealed record SessionSnapshot(ServerState Server, TunnelState Tunnel, Wor
 public sealed class HostSession
 {
     private const int PreferredPort = 7777;
+    private const string LocalHost = "127.0.0.1";
+    private static readonly TimeSpan ProbeTimeout = TimeSpan.FromSeconds(2);
+    private static readonly TimeSpan ProbeInterval = TimeSpan.FromSeconds(3);
     private const int MaxCrashRestarts = 3;
     private static readonly TimeSpan CrashWindow = TimeSpan.FromMinutes(10);
     private static readonly TimeSpan RestartDelay = TimeSpan.FromSeconds(3);
@@ -29,6 +32,7 @@ public sealed class HostSession
     private readonly List<DateTimeOffset> _crashes = [];
     private CancellationTokenSource? _run;
     private TunnelClient? _tunnel;
+    private ServerState.Bridged? _bridge;
     private bool _stopping;
 
     public HostSession(HostEnvironment environment)
@@ -53,6 +57,8 @@ public sealed class HostSession
         CancellationTokenSource run;
         lock (_gate)
         {
+            if (_bridge is not null)
+                return false;
             if (_run is not null && !Server.State.IsActive)
             {
                 _run.Cancel();
@@ -70,7 +76,7 @@ public sealed class HostSession
 
         _environment.Settings.Update(s => s with { LastWorldId = worldId });
         _environment.Worlds.MarkPlayed(worldId);
-        StartTunnel(port, run.Token);
+        StartTunnel(LocalHost, port, run.Token);
         _ = RunServerAsync(world, port, first, run.Token);
         return true;
     }
@@ -92,15 +98,74 @@ public sealed class HostSession
         {
             _run = null;
             _tunnel = null;
+            _bridge = null;
             run.Dispose();
             Snapshot = SessionSnapshot.Idle;
         }
         Refresh();
     }
 
-    private void StartTunnel(int port, CancellationToken cancellation)
+    public bool StartBridge(string host, int port)
     {
-        var tunnel = new TunnelClient(_environment.Relay, _environment.Identity.Load(), _environment.AppVersion, port);
+        CancellationTokenSource run;
+        lock (_gate)
+        {
+            if (_bridge is not null || Server.State.IsActive)
+                return false;
+            _run?.Cancel();
+            _run?.Dispose();
+            _stopping = false;
+            run = _run = new CancellationTokenSource();
+            _bridge = new ServerState.Bridged(host, port, false);
+            Snapshot = Snapshot with { World = null, StartedAt = DateTimeOffset.UtcNow };
+        }
+        StartTunnel(host, port, run.Token);
+        _ = WatchBridgeAsync(host, port, run.Token);
+        Refresh();
+        return true;
+    }
+
+    public static async Task<bool> ProbeAsync(string host, int port, CancellationToken cancellation = default)
+    {
+        try
+        {
+            using var client = new TcpClient();
+            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellation);
+            timeout.CancelAfter(ProbeTimeout);
+            await client.ConnectAsync(host, port, timeout.Token);
+            return true;
+        }
+        catch (Exception ex) when (ex is SocketException or OperationCanceledException or IOException)
+        {
+            return false;
+        }
+    }
+
+    private async Task WatchBridgeAsync(string host, int port, CancellationToken cancellation)
+    {
+        try
+        {
+            while (true)
+            {
+                var reachable = await ProbeAsync(host, port, cancellation);
+                lock (_gate)
+                {
+                    if (cancellation.IsCancellationRequested || _bridge is null)
+                        return;
+                    _bridge = _bridge with { Reachable = reachable };
+                }
+                Refresh();
+                await Task.Delay(ProbeInterval, cancellation);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+
+    private void StartTunnel(string host, int port, CancellationToken cancellation)
+    {
+        var tunnel = new TunnelClient(_environment.Relay, _environment.Identity.Load(), _environment.AppVersion, host, port);
         tunnel.StateChanged += _ => Refresh();
         _tunnel = tunnel;
         _ = tunnel.RunAsync(cancellation);
@@ -157,7 +222,7 @@ public sealed class HostSession
         {
             snapshot = Snapshot with
             {
-                Server = Server.State,
+                Server = _bridge ?? Server.State,
                 Tunnel = _tunnel?.State ?? TunnelState.Idle
             };
             Snapshot = snapshot;
