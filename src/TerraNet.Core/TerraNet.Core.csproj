@@ -7,5 +7,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Shared\AgentWire.cs" Link="Hosting\AgentWire.cs" />
+    <EmbeddedResource Include="Hosting/tshock-options.json" LogicalName="TerraNet.Core.Hosting.tshock-options.json" />
   </ItemGroup>
 </Project>
