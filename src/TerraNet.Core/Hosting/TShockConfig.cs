@@ -7,7 +7,9 @@ namespace TerraNet.Core.Hosting;
 public static class TShockConfig
 {
     private const string FileName = "config.json";
+    private const string SscFileName = "sscconfig.json";
     private const int Unlimited = 1_000_000;
+    private static readonly JsonSerializerOptions Indented = new() { WriteIndented = true };
 
     private static readonly (string Key, JsonNode Value)[] Relaxed =
     [
@@ -29,14 +31,9 @@ public static class TShockConfig
         ("KickOnHealOtherThresholdBroken", false)
     ];
 
-    public static void Write(string directory, HostSettings settings)
+    public static JsonObject Managed(HostSettings settings)
     {
-        Directory.CreateDirectory(directory);
-        var path = Path.Combine(directory, FileName);
-        var root = Read(path);
-        var values = root["Settings"] as JsonObject ?? new JsonObject();
-        root["Settings"] = values;
-
+        var values = new JsonObject();
         values["ServerPassword"] = settings.Password;
         values["MaxSlots"] = settings.MaxPlayers;
         values["ReservedSlots"] = 0;
@@ -62,18 +59,48 @@ public static class TShockConfig
         values["DisableUUIDLogin"] = true;
         values["EnableChatAboveHeads"] = true;
         values["AnonymousBossInvasions"] = true;
-        foreach (var (key, relaxed) in Relaxed)
-        {
-            if (settings.AntiCheat)
-                values.Remove(key);
-            else
+        if (!settings.AntiCheat)
+            foreach (var (key, relaxed) in Relaxed)
                 values[key] = relaxed.DeepClone();
-        }
+        return values;
+    }
+
+    public static JsonNode? Effective(HostSettings settings, TShockOption option)
+    {
+        if (settings.TShockOverrides.TryGetValue(option.Id, out var raw))
+            return JsonNode.Parse(raw);
+        if (!option.IsSsc && Managed(settings)[option.Key] is { } managed)
+            return managed.DeepClone();
+        return option.Default?.DeepClone();
+    }
+
+    public static void Write(string directory, HostSettings settings)
+    {
+        Directory.CreateDirectory(directory);
+        var path = Path.Combine(directory, FileName);
+        var root = Read(path);
+        var values = root["Settings"] as JsonObject ?? new JsonObject();
+        root["Settings"] = values;
+
+        if (settings.AntiCheat)
+            foreach (var (key, _) in Relaxed)
+                values.Remove(key);
+        foreach (var (key, value) in Managed(settings))
+            values[key] = value?.DeepClone();
+
+        var sscPath = Path.Combine(directory, SscFileName);
+        var sscRoot = Read(sscPath);
+        var ssc = sscRoot["Settings"] as JsonObject ?? new JsonObject();
+        sscRoot["Settings"] = ssc;
+
+        foreach (var option in TShockOptions.All)
+            if (settings.TShockOverrides.TryGetValue(option.Id, out var raw))
+                (option.IsSsc ? ssc : values)[option.Key] = JsonNode.Parse(raw);
 
         File.WriteAllText(Path.Combine(directory, "motd.txt"), settings.WelcomeMessage ?? Welcome.Default);
         File.WriteAllText(Path.Combine(directory, "rules.txt"), "");
-
-        File.WriteAllText(path, root.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        File.WriteAllText(path, root.ToJsonString(Indented));
+        File.WriteAllText(sscPath, sscRoot.ToJsonString(Indented));
     }
 
     private static JsonObject Read(string path)
