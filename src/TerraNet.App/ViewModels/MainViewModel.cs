@@ -9,7 +9,6 @@ namespace TerraNet.App.ViewModels;
 public sealed partial class MainViewModel : ObservableObject
 {
     private static readonly TimeSpan ToastDuration = TimeSpan.FromSeconds(1.8);
-    private static readonly TimeSpan UpdateInterval = TimeSpan.FromMinutes(20);
     private readonly Stack<ObservableObject> _history = new();
 
     public MainViewModel(AppHost host)
@@ -17,7 +16,7 @@ public sealed partial class MainViewModel : ObservableObject
         Host = host;
         Home = new HomeViewModel(host, this);
         _page = Home;
-        _ = WatchForUpdatesAsync();
+        _ = CheckForUpdatesAsync();
     }
 
     public AppHost Host { get; }
@@ -148,12 +147,6 @@ public sealed partial class MainViewModel : ObservableObject
         var dialog = new ConfirmViewModel(message, confirm, () => Dialog = null);
         Dialog = dialog;
         return dialog.Result;
-    }
-
-    private async Task WatchForUpdatesAsync()
-    {
-        while (Dialog is not null || !await CheckForUpdatesAsync())
-            await Task.Delay(UpdateInterval);
     }
 
     public async Task<bool> CheckForUpdatesAsync()
