@@ -110,6 +110,17 @@
             </StackPanel>
           </c:PixelFrame>
 
+          <Button Classes="tile" Command="{Binding OpenAllOptionsCommand}">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <c:PixelSprite Sprite="sliders" Unit="3" VerticalAlignment="Center" Margin="0,0,14,0" />
+              <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <TextBlock Classes="h2" Text="{app:Tr allOptions}" />
+                <TextBlock Classes="muted" Text="{app:Tr allOptionsHint}" TextWrapping="Wrap" FontSize="13" />
+              </StackPanel>
+              <c:PixelSprite Grid.Column="2" Sprite="chevron" Unit="2" VerticalAlignment="Center" />
+            </Grid>
+          </Button>
+
           <c:PixelFrame Classes="card">
             <StackPanel Spacing="10">
               <Grid ColumnDefinitions="Auto,*,Auto">

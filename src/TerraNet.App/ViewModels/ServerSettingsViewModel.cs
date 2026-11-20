@@ -89,6 +89,9 @@ public sealed partial class ServerSettingsViewModel : ObservableObject
     private void NarrowerSpawn() => SpawnRadius = Math.Max(MinRadius, SpawnRadius - 1);
 
     [RelayCommand]
+    private void OpenAllOptions() => _main.Navigate(new TShockOptionsViewModel(_main));
+
+    [RelayCommand]
     private void ResetWelcome() => Welcome = Core.Hosting.Welcome.Default;
 
     [RelayCommand]

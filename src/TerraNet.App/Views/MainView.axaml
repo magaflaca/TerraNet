@@ -33,6 +33,7 @@
     <DataTemplate DataType="vm:PromptViewModel"><v:PromptView /></DataTemplate>
     <DataTemplate DataType="vm:BridgeViewModel"><v:BridgeView /></DataTemplate>
     <DataTemplate DataType="vm:ServerSettingsViewModel"><v:ServerSettingsView /></DataTemplate>
+    <DataTemplate DataType="vm:TShockOptionsViewModel"><v:TShockOptionsView /></DataTemplate>
   </UserControl.DataTemplates>
 
   <Panel>

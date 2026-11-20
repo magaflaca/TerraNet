@@ -1,0 +1,77 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:TerraNet.App.ViewModels"
+             xmlns:v="using:TerraNet.App.Views"
+             xmlns:c="using:TerraNet.App.Controls"
+             xmlns:app="using:TerraNet.App"
+             x:Class="TerraNet.App.Views.TShockOptionsView"
+             x:DataType="vm:TShockOptionsViewModel">
+  <c:PixelFrame Classes="sheet tall">
+    <Grid RowDefinitions="Auto,Auto,*">
+      <Grid ColumnDefinitions="*,Auto">
+        <v:PageHeader Title="{app:Tr allOptions}" />
+        <Button Grid.Column="1" Classes="soft icon" Margin="0,10,12,6" Command="{Binding ResetAllCommand}" ToolTip.Tip="{app:Tr reset}">
+          <c:PixelSprite Sprite="diceIcon" Unit="2" />
+        </Button>
+      </Grid>
+
+      <c:PixelFrame Grid.Row="1" Classes="field" Margin="16,4,16,8" MaxWidth="560">
+        <Grid ColumnDefinitions="Auto,*">
+          <c:PixelSprite Sprite="globe" Unit="2" Tint="{DynamicResource InkMutedBrush}" Margin="4,0,8,0" VerticalAlignment="Center" />
+          <TextBox Grid.Column="1" Text="{Binding Search}" PlaceholderText="{app:Tr searchOptions}" />
+        </Grid>
+      </c:PixelFrame>
+
+      <ScrollViewer Grid.Row="2">
+        <ItemsControl ItemsSource="{Binding Visible}" MaxWidth="560" Margin="16,4,16,24">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:OptionSectionViewModel">
+              <StackPanel Spacing="8" Margin="0,0,0,18">
+                <StackPanel Orientation="Horizontal" Spacing="10" Margin="2,0,0,2">
+                  <c:PixelSprite Sprite="{Binding Sprite}" Unit="2" VerticalAlignment="Center" />
+                  <TextBlock Classes="h2" Text="{Binding Title}" VerticalAlignment="Center" />
+                </StackPanel>
+                <c:PixelFrame Classes="card" Padding="14,6">
+                  <ItemsControl ItemsSource="{Binding Items}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="vm:OptionItemViewModel">
+                        <StackPanel Margin="0,8" Spacing="6">
+                          <Grid ColumnDefinitions="*,Auto,Auto" MinHeight="36">
+                            <StackPanel VerticalAlignment="Center" Spacing="1">
+                              <Grid ColumnDefinitions="Auto,*">
+                                <c:PixelSprite Sprite="sparkle" Unit="1" IsVisible="{Binding IsCustom}" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                <TextBlock Grid.Column="1" Text="{Binding Label}" TextWrapping="Wrap" FontSize="15" />
+                              </Grid>
+                              <TextBlock Classes="muted" Text="{Binding Hint}" IsVisible="{Binding HasHint}" TextWrapping="Wrap" FontSize="12" />
+                            </StackPanel>
+                            <Button Grid.Column="1" Classes="ghost" Margin="6,0" IsVisible="{Binding IsCustom}" Command="{Binding ResetCommand}">
+                              <c:PixelSprite Sprite="back" Unit="1" Tint="{DynamicResource InkMutedBrush}" />
+                            </Button>
+                            <c:PixelSwitch Grid.Column="2" IsVisible="{Binding IsBool}" IsChecked="{Binding BoolValue}" VerticalAlignment="Center" />
+                            <c:PixelFrame Grid.Column="2" Classes="field" IsVisible="{Binding IsInt}" Padding="8,2" Width="92" Margin="8,0,0,0" VerticalAlignment="Center">
+                              <TextBox Text="{Binding TextValue}" TextAlignment="Right" MaxLength="9" />
+                            </c:PixelFrame>
+                          </Grid>
+                          <c:PixelFrame Classes="field" IsVisible="{Binding IsText}" Padding="8,2">
+                            <TextBox Text="{Binding TextValue}" MaxLength="120" />
+                          </c:PixelFrame>
+                          <ListBox Theme="{StaticResource ChoiceList}" IsVisible="{Binding IsChoice}" ItemsSource="{Binding Choices}" SelectedItem="{Binding ChoiceValue}">
+                            <ListBox.ItemTemplate>
+                              <DataTemplate x:DataType="vm:Choice">
+                                <TextBlock Text="{Binding Label}" FontSize="14" HorizontalAlignment="Center" />
+                              </DataTemplate>
+                            </ListBox.ItemTemplate>
+                          </ListBox>
+                        </StackPanel>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </c:PixelFrame>
+              </StackPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+    </Grid>
+  </c:PixelFrame>
+</UserControl>

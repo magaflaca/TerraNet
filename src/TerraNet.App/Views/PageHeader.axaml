@@ -14,6 +14,7 @@
     <TextBlock Grid.Column="1"
                Classes="h1"
                VerticalAlignment="Center"
+               TextTrimming="CharacterEllipsis"
                Text="{Binding $parent[v:PageHeader].Title}" />
   </Grid>
 </UserControl>
