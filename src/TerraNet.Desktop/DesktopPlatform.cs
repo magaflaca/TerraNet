@@ -88,7 +88,14 @@ public sealed partial class DesktopPlatform : IPlatform
             "@echo off",
             ":wait",
             $"tasklist /FI \"PID eq {Environment.ProcessId}\" | find \"{Environment.ProcessId}\" >nul && (timeout /t 1 /nobreak >nul & goto wait)",
-            $"move /Y \"{downloaded}\" \"{current}\" >nul",
+            "set tries=0",
+            ":move",
+            $"move /Y \"{downloaded}\" \"{current}\" >nul 2>&1 && goto done",
+            "set /a tries+=1",
+            "if %tries% geq 60 goto done",
+            "timeout /t 1 /nobreak >nul",
+            "goto move",
+            ":done",
             $"start \"\" \"{current}\"",
             "del \"%~f0\""));
         Process.Start(new ProcessStartInfo("cmd.exe", $"/c \"{script}\"") { CreateNoWindow = true, UseShellExecute = false });
