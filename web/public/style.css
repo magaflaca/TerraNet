@@ -290,7 +290,7 @@ main {
   .repo {
     position: fixed;
     left: 50%;
-    bottom: 14px;
+    bottom: 30px;
     z-index: 1;
     margin: 0;
     transform: translateX(-50%);
