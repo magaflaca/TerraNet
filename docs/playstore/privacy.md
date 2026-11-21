@@ -24,7 +24,7 @@ This data is used only to run the relay. It is not sold, not shared with third p
 
 **Children.** TerraNet is not directed at children under 13.
 
-**Contact.** [correo de contacto] · https://github.com/magaflaca/TerraNet/issues
+**Contact.** isa@hacks.win · https://github.com/magaflaca/TerraNet/issues
 
 ## Español
 
@@ -48,4 +48,4 @@ Estos datos se usan solo para que funcione el relay. No se venden, no se compart
 
 **Menores.** TerraNet no está dirigida a menores de 13 años.
 
-**Contacto.** [correo de contacto] · https://github.com/magaflaca/TerraNet/issues
+**Contacto.** isa@hacks.win · https://github.com/magaflaca/TerraNet/issues
