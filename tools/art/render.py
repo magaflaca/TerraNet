@@ -103,6 +103,16 @@ def badge(palette, sprites):
     return notch(canvas, 1)
 
 
+def tray(palette, sprites, online):
+    canvas = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    stamp(canvas, sprites["slimeIcon"], palette, 1, 6)
+    if online:
+        stamp(canvas, [".kkk.", "kGGGk", "kGgGk", "kGGGk", ".kkk."], palette, 11, 0)
+    else:
+        stamp(canvas, ["KKK", "..K", ".K.", "KKK"], palette, 12, 1)
+    return canvas
+
+
 def notch(image, radius):
     mask = Image.new("L", image.size, 255)
     w, h = image.size
@@ -129,6 +139,11 @@ def main():
     frames = [scaled(small, side) for side in (16, 32, 48, 64, 128, 256)]
     frames[-1].save(OUT / "terranet.ico", sizes=[f.size for f in frames], append_images=frames[:-1])
     scaled(small, 256).save(OUT / "badge-256.png")
+    for state in ("idle", "online"):
+        image = tray(palette, sprites, state == "online")
+        layers = [scaled(image, side) for side in (16, 32, 48)]
+        layers[-1].save(OUT / f"tray-{state}.ico", sizes=[f.size for f in layers], append_images=layers[:-1])
+        scaled(image, 128).save(OUT / f"tray-{state}.png")
 
     foreground = floating(54, palette, sprites)
     background = sky(54)
