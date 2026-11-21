@@ -1,10 +1,28 @@
-# TerraNet
+<p align="center">
+  <img src="art/build/logo.png" alt="TerraNet" width="460">
+</p>
 
-Host Terraria worlds from your phone or PC and let friends join from anywhere.
+<p align="center">
+  <strong>Host Terraria worlds from your phone or PC and let friends join from anywhere.</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/magaflaca/terranet/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/magaflaca/terranet?style=flat-square&color=5fc970"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0-ffcf5c?style=flat-square"></a>
+  <img alt="Platforms" src="https://img.shields.io/badge/platforms-Android%20%7C%20Windows-86cbff?style=flat-square">
+  <img alt="Terraria" src="https://img.shields.io/badge/Terraria-1.4.5-9be58a?style=flat-square">
+</p>
+
+<p align="center">
+  <a href="https://terra.hacks.win"><strong>Download</strong></a> ·
+  <a href="https://github.com/magaflaca/terranet/releases">Releases</a> ·
+  <a href="#building">Build</a> ·
+  <a href="#credits">Credits</a>
+</p>
+
+## About
 
 TerraNet runs a Terraria server on your own device and gives it a public address on `play.hacks.win`, so friends can join without port forwarding. It plays like vanilla by default, and every extra is opt-in.
-
-Download: https://terra.hacks.win
 
 ## Features
 

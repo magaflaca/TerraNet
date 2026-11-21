@@ -156,6 +156,25 @@ def og(palette, sprites):
     return banner.resize((width * 5, height * 5), Image.NEAREST)
 
 
+def logo(palette, sprites):
+    ink = (59, 47, 74, 255)
+    font = ImageFont.truetype(str(ART / "fonts" / "PixelifySans-Bold.ttf"), 30)
+    measure = ImageDraw.Draw(Image.new("RGBA", (1, 1)))
+    terra = measure.textlength("Terra", font=font)
+    words = round(terra + measure.textlength("Net", font=font))
+    slime = Image.new("RGBA", (len(sprites["slime"][0]), len(sprites["slime"])), (0, 0, 0, 0))
+    stamp(slime, sprites["slime"], palette, 0, 0)
+    slime = slime.resize((slime.width * 2, slime.height * 2), Image.NEAREST)
+    canvas = Image.new("RGBA", (slime.width + words + 24, 48), (0, 0, 0, 0))
+    canvas.paste(slime, (2, canvas.height - slime.height - 6), slime)
+    stamp(canvas, sprites["sparkle"], palette, slime.width - 4, 4)
+    text = slime.width + 10
+    outlined(canvas, (text, 6), "Terra", font, (155, 229, 138, 255), ink, ink)
+    outlined(canvas, (text + round(terra), 6), "Net", font, (255, 207, 92, 255), ink, ink)
+    cropped = canvas.crop(canvas.getbbox())
+    return cropped.resize((cropped.width * 4, cropped.height * 4), Image.NEAREST)
+
+
 def notch(image, radius):
     mask = Image.new("L", image.size, 255)
     w, h = image.size
@@ -222,6 +241,7 @@ def main():
     (WEB / "favicon.svg").write_text("".join(svg), encoding="utf-8")
 
     og(palette, sprites).save(WEB / "og.png")
+    logo(palette, sprites).save(OUT / "logo.png")
     print("rendered", OUT, file=sys.stderr)
 
 
