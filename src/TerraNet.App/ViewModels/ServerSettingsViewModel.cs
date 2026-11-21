@@ -67,6 +67,12 @@ public sealed partial class ServerSettingsViewModel : ObservableObject
     [ObservableProperty]
     private bool _playerCommands;
 
+    [ObservableProperty]
+    private bool _includeWorlds;
+
+    [ObservableProperty]
+    private bool _exporting;
+
     partial void OnMaxPlayersChanged(int value) => _settings.Update(s => s with { MaxPlayers = value });
     partial void OnPasswordChanged(string value) => _settings.Update(s => s with { Password = value });
     partial void OnWelcomeChanged(string value) => _settings.Update(s => s with { WelcomeMessage = value });
@@ -118,6 +124,34 @@ public sealed partial class ServerSettingsViewModel : ObservableObject
     {
         if (await _main.ConfirmAsync(Loc.Format("deletePlugin", plugin.Name), Loc.Get("delete")))
             _plugins.Delete(plugin.Name);
+    }
+
+    [RelayCommand]
+    private async Task ExportServer()
+    {
+        if (Exporting || _main.SaveFile is not { } save || await save(ServerExport.SuggestedName()) is not { } file)
+            return;
+        Exporting = true;
+        var exported = false;
+        try
+        {
+            var host = _main.Host;
+            var settings = _settings.Current;
+            var includeWorlds = IncludeWorlds;
+            await using var stream = await file.OpenWriteAsync();
+            await Task.Run(() => ServerExport.WriteAsync(stream, host.Paths, settings, host.Worlds, _plugins, includeWorlds));
+            exported = true;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidDataException)
+        {
+            Core.Diagnostics.AppLog.Error("export server", ex);
+        }
+        finally
+        {
+            Exporting = false;
+        }
+        Sfx.Play(exported ? Sound.Copy : Sound.Error);
+        _main.ShowToast(Loc.Get(exported ? "serverExported" : "exportFailed"));
     }
 
     private void ReloadPlugins()
