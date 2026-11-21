@@ -12,6 +12,9 @@ public interface IPlatform
     IProcessLauncher Launcher { get; }
     ServerCommand ServerCommand(ServerPack pack);
     bool SupportsStartOnBoot { get; }
+    bool SupportsTray { get; }
+
+    void ApplyStartOnBoot(bool enabled);
     Core.Worlds.DeviceTier Tier { get; }
 
     Task<ServerPack> PreparePackAsync(IProgress<double> progress);

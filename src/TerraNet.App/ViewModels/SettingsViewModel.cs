@@ -20,12 +20,14 @@ public sealed partial class SettingsViewModel : ObservableObject
         _keepAwake = current.KeepAwake;
         _restartOnCrash = current.RestartOnCrash;
         _startOnBoot = current.StartOnBoot;
+        _keepInTray = current.KeepInTray;
         _sounds = current.Sounds;
         _theme = Choices.Find(Choices.Themes, current.Theme);
     }
 
     public IReadOnlyList<Choice> Themes => Choices.Themes;
     public bool SupportsStartOnBoot => _main.Host.Platform.SupportsStartOnBoot;
+    public bool SupportsTray => _main.Host.Platform.SupportsTray;
     public string Version => _main.Host.Platform.AppVersion.ToString(3);
 
     [ObservableProperty]
@@ -38,6 +40,9 @@ public sealed partial class SettingsViewModel : ObservableObject
     private bool _startOnBoot;
 
     [ObservableProperty]
+    private bool _keepInTray;
+
+    [ObservableProperty]
     private Choice _theme;
 
     [ObservableProperty]
@@ -48,7 +53,13 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     partial void OnKeepAwakeChanged(bool value) => _settings.Update(s => s with { KeepAwake = value });
     partial void OnRestartOnCrashChanged(bool value) => _settings.Update(s => s with { RestartOnCrash = value });
-    partial void OnStartOnBootChanged(bool value) => _settings.Update(s => s with { StartOnBoot = value });
+    partial void OnStartOnBootChanged(bool value)
+    {
+        _settings.Update(s => s with { StartOnBoot = value });
+        _main.Host.Platform.ApplyStartOnBoot(value);
+    }
+
+    partial void OnKeepInTrayChanged(bool value) => _settings.Update(s => s with { KeepInTray = value });
     partial void OnSoundsChanged(bool value) => _settings.Update(s => s with { Sounds = value });
 
     partial void OnThemeChanged(Choice value)

@@ -38,6 +38,11 @@ public sealed class AndroidPlatform(AndroidApp context) : IPlatform
     public ServerCommand ServerCommand(ServerPack pack) =>
         new(Path.Combine(context.ApplicationInfo!.NativeLibraryDir!, "libtnhost.so"), [pack.DotnetRoot!, pack.Entry]);
     public bool SupportsStartOnBoot => true;
+    public bool SupportsTray => false;
+
+    public void ApplyStartOnBoot(bool enabled)
+    {
+    }
 
     public Core.Worlds.DeviceTier Tier => Core.Worlds.DeviceTiers.Measure(TotalMemory(), Environment.ProcessorCount, true);
 

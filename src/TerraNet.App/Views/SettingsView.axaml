@@ -47,8 +47,18 @@
               <c:PixelSwitch Grid.Column="1" IsChecked="{Binding RestartOnCrash}" />
             </Grid>
             <Grid Classes="row" ColumnDefinitions="*,Auto" IsVisible="{Binding SupportsStartOnBoot}">
-              <TextBlock Text="{app:Tr startOnBoot}" />
+              <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="{app:Tr startOnBoot}" />
+                <TextBlock Classes="muted" Text="{app:Tr startOnBootHint}" FontSize="13" TextWrapping="Wrap" />
+              </StackPanel>
               <c:PixelSwitch Grid.Column="1" IsChecked="{Binding StartOnBoot}" />
+            </Grid>
+            <Grid Classes="row" ColumnDefinitions="*,Auto" IsVisible="{Binding SupportsTray}">
+              <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="{app:Tr keepInTray}" />
+                <TextBlock Classes="muted" Text="{app:Tr keepInTrayHint}" FontSize="13" TextWrapping="Wrap" />
+              </StackPanel>
+              <c:PixelSwitch Grid.Column="1" IsChecked="{Binding KeepInTray}" />
             </Grid>
           </StackPanel>
         </c:PixelFrame>

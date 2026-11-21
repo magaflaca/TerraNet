@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.IO.Compression;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using Microsoft.Win32;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
@@ -15,6 +16,8 @@ namespace TerraNet.Desktop;
 public sealed partial class DesktopPlatform : IPlatform
 {
     private const string PackResource = "TerraNet.ServerPack.zip";
+    private const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
+    private const string RunValue = "TerraNet";
     private const uint ContinuousAwake = 0x80000000 | 0x00000001;
     private const uint ContinuousOnly = 0x80000000;
     private const uint SoundAsync = 0x0001;
@@ -31,7 +34,17 @@ public sealed partial class DesktopPlatform : IPlatform
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "TerraNet");
 
     public IProcessLauncher Launcher { get; } = new SystemProcessLauncher();
-    public bool SupportsStartOnBoot => false;
+    public bool SupportsStartOnBoot => true;
+    public bool SupportsTray => true;
+
+    public void ApplyStartOnBoot(bool enabled)
+    {
+        using var run = Registry.CurrentUser.CreateSubKey(RunKey);
+        if (enabled)
+            run.SetValue(RunValue, $"\"{Environment.ProcessPath}\" {Program.BackgroundFlag}");
+        else
+            run.DeleteValue(RunValue, false);
+    }
 
     public Core.Worlds.DeviceTier Tier { get; } =
         Core.Worlds.DeviceTiers.Measure(GC.GetGCMemoryInfo().TotalAvailableMemoryBytes, Environment.ProcessorCount, false);
