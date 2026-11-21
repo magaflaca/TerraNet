@@ -1,4 +1,12 @@
 {
+  "0.1.5": {
+    "en": [
+      "Export your server for a regular TShock: config, accounts, characters, plugins and, if you want, your worlds in one .zip"
+    ],
+    "es": [
+      "Exporta tu servidor para un TShock normal: configuración, cuentas, personajes, plugins y, si quieres, tus mundos en un .zip"
+    ]
+  },
   "0.1.4": {
     "en": [
       "Sturdier connections: players who drop no longer keep a slot busy, and the server keeps accepting players when it fills up",
