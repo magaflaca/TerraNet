@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/magaflaca/terranet/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/magaflaca/terranet?style=flat-square&color=5fc970"></a>
+  <a href="https://github.com/magaflaca/TerraNet/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/magaflaca/TerraNet?style=flat-square&color=5fc970"></a>
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0-ffcf5c?style=flat-square"></a>
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-Android%20%7C%20Windows-86cbff?style=flat-square">
   <img alt="Terraria" src="https://img.shields.io/badge/Terraria-1.4.5-9be58a?style=flat-square">
@@ -15,7 +15,7 @@
 
 <p align="center">
   <a href="https://terra.hacks.win"><strong>Download</strong></a> ·
-  <a href="https://github.com/magaflaca/terranet/releases">Releases</a> ·
+  <a href="https://github.com/magaflaca/TerraNet/releases">Releases</a> ·
   <a href="#building">Build</a> ·
   <a href="#credits">Credits</a>
 </p>

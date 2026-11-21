@@ -1,4 +1,4 @@
-const REPO = "https://github.com/magaflaca/terranet";
+const REPO = "https://github.com/magaflaca/TerraNet";
 const DATA = window.TERRANET && typeof window.TERRANET === "object" ? window.TERRANET : {};
 const LANG = DATA.lang || ((navigator.language || "en").startsWith("es") ? "es" : "en");
 

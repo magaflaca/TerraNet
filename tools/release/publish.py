@@ -8,7 +8,7 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-REPO = "magaflaca/terranet"
+REPO = "magaflaca/TerraNet"
 API = "https://api.github.com"
 UPLOADS = "https://uploads.github.com"
 
