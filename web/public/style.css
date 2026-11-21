@@ -92,7 +92,7 @@ main {
   z-index: 1;
   min-height: 100dvh;
   display: grid;
-  grid-template-rows: auto auto auto 1fr;
+  grid-template-rows: auto auto auto auto 1fr;
   justify-items: center;
   align-content: start;
   gap: 22px;
@@ -264,6 +264,31 @@ main {
   font-size: 18px;
   font-weight: 700;
   color: var(--primary-dark);
+}
+
+.repo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: -6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  text-shadow: 2px 0 #3b2f4a, -2px 0 #3b2f4a, 0 2px #3b2f4a, 0 -2px #3b2f4a, 0 3px #3b2f4a;
+  opacity: 0.85;
+  transition: opacity 0.12s steps(2), transform 0.12s steps(2);
+}
+
+.repo:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.repo-icon {
+  width: 24px;
+  height: auto;
+  image-rendering: pixelated;
 }
 
 .toggles {

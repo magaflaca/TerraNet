@@ -1,3 +1,4 @@
+const REPO = "https://github.com/magaflaca/terranet";
 const DATA = window.TERRANET && typeof window.TERRANET === "object" ? window.TERRANET : {};
 const LANG = DATA.lang || ((navigator.language || "en").startsWith("es") ? "es" : "en");
 
@@ -8,6 +9,8 @@ const TEXT = {
     join: "Friends join at",
     soon: "Coming soon",
     bunny: "noob",
+    repo: "Open source on GitHub",
+    slime: ["boing!", "don't squish me", "premium jelly here", "host a world already", "lag is a myth", "I ate your copper sword", "summon the Eye, I dare you", "I'm the admin now", "touch grass", "gel tastes like strawberry", "friends join at play.hacks.win", "no port forwarding, just vibes"],
   },
   es: {
     tagline: "Abre mundos de Terraria desde tu móvil o PC y juega con tus amigos donde sea.",
@@ -15,6 +18,8 @@ const TEXT = {
     join: "Tus amigos entran en",
     soon: "Muy pronto",
     bunny: "pendejo",
+    repo: "Código abierto en GitHub",
+    slime: ["¡boing!", "no me aplastes", "gelatina premium", "abre un mundo ya", "el lag es un mito", "me comí tu espada de cobre", "invoca al Ojo, a que no", "ahora el admin soy yo", "sal a tocar pasto", "el gel sabe a fresa", "tus amigos entran en play.hacks.win", "sin abrir puertos, puro feeling"],
   },
 };
 
@@ -92,8 +97,11 @@ function scene() {
   let backdropKey = "";
   let celestial = { x: 0, y: 0, w: 0, h: 0 };
   let bunny = { x: 0, y: 0, w: 0, h: 0 };
-  let speechUntil = 0;
-  const bunnyWord = t("bunny");
+  let slimeBox = { x: 0, y: 0, w: 0, h: 0 };
+  let chest = { x: 0, y: 0, w: 0, h: 0 };
+  let speech = { who: null, text: "", until: 0 };
+  let lastLine = -1;
+  const lines = (TEXT[LANG] || TEXT.en).slime;
   let layout = null;
 
   const resize = () => {
@@ -110,7 +118,7 @@ function scene() {
 
   const contentBox = () => {
     const ratio = width / window.innerWidth;
-    const rects = [...document.querySelectorAll(".sign, .address")].map((el) => el.getBoundingClientRect());
+    const rects = [...document.querySelectorAll(".sign, .address, .repo")].map((el) => el.getBoundingClientRect());
     if (!rects.length) return null;
     return {
       left: Math.min(...rects.map((r) => r.left)) * ratio,
@@ -133,6 +141,9 @@ function scene() {
       ground,
       blocked,
       center,
+      contentBottom: box ? box.bottom : 0,
+      contentLeft: box ? box.left : 0,
+      contentRight: box ? box.right : 0,
       left: blocked ? snap(box.left - 6 * u) : center - 12 * u,
       right: blocked ? snap(box.right + 6 * u) : center + 12 * u,
     };
@@ -269,7 +280,8 @@ function scene() {
       }
       drawSprite(ctx, "tree", islandX + 4 * u, islandY - 11 * u, u);
       drawSprite(ctx, "chest", islandX + 12 * u, islandY - 8 * u, u);
-    }
+      chest = { x: islandX + 10 * u, y: islandY - 10 * u, w: 16 * u, h: 13 * u };
+    } else chest = { x: 0, y: 0, w: 0, h: 0 };
 
     if (!isNight)
       for (let i = 0; i < 3; i++) {
@@ -283,7 +295,9 @@ function scene() {
     const phase = (t % period) / period;
     const lift = phase < 0.35 ? Math.sin((phase / 0.35) * Math.PI) * 5 : 0;
     const slime = t % 4.7 < 0.14 ? "slimeBlink" : "slime";
-    drawSprite(ctx, slime, sx, ground - 14 * u - Math.round(lift) * u, u);
+    const slimeY = ground - 14 * u - Math.round(lift) * u;
+    drawSprite(ctx, slime, sx, slimeY, u);
+    slimeBox = { x: sx - u * 2, y: slimeY - u * 2, w: u * 20, h: u * 17 };
 
     const bunnyPhase = (t * 0.025) % 2;
     const forward = bunnyPhase < 1;
@@ -293,7 +307,6 @@ function scene() {
     const bunnyY = ground - 7 * u - Math.round(hop) * u + u;
     drawSprite(ctx, "bunny", bunnyX, bunnyY, u, { flip: forward });
     bunny = { x: bunnyX - u * 4, y: bunnyY - u * 6, w: u * 16, h: u * 14 };
-    if (t < speechUntil) speak(bunnyWord, bunnyX + u * 4, bunnyY, speechUntil - t);
 
     if (isNight)
       for (let i = 0; i < 14; i++) {
@@ -312,6 +325,11 @@ function scene() {
         drawSprite(ctx, name, Math.round((sx + 8 * u + (i - 1) * 60 * u + Math.sin(t * 0.4 + i * 2) * u * 30) / u) * u, Math.round((ground - u * (18 + i * 7) + Math.sin(t * 1.3 + i) * u * 6) / u) * u, u);
       }
 
+    if (t < speech.until) {
+      const anchor = speech.who === "slime" ? [sx + u * 8, slimeY] : [bunnyX + u * 4, bunnyY];
+      speak(speech.text, anchor[0], anchor[1], speech.until - t);
+    }
+
     requestAnimationFrame(frame);
   };
 
@@ -322,8 +340,14 @@ function scene() {
     const w = snap(ctx.measureText(text).width + pad * 2);
     const h = u * 9;
     const rise = remaining > 2 ? Math.round((2.2 - remaining) * 10) : 2;
-    const x = Math.min(Math.max(snap(centerX - w / 2), u), width - w - u);
-    const y = snap(top - h - u * (2 + rise));
+    const area = current();
+    let x = Math.min(Math.max(snap(centerX - w / 2), u), width - w - u);
+    let y = snap(top - h - u * (2 + rise));
+    if (y < area.contentBottom + u && x + w > area.contentLeft && x < area.contentRight) {
+      if (area.blocked) x = centerX > area.contentRight ? Math.max(x, snap(area.contentRight + u)) : Math.min(x, snap(area.contentLeft - w - u));
+      else y = snap(area.contentBottom + u);
+    }
+    x = Math.min(Math.max(x, u), width - w - u);
     const tail = Math.min(Math.max(snap(centerX), x + u * 3), x + w - u * 4);
     ctx.fillStyle = "#3B2F4A";
     ctx.fillRect(x + u, y, w - u * 2, h);
@@ -342,18 +366,49 @@ function scene() {
 
   const inside = (box, x, y) => x >= box.x && y >= box.y && x <= box.x + box.w && y <= box.y + box.h;
 
-  document.addEventListener("pointerdown", (event) => {
-    if (event.target.closest("a, button")) return;
+  const say = (who, text) => {
+    speech = { who, text, until: performance.now() / 1000 + 2.2 };
+  };
+
+  const randomLine = () => {
+    let index = Math.floor(Math.random() * lines.length);
+    if (index === lastLine) index = (index + 1) % lines.length;
+    lastLine = index;
+    return lines[index];
+  };
+
+  const spot = (event) => {
+    if (event.target.closest("a, button, .sign, .address")) return null;
     const ratio = canvas.width / window.innerWidth;
     const x = event.clientX * ratio;
     const y = event.clientY * ratio;
-    if (inside(bunny, x, y)) {
-      speechUntil = performance.now() / 1000 + 2.2;
-      audio.play("squeak");
-      return;
+    if (inside(bunny, x, y)) return "bunny";
+    if (inside(slimeBox, x, y)) return "slime";
+    if (inside(chest, x, y)) return "chest";
+    if (inside(celestial, x, y)) return "sky";
+    return null;
+  };
+
+  document.addEventListener("pointermove", (event) => document.documentElement.classList.toggle("hot", spot(event) !== null));
+
+  document.addEventListener("pointerdown", (event) => {
+    switch (spot(event)) {
+      case "bunny":
+        say("bunny", t("bunny"));
+        audio.play("squeak");
+        break;
+      case "slime":
+        say("slime", randomLine());
+        audio.play("boing");
+        break;
+      case "chest":
+        audio.play("chest");
+        window.open(REPO, "_blank", "noopener");
+        break;
+      case "sky":
+        toggleTheme();
+        break;
     }
-    if (x < celestial.x || y < celestial.y || x > celestial.x + celestial.w || y > celestial.y + celestial.h) return;
-    toggleTheme();
   });
 
   const invalidate = () => {
@@ -400,6 +455,8 @@ const audio = {
       hover: () => this.tone(1568, 0, 0.04, "triangle", 0.03),
       click: () => this.tone(1319, 0, 0.06, "square", 0.04, 1760),
       toggle: () => [1047, 1568].forEach((f, i) => this.tone(f, i * 0.05, 0.06, "square", 0.04)),
+      boing: () => [392, 523, 784].forEach((f, i) => this.tone(f, i * 0.05, 0.09, "square", 0.04, f * 1.5)),
+      chest: () => [659, 880, 1319, 1760].forEach((f, i) => this.tone(f, i * 0.06, 0.12, "triangle", 0.05)),
       squeak: () => [1760, 2349, 1976].forEach((f, i) => this.tone(f, i * 0.06, 0.07, "triangle", 0.05, f * 1.2)),
       download: () => [523, 659, 784, 1047, 1319].forEach((f, i) => this.tone(f, i * 0.07, 0.18, i % 2 ? "triangle" : "square", 0.045)),
     };
@@ -427,6 +484,7 @@ function formatSize(bytes) {
 
 function applyText() {
   document.querySelectorAll("[data-i18n]").forEach((el) => (el.textContent = t(el.dataset.i18n)));
+  document.querySelectorAll("[data-repo]").forEach((el) => (el.href = REPO));
   for (const platform of ["android", "windows"]) {
     const info = DATA[platform];
     const meta = document.querySelector(`[data-meta="${platform}"]`);
@@ -444,7 +502,7 @@ function setupCursor() {
   const arrow = spriteToDataUrl("cursor", 2);
   const hand = spriteToDataUrl("cursorHand", 2);
   const style = document.createElement("style");
-  style.textContent = `html, body { cursor: url(${arrow}) 1 1, auto; } a, button, .sign { cursor: url(${hand}) 8 1, pointer; }`;
+  style.textContent = `html, body { cursor: url(${arrow}) 1 1, auto; } a, button, .sign, html.hot, html.hot body { cursor: url(${hand}) 8 1, pointer; }`;
   document.head.appendChild(style);
 }
 
