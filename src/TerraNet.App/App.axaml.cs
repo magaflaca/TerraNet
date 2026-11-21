@@ -18,6 +18,7 @@ public partial class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         var host = AppHost.Initialize(PlatformFactory?.Invoke() ?? throw new InvalidOperationException("platform not configured"));
+        Core.Localization.Loc.Use(host.Settings.Current.Language);
         SettingsViewModel.ApplyTheme(host.Settings.Current.Theme);
         SoundHooks.Install();
 

@@ -88,6 +88,13 @@ public sealed partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void GoBack() => Back();
 
+    public void Relocalize()
+    {
+        _history.Clear();
+        Page = Home;
+        Home.Relocalize();
+    }
+
     public bool Back()
     {
         if (Dialog is ConfirmViewModel confirm)

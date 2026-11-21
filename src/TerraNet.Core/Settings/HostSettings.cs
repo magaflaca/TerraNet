@@ -26,6 +26,7 @@ public sealed record HostSettings
     public bool ResumeAfterRestart { get; init; } = true;
     public int AutoSaveMinutes { get; init; } = 10;
     public AppTheme Theme { get; init; } = AppTheme.Auto;
+    public string Language { get; init; } = "auto";
     public bool Sounds { get; init; } = true;
     public string? WelcomeMessage { get; init; }
     public PvpMode Pvp { get; init; } = PvpMode.Normal;

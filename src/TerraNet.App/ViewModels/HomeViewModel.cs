@@ -52,6 +52,12 @@ public sealed partial class HomeViewModel : ObservableObject
 
     public void Attach(HostSession session) => Bind(session);
 
+    public void Relocalize()
+    {
+        Reload();
+        Session = SessionView.From(_snapshot, _preparing);
+    }
+
     private void Bind(HostSession session)
     {
         session.Changed -= OnSessionChanged;

@@ -15,6 +15,9 @@ public static class Loc
 
     public static void Use(CultureInfo culture) => Language = Detect(culture);
 
+    public static void Use(string? code) =>
+        Language = code is not null && Tables.ContainsKey(code) ? code : Detect(CultureInfo.CurrentUICulture);
+
     public static string Get(string key) =>
         Tables[Language].TryGetValue(key, out var value) || Tables["en"].TryGetValue(key, out value) ? value : key;
 

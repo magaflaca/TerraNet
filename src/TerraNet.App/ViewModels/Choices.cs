@@ -8,37 +8,58 @@ public sealed record Choice(object Value, string Label, string Sprite, double Un
 
 public static class Choices
 {
-    public static IReadOnlyList<Choice> Sizes { get; } =
+    private static IReadOnlyList<Choice>? _pvpmodes;
+    private static IReadOnlyList<Choice>? _themes;
+    private static IReadOnlyList<Choice>? _evils;
+    private static IReadOnlyList<Choice>? _difficulties;
+    private static IReadOnlyList<Choice>? _sizes;
+    public static IReadOnlyList<Choice> Sizes => _sizes ??=
     [
         new(WorldSize.Small, Loc.Get("small"), "world", 2),
         new(WorldSize.Medium, Loc.Get("medium"), "world", 3),
         new(WorldSize.Large, Loc.Get("large"), "world", 4)
     ];
 
-    public static IReadOnlyList<Choice> Difficulties { get; } =
+    public static IReadOnlyList<Choice> Difficulties => _difficulties ??=
         Enum.GetValues<WorldDifficulty>()
             .OrderBy(d => d == WorldDifficulty.Journey ? -1 : (int)d)
             .Select(d => new Choice(d, Loc.Get(d.ToString().ToLowerInvariant()), DifficultySprite(d)))
             .ToList();
 
-    public static IReadOnlyList<Choice> Evils { get; } =
+    public static IReadOnlyList<Choice> Evils => _evils ??=
         Enum.GetValues<WorldEvil>()
             .Select(e => new Choice(e, Loc.Get(e.ToString().ToLowerInvariant()), EvilSprite(e)))
             .ToList();
 
-    public static IReadOnlyList<Choice> Themes { get; } =
+    public static IReadOnlyList<Choice> Themes => _themes ??=
     [
         new(AppTheme.Auto, Loc.Get("themeAuto"), "globe"),
         new(AppTheme.Light, Loc.Get("themeLight"), "sunIcon"),
         new(AppTheme.Dark, Loc.Get("themeDark"), "moonIcon")
     ];
 
-    public static IReadOnlyList<Choice> PvpModes { get; } =
+    public static IReadOnlyList<Choice> PvpModes => _pvpmodes ??=
     [
         new(PvpMode.Normal, Loc.Get("pvpNormal"), "heart"),
         new(PvpMode.Always, Loc.Get("pvpAlways"), "flame"),
         new(PvpMode.Disabled, Loc.Get("pvpDisabled"), "lock")
     ];
+
+    public static IReadOnlyList<Choice> Languages =>
+    [
+        new("auto", Loc.Get("themeAuto"), "globe"),
+        new("en", "English", "sparkle"),
+        new("es", "Español", "sparkle")
+    ];
+
+    public static void Reset()
+    {
+        _sizes = null;
+        _difficulties = null;
+        _evils = null;
+        _themes = null;
+        _pvpmodes = null;
+    }
 
     public static Choice Find(IReadOnlyList<Choice> choices, object value) =>
         choices.FirstOrDefault(c => c.Value.Equals(value)) ?? choices[0];

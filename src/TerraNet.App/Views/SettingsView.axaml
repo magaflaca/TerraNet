@@ -64,6 +64,20 @@
         </c:PixelFrame>
 
         <StackPanel>
+          <TextBlock Classes="label" Text="{app:Tr language}" />
+          <ListBox Theme="{StaticResource ChoiceList}" ItemsSource="{Binding Languages}" SelectedItem="{Binding Language}">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:Choice">
+                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                  <c:PixelSprite Sprite="{Binding Sprite}" Unit="2" />
+                  <TextBlock Text="{Binding Label}" FontSize="14" VerticalAlignment="Center" />
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </StackPanel>
+
+        <StackPanel>
           <TextBlock Classes="label" Text="{app:Tr theme}" />
           <ListBox Theme="{StaticResource ChoiceList}" ItemsSource="{Binding Themes}" SelectedItem="{Binding Theme}">
             <ListBox.ItemTemplate>

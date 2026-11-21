@@ -23,9 +23,25 @@ public sealed partial class SettingsViewModel : ObservableObject
         _keepInTray = current.KeepInTray;
         _sounds = current.Sounds;
         _theme = Choices.Find(Choices.Themes, current.Theme);
+        _language = Choices.Find(Languages, current.Language);
     }
 
     public IReadOnlyList<Choice> Themes => Choices.Themes;
+    public IReadOnlyList<Choice> Languages { get; } = Choices.Languages;
+
+    [ObservableProperty]
+    private Choice _language;
+
+    partial void OnLanguageChanged(Choice value)
+    {
+        var code = (string)value.Value;
+        if (_main.Page != this || code == _settings.Current.Language)
+            return;
+        _settings.Update(s => s with { Language = code });
+        Core.Localization.Loc.Use(code);
+        Choices.Reset();
+        _main.Relocalize();
+    }
     public bool SupportsStartOnBoot => _main.Host.Platform.SupportsStartOnBoot;
     public bool SupportsTray => _main.Host.Platform.SupportsTray;
     public string Version => _main.Host.Platform.AppVersion.ToString(3);
