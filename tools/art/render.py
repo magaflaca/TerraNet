@@ -144,57 +144,41 @@ def og(palette, sprites):
 
     ink = (59, 47, 74, 255)
     title = ImageFont.truetype(str(ART / "fonts" / "PixelifySans-Bold.ttf"), 30)
-    body = ImageFont.truetype(str(ART / "fonts" / "PixelifySans-SemiBold.ttf"), 13 * 5)
+    body = ImageFont.truetype(str(ART / "fonts" / "PixelifySans-SemiBold.ttf"), 13)
     measure = ImageDraw.Draw(banner)
     terra = measure.textlength("Terra", font=title)
     total = terra + measure.textlength("Net", font=title)
     left = round((width - total) / 2)
     outlined(banner, (left, 14), "Terra", title, (155, 229, 138, 255), ink, ink)
     outlined(banner, (left + round(terra), 14), "Net", title, (255, 207, 92, 255), ink, ink)
-    banner = banner.resize((width * 5, height * 5), Image.NEAREST)
-    lines = ("Host Terraria worlds", "from your phone or PC")
-    text_width = max(measure.textlength(line, font=body) for line in lines)
-    plate_width = round(text_width / 5) + 16
-    plate_left = (width - plate_width) // 2
-    sign(banner, plate_left * 5, 50 * 5, plate_width * 5, 36 * 5, 5)
-    draw = ImageDraw.Draw(banner)
-    draw.fontmode = "1"
-    for index, line in enumerate(lines):
+    for index, line in enumerate(("Host Terraria worlds", "from your phone or PC")):
         size = measure.textlength(line, font=body)
-        origin = (round((banner.width - size) / 2), (54 + index * 15) * 5)
-        draw.text(origin, line, font=body, fill=ink)
-        if line.endswith("C"):
-            open_c(banner, (origin[0] + round(draw.textlength(line[:-1], font=body)), origin[1]), body, ink)
-    return banner
+        tagline(banner, (round((width - size) / 2), 54 + index * 16), line, body, (255, 255, 255, 255), ink)
+    return banner.resize((width * 5, height * 5), Image.NEAREST)
 
 
-def open_c(canvas, origin, font, ink):
-    pad = 20
-    mask = Image.new("L", (font.size * 2, font.size * 2), 0)
+def tagline(canvas, position, text, font, fill, ink):
+    pad = 4
+    measure = ImageDraw.Draw(canvas)
+    mask = Image.new("L", (round(measure.textlength(text, font=font)) + pad * 2, font.size * 2), 0)
     draw = ImageDraw.Draw(mask)
     draw.fontmode = "1"
-    draw.text((pad, pad), "C", font=font, fill=255)
-    left, top, right, bottom = mask.getbbox()
-    middle = (left + right) // 2
-    cap = 0
-    while mask.getpixel((middle, top + cap)):
-        cap += 1
-    paper = canvas.getpixel((origin[0] + middle - pad, origin[1] + (top + bottom) // 2 - pad))
-    paint = ImageDraw.Draw(canvas)
-    for y in range(top + cap * 2, bottom - cap * 2):
-        for x in range(middle, right):
-            if mask.getpixel((x, y)):
-                paint.point((origin[0] + x - pad, origin[1] + y - pad), fill=paper)
-
-
-def sign(canvas, x, y, w, h, unit):
-    draw = ImageDraw.Draw(canvas)
-    ink = (59, 47, 74, 255)
-    draw.rectangle((x + unit, y + h, x + w - 1, y + h + unit - 1), fill=(201, 190, 223, 255))
-    draw.rectangle((x + unit, y, x + w - unit - 1, y + h - 1), fill=ink)
-    draw.rectangle((x, y + unit, x + w - 1, y + h - unit - 1), fill=ink)
-    draw.rectangle((x + unit, y + unit, x + w - unit - 1, y + h - unit - 1), fill=(255, 251, 243, 255))
-    draw.rectangle((x + unit, y + unit, x + w - unit - 1, y + unit * 2 - 1), fill=(255, 255, 255, 255))
+    draw.text((pad, pad), text, font=font, fill=255)
+    if text.endswith("C"):
+        start = pad + round(draw.textlength(text[:-1], font=font))
+        glyph = mask.crop((start, 0, mask.width, mask.height))
+        left, top, right, bottom = glyph.getbbox()
+        middle = (left + right) // 2
+        for y in range(top + 2, bottom - 2):
+            for x in range(middle, right):
+                mask.putpixel((start + x, y), 0)
+    x, y = position[0] - pad, position[1] - pad
+    solid = lambda color: Image.new("RGBA", mask.size, color)
+    canvas.paste(solid(ink), (x, y + 2), mask)
+    for dx in range(-1, 2):
+        for dy in range(-1, 3):
+            canvas.paste(solid(ink), (x + dx, y + dy), mask)
+    canvas.paste(solid(fill), (x, y), mask)
 
 
 def logo(palette, sprites):
