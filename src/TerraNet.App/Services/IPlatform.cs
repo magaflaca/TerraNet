@@ -13,6 +13,7 @@ public interface IPlatform
     ServerCommand ServerCommand(ServerPack pack);
     bool SupportsStartOnBoot { get; }
     bool SupportsTray { get; }
+    bool SupportsSelfUpdate => true;
 
     void ApplyStartOnBoot(bool enabled);
     Core.Worlds.DeviceTier Tier { get; }

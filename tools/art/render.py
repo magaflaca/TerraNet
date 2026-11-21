@@ -124,23 +124,24 @@ def outlined(canvas, position, text, font, fill, outline, shadow, thickness=1):
     draw.text((x, y), text, font=font, fill=fill)
 
 
-def og(palette, sprites):
-    width, height = 240, 126
+def og(palette, sprites, lines=("Host Terraria worlds", "from your phone or PC"), width=240, scale=5):
+    height = 126
+    dx = (width - 240) // 2
     banner = sky(126).resize((width, height), Image.NEAREST)
     ground = height - 12
     for x in range(0, width, 16):
         stamp(banner, sprites["grass"], palette, x, ground)
-    stamp(banner, sprites["cloud"], palette, 14, 10)
-    stamp(banner, sprites["cloudSmall"], palette, 186, 30)
-    stamp(banner, sprites["sun"], palette, 212, 6)
-    stamp(banner, sprites["house"], palette, 14, ground - 20)
-    stamp(banner, sprites["lamp"], palette, 41, ground - 11)
-    stamp(banner, sprites["treeBig"], palette, 196, ground - 27)
-    stamp(banner, sprites["bush"], palette, 178, ground - 5)
-    stamp(banner, sprites["slime"], palette, 112, ground - 12)
-    stamp(banner, sprites["bunny"], palette, 150, ground - 6)
-    stamp(banner, sprites["flower"], palette, 70, ground - 4)
-    stamp(banner, sprites["mushroom"], palette, 92, ground - 6)
+    stamp(banner, sprites["cloud"], palette, dx + 14, 10)
+    stamp(banner, sprites["cloudSmall"], palette, dx + 186, 30)
+    stamp(banner, sprites["sun"], palette, dx + 212, 6)
+    stamp(banner, sprites["house"], palette, dx + 14, ground - 20)
+    stamp(banner, sprites["lamp"], palette, dx + 41, ground - 11)
+    stamp(banner, sprites["treeBig"], palette, dx + 196, ground - 27)
+    stamp(banner, sprites["bush"], palette, dx + 178, ground - 5)
+    stamp(banner, sprites["slime"], palette, dx + 112, ground - 12)
+    stamp(banner, sprites["bunny"], palette, dx + 150, ground - 6)
+    stamp(banner, sprites["flower"], palette, dx + 70, ground - 4)
+    stamp(banner, sprites["mushroom"], palette, dx + 92, ground - 6)
 
     ink = (59, 47, 74, 255)
     title = ImageFont.truetype(str(ART / "fonts" / "PixelifySans-Bold.ttf"), 30)
@@ -151,10 +152,10 @@ def og(palette, sprites):
     left = round((width - total) / 2)
     outlined(banner, (left, 14), "Terra", title, (155, 229, 138, 255), ink, ink)
     outlined(banner, (left + round(terra), 14), "Net", title, (255, 207, 92, 255), ink, ink)
-    for index, line in enumerate(("Host Terraria worlds", "from your phone or PC")):
+    for index, line in enumerate(lines):
         size = measure.textlength(line, font=body)
         tagline(banner, (round((width - size) / 2), 54 + index * 16), line, body, (255, 255, 255, 255), ink)
-    return banner.resize((width * 5, height * 5), Image.NEAREST)
+    return banner.resize((width * scale, height * scale), Image.NEAREST)
 
 
 def tagline(canvas, position, text, font, fill, ink):
@@ -216,6 +217,9 @@ def scaled(image, size):
     return image.resize((size, size), Image.NEAREST)
 
 
+PLAY = ROOT / "docs" / "playstore" / "graphics"
+
+
 def main():
     palette, sprites = load()
     OUT.mkdir(parents=True, exist_ok=True)
@@ -267,6 +271,12 @@ def main():
 
     og(palette, sprites).save(WEB / "og.png")
     logo(palette, sprites).save(OUT / "logo.png")
+    PLAY.mkdir(parents=True, exist_ok=True)
+    scaled(icon, 512).convert("RGBA").save(PLAY / "icon-512.png")
+    features = {"en": ("Host Terraria worlds", "from your phone or PC"), "es": ("Abre mundos de Terraria", "desde tu celular o PC")}
+    for language, lines in features.items():
+        scene = og(palette, sprites, lines, width=256, scale=1).crop((0, 1, 256, 126))
+        scene.resize((1024, 500), Image.NEAREST).convert("RGB").save(PLAY / f"feature-{language}.png")
     print("rendered", OUT, file=sys.stderr)
 
 

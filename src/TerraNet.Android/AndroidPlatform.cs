@@ -1,7 +1,6 @@
 using System.IO.Compression;
 using Android.Content;
 using Android.Media;
-using AndroidX.Core.Content;
 using TerraNet.App.Services;
 using TerraNet.Core.Hosting;
 using TerraNet.Core.Session;
@@ -13,7 +12,6 @@ namespace TerraNet.Android;
 public sealed class AndroidPlatform(AndroidApp context) : IPlatform
 {
     private const string PackAsset = "server.zip";
-    private const string Authority = "win.hacks.terranet.files";
 
     private readonly Lazy<SoundPool> _pool = new(() => new SoundPool.Builder()
         .SetMaxStreams(4)!
@@ -112,24 +110,9 @@ public sealed class AndroidPlatform(AndroidApp context) : IPlatform
         return Task.FromResult(true);
     }
 
-    public async Task InstallUpdateAsync(ReleaseInfo release, IProgress<double> progress)
-    {
-        if (!context.PackageManager!.CanRequestPackageInstalls())
-        {
-            var settings = new Intent(global::Android.Provider.Settings.ActionManageUnknownAppSources, global::Android.Net.Uri.Parse("package:" + context.PackageName))
-                .AddFlags(ActivityFlags.NewTask)!;
-            context.StartActivity(settings);
-            return;
-        }
+    public bool SupportsSelfUpdate => false;
 
-        var directory = Path.Combine(context.CacheDir!.AbsolutePath, "updates");
-        var apk = await UpdateChecker.DownloadAsync(release, directory, progress);
-        var uri = FileProvider.GetUriForFile(context, Authority, new Java.IO.File(apk))!;
-        var install = new Intent(Intent.ActionView)
-            .SetDataAndType(uri, "application/vnd.android.package-archive")!
-            .AddFlags(ActivityFlags.NewTask | ActivityFlags.GrantReadUriPermission)!;
-        context.StartActivity(install);
-    }
+    public Task InstallUpdateAsync(ReleaseInfo release, IProgress<double> progress) => Task.CompletedTask;
 
     public void PlaySound(string name, byte[] wave)
     {

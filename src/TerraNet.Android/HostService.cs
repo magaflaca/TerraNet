@@ -11,7 +11,7 @@ using TerraNet.Core.Session;
 namespace TerraNet.Android;
 
 [Service(Exported = false, ForegroundServiceType = ForegroundService.TypeSpecialUse)]
-[MetaData("android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE", Value = "Hosts a multiplayer game server for friends")]
+[Property("android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE", Value = "Runs a dedicated multiplayer game server on the device so friends can keep playing in the hosted world while the app is in the background")]
 public sealed class HostService : Service
 {
     private const string Channel = "server";

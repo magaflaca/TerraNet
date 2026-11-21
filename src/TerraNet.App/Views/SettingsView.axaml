@@ -101,7 +101,7 @@
                 <Run Text="{Binding Version}" />
               </TextBlock>
             </StackPanel>
-            <Button Grid.Column="2" Classes="soft icon" Command="{Binding CheckUpdatesCommand}" IsEnabled="{Binding !IsChecking}">
+            <Button Grid.Column="2" Classes="soft icon" Command="{Binding CheckUpdatesCommand}" IsEnabled="{Binding !IsChecking}" IsVisible="{Binding SupportsSelfUpdate}">
               <c:PixelSprite Sprite="download" Unit="2" />
             </Button>
           </Grid>

@@ -158,6 +158,8 @@ public sealed partial class MainViewModel : ObservableObject
 
     public async Task<bool> CheckForUpdatesAsync()
     {
+        if (!Host.Platform.SupportsSelfUpdate)
+            return false;
         var release = await Host.Updates.CheckAsync();
         if (release is null)
             return false;

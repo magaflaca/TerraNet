@@ -44,6 +44,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     }
     public bool SupportsStartOnBoot => _main.Host.Platform.SupportsStartOnBoot;
     public bool SupportsTray => _main.Host.Platform.SupportsTray;
+    public bool SupportsSelfUpdate => _main.Host.Platform.SupportsSelfUpdate;
     public string Version => _main.Host.Platform.AppVersion.ToString(3);
 
     [ObservableProperty]
