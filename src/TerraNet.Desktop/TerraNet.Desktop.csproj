@@ -22,6 +22,7 @@
   <ItemGroup>
     <EmbeddedResource Include="../../art/build/tray-idle.ico" LogicalName="TerraNet.TrayIdle.ico" />
     <EmbeddedResource Include="../../art/build/tray-online.ico" LogicalName="TerraNet.TrayOnline.ico" />
+    <EmbeddedResource Include="../../art/build/badge-256.png" LogicalName="TerraNet.ToastLogo.png" />
   </ItemGroup>
   <ItemGroup Condition="Exists('$(ServerPackZip)')">
     <EmbeddedResource Include="$(ServerPackZip)" LogicalName="TerraNet.ServerPack.zip" />

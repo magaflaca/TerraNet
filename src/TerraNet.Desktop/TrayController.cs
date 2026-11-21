@@ -87,6 +87,8 @@ public sealed class TrayController
             _window.Hide();
             _hidden = true;
             Refresh();
+            var session = _main.Home.Session;
+            WindowsToast.Show(Loc.Get("toastTitle"), session.IsActive ? Loc.Format("toastOnline", session.WorldName) : Loc.Get("toastIdle"));
             return;
         }
         Quit();
