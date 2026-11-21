@@ -21,7 +21,8 @@ public sealed record SessionView(
     string PlayersText,
     IReadOnlyList<string> Players,
     SceneMood Mood,
-    bool IsBridge)
+    bool IsBridge,
+    string ConnectingText)
 {
     public static readonly SessionView Idle = From(SessionSnapshot.Idle, null);
 
@@ -71,6 +72,13 @@ public sealed record SessionView(
             running is null ? "" : $"{players.Count}/{running.MaxPlayers}",
             players,
             mood,
-            server is ServerState.Bridged);
+            server is ServerState.Bridged,
+            snapshot.Tunnel switch
+            {
+                TunnelState.Refused { Reason: Protocol.RejectReason.NoPortsAvailable } => Loc.Get("noPorts"),
+                TunnelState.Refused { Reason: Protocol.RejectReason.TooManySessions } => Loc.Get("tooManySessions"),
+                TunnelState.Refused { Reason: Protocol.RejectReason.UnsupportedVersion } => Loc.Get("updateRequired"),
+                _ => Loc.Get("connecting")
+            });
     }
 }

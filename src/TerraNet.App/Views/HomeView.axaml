@@ -87,7 +87,7 @@
 
                 <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding Session.IsConnecting}">
                   <c:PixelSprite Sprite="signal" Unit="2" Tint="{DynamicResource InkMutedBrush}" />
-                  <TextBlock Classes="muted" Text="{app:Tr connecting}" />
+                  <TextBlock Classes="muted" Text="{Binding Session.ConnectingText}" TextWrapping="Wrap" />
                 </StackPanel>
 
                 <StackPanel Spacing="8" IsVisible="{Binding Session.IsRunning}">
