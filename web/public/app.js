@@ -7,12 +7,14 @@ const TEXT = {
     download: "Download",
     join: "Friends join at",
     soon: "Coming soon",
+    bunny: "noob",
   },
   es: {
     tagline: "Abre mundos de Terraria desde tu móvil o PC y juega con tus amigos donde sea.",
     download: "Descargar",
     join: "Tus amigos entran en",
     soon: "Muy pronto",
+    bunny: "pendejo",
   },
 };
 
@@ -89,6 +91,9 @@ function scene() {
   let backdrop = null;
   let backdropKey = "";
   let celestial = { x: 0, y: 0, w: 0, h: 0 };
+  let bunny = { x: 0, y: 0, w: 0, h: 0 };
+  let speechUntil = 0;
+  const bunnyWord = t("bunny");
   let layout = null;
 
   const resize = () => {
@@ -284,7 +289,11 @@ function scene() {
     const forward = bunnyPhase < 1;
     const travel = forward ? bunnyPhase : 2 - bunnyPhase;
     const hop = Math.abs(Math.sin(t * 6)) * 3;
-    drawSprite(ctx, "bunny", snap(u * 6 + travel * (width - u * 20)), ground - 7 * u - Math.round(hop) * u + u, u, { flip: forward });
+    const bunnyX = snap(u * 6 + travel * (width - u * 20));
+    const bunnyY = ground - 7 * u - Math.round(hop) * u + u;
+    drawSprite(ctx, "bunny", bunnyX, bunnyY, u, { flip: forward });
+    bunny = { x: bunnyX - u * 4, y: bunnyY - u * 6, w: u * 16, h: u * 14 };
+    if (t < speechUntil) speak(bunnyWord, bunnyX + u * 4, bunnyY, speechUntil - t);
 
     if (isNight)
       for (let i = 0; i < 14; i++) {
@@ -306,11 +315,43 @@ function scene() {
     requestAnimationFrame(frame);
   };
 
+  const speak = (text, centerX, top, remaining) => {
+    const u = unit;
+    ctx.font = `700 ${u * 5}px "Pixelify Sans", sans-serif`;
+    const pad = u * 3;
+    const w = snap(ctx.measureText(text).width + pad * 2);
+    const h = u * 9;
+    const rise = remaining > 2 ? Math.round((2.2 - remaining) * 10) : 2;
+    const x = Math.min(Math.max(snap(centerX - w / 2), u), width - w - u);
+    const y = snap(top - h - u * (2 + rise));
+    const tail = Math.min(Math.max(snap(centerX), x + u * 3), x + w - u * 4);
+    ctx.fillStyle = "#3B2F4A";
+    ctx.fillRect(x + u, y, w - u * 2, h);
+    ctx.fillRect(x, y + u, w, h - u * 2);
+    ctx.fillRect(tail - u, y + h, u * 3, u);
+    ctx.fillRect(tail, y + h + u, u, u);
+    ctx.fillStyle = "#FFFBF3";
+    ctx.fillRect(x + u * 2, y + u, w - u * 4, h - u * 2);
+    ctx.fillRect(x + u, y + u * 2, w - u * 2, h - u * 4);
+    ctx.fillRect(tail, y + h - u, u, u * 2);
+    ctx.fillStyle = "#3B2F4A";
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
+    ctx.fillText(text, x + w / 2, y + h / 2 + u * 0.5);
+  };
+
+  const inside = (box, x, y) => x >= box.x && y >= box.y && x <= box.x + box.w && y <= box.y + box.h;
+
   document.addEventListener("pointerdown", (event) => {
     if (event.target.closest("a, button")) return;
     const ratio = canvas.width / window.innerWidth;
     const x = event.clientX * ratio;
     const y = event.clientY * ratio;
+    if (inside(bunny, x, y)) {
+      speechUntil = performance.now() / 1000 + 2.2;
+      audio.play("squeak");
+      return;
+    }
     if (x < celestial.x || y < celestial.y || x > celestial.x + celestial.w || y > celestial.y + celestial.h) return;
     toggleTheme();
   });
@@ -359,6 +400,7 @@ const audio = {
       hover: () => this.tone(1568, 0, 0.04, "triangle", 0.03),
       click: () => this.tone(1319, 0, 0.06, "square", 0.04, 1760),
       toggle: () => [1047, 1568].forEach((f, i) => this.tone(f, i * 0.05, 0.06, "square", 0.04)),
+      squeak: () => [1760, 2349, 1976].forEach((f, i) => this.tone(f, i * 0.06, 0.07, "triangle", 0.05, f * 1.2)),
       download: () => [523, 659, 784, 1047, 1319].forEach((f, i) => this.tone(f, i * 0.07, 0.18, i % 2 ? "triangle" : "square", 0.045)),
     };
     notes[kind]?.();
