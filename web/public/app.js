@@ -118,7 +118,7 @@ function scene() {
 
   const contentBox = () => {
     const ratio = width / window.innerWidth;
-    const rects = [...document.querySelectorAll(".sign, .address, .repo")].map((el) => el.getBoundingClientRect());
+    const rects = [...document.querySelectorAll(window.innerWidth > window.innerHeight ? ".sign, .address" : ".sign, .address, .repo")].map((el) => el.getBoundingClientRect());
     if (!rects.length) return null;
     return {
       left: Math.min(...rects.map((r) => r.left)) * ratio,
@@ -327,13 +327,13 @@ function scene() {
 
     if (t < speech.until) {
       const anchor = speech.who === "slime" ? [sx + u * 8, slimeY] : [bunnyX + u * 4, bunnyY];
-      speak(speech.text, anchor[0], anchor[1], speech.until - t);
+      speak(speech.text, anchor[0], anchor[1], speech.until - t, speech.who === "slime");
     }
 
     requestAnimationFrame(frame);
   };
 
-  const speak = (text, centerX, top, remaining) => {
+  const speak = (text, centerX, top, remaining, avoid) => {
     const u = unit;
     ctx.font = `700 ${u * 5}px "Pixelify Sans", sans-serif`;
     const pad = u * 3;
@@ -343,7 +343,7 @@ function scene() {
     const area = current();
     let x = Math.min(Math.max(snap(centerX - w / 2), u), width - w - u);
     let y = snap(top - h - u * (2 + rise));
-    if (y < area.contentBottom + u && x + w > area.contentLeft && x < area.contentRight) {
+    if (avoid && y < area.contentBottom + u && x + w > area.contentLeft && x < area.contentRight) {
       if (area.blocked) x = centerX > area.contentRight ? Math.max(x, snap(area.contentRight + u)) : Math.min(x, snap(area.contentLeft - w - u));
       else y = snap(area.contentBottom + u);
     }

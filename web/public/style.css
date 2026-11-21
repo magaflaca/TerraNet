@@ -285,6 +285,21 @@ main {
   transform: translateY(-2px);
 }
 
+@media (orientation: landscape) and (min-width: 700px) {
+  .repo {
+    position: fixed;
+    left: 50%;
+    bottom: 14px;
+    z-index: 1;
+    margin: 0;
+    transform: translateX(-50%);
+  }
+
+  .repo:hover {
+    transform: translate(-50%, -2px);
+  }
+}
+
 .repo-icon {
   width: 24px;
   height: auto;
