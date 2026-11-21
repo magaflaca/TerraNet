@@ -6,8 +6,12 @@ using TShockAPI;
 namespace TerraNet.ServerAgent;
 
 [ApiVersion(2, 1)]
-public sealed class AgentPlugin(Main game) : TerrariaPlugin(game)
+public sealed class AgentPlugin : TerrariaPlugin
 {
+    private const int LoadAfterTShock = 100;
+
+    public AgentPlugin(Main game) : base(game) => Order = LoadAfterTShock;
+
     public override string Name => "TerraNet";
     public override string Author => "TerraNet";
     public override string Description => "Reports server state to the host app.";
@@ -19,6 +23,8 @@ public sealed class AgentPlugin(Main game) : TerrariaPlugin(game)
 
     public override void Initialize()
     {
+        OTAPI.Hooks.Netplay.CreateTcpListener += OnCreateListener;
+        HookEvents.Terraria.NetMessage.LogMessageError += OnPacketError;
         _progress = new Timer(_ => ReportProgress(), null, ProgressInterval, ProgressInterval);
         ConsoleBridge.StartIfSuppressed();
         ServerApi.Hooks.GamePostInitialize.Register(this, OnPostInitialize);
@@ -31,6 +37,8 @@ public sealed class AgentPlugin(Main game) : TerrariaPlugin(game)
     {
         if (disposing)
         {
+            OTAPI.Hooks.Netplay.CreateTcpListener -= OnCreateListener;
+            HookEvents.Terraria.NetMessage.LogMessageError -= OnPacketError;
             ServerApi.Hooks.GamePostInitialize.Deregister(this, OnPostInitialize);
             ServerApi.Hooks.NetGreetPlayer.Deregister(this, OnGreet);
             ServerApi.Hooks.ServerLeave.Deregister(this, OnLeave);
@@ -38,6 +46,16 @@ public sealed class AgentPlugin(Main game) : TerrariaPlugin(game)
             _progress?.Dispose();
         }
         base.Dispose(disposing);
+    }
+
+    private static void OnCreateListener(object? sender, OTAPI.Hooks.Netplay.CreateTcpListenerEventArgs args) =>
+        args.Result = new RobustSocket();
+
+    private static void OnPacketError(object? sender, HookEvents.Terraria.NetMessage.LogMessageErrorEventArgs args)
+    {
+        args.ContinueExecution = false;
+        var client = args.bufferIndex >= 0 && args.bufferIndex < Netplay.Clients.Length ? Netplay.Clients[args.bufferIndex] : null;
+        Console.WriteLine($"Invariant Failed: {Terraria.Localization.Language.GetTextValue("Error.NetMessageError", args.id)} @{client?.Socket?.GetRemoteAddress()?.ToString() ?? "disconnected"}({client?.Name}). {args.exception}");
     }
 
     private void OnPostInitialize(EventArgs args)
