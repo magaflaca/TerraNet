@@ -25,7 +25,7 @@ public sealed class DeviceRegistry
             .ToDictionary();
     }
 
-    public RegistrationResult Register(DeviceId device, ReadOnlySpan<byte> secret)
+    public RegistrationResult Register(DeviceId device, ReadOnlySpan<byte> secret, IReadOnlySet<int> activePorts)
     {
         var key = device.ToString();
         var hash = DeviceCredentials.HashSecret(secret);
@@ -42,7 +42,7 @@ public sealed class DeviceRegistry
                 return RegistrationResult.Success(existing.Port);
             }
 
-            var port = AllocatePort();
+            var port = AllocatePort(activePorts);
             if (port is null)
                 return RegistrationResult.Failed(RejectReason.NoPortsAvailable);
 
@@ -52,22 +52,51 @@ public sealed class DeviceRegistry
         }
     }
 
-    private int? AllocatePort()
+    public void Touch(DeviceId device)
+    {
+        var key = device.ToString();
+        lock (_gate)
+        {
+            if (!_devices.TryGetValue(key, out var existing))
+                return;
+            _devices[key] = existing with { LastSeen = DateTimeOffset.UtcNow };
+            Persist();
+        }
+    }
+
+    public int Sweep(IReadOnlySet<int> activePorts)
+    {
+        var cutoff = DateTimeOffset.UtcNow.AddDays(-_options.PortRetentionDays);
+        lock (_gate)
+        {
+            var stale = _devices.Where(d => d.Value.LastSeen < cutoff && !d.Value.Banned && !activePorts.Contains(d.Value.Port))
+                .Select(d => d.Key)
+                .ToList();
+            foreach (var key in stale)
+                _devices.Remove(key);
+            if (stale.Count > 0)
+                Persist();
+            return stale.Count;
+        }
+    }
+
+    private int? AllocatePort(IReadOnlySet<int> activePorts)
     {
         var used = _devices.Values.Select(d => d.Port).ToHashSet();
         for (var port = _options.PortRangeStart; port <= _options.PortRangeEnd; port++)
-            if (!used.Contains(port))
+            if (!used.Contains(port) && !activePorts.Contains(port))
                 return port;
 
-        var cutoff = DateTimeOffset.UtcNow.AddDays(-_options.PortRetentionDays);
-        var stale = _devices.Where(d => d.Value.LastSeen < cutoff && !d.Value.Banned)
+        var cutoff = DateTimeOffset.UtcNow.AddHours(-_options.ReclaimIdleHours);
+        var idle = _devices.Where(d => d.Value.LastSeen < cutoff && !d.Value.Banned && !activePorts.Contains(d.Value.Port))
             .OrderBy(d => d.Value.LastSeen)
             .FirstOrDefault();
-        if (stale.Key is null)
+        if (idle.Key is null)
             return null;
 
-        _devices.Remove(stale.Key);
-        return stale.Value.Port;
+        Log.Info($"reclaimed port {idle.Value.Port} from idle device {idle.Key}");
+        _devices.Remove(idle.Key);
+        return idle.Value.Port;
     }
 
     private void Persist()

@@ -12,7 +12,8 @@ public sealed record RelayOptions
     public string CertificatePath { get; init; } = "/etc/terranet/relay.pfx";
     public int MaxSessionsPerAddress { get; init; } = 8;
     public int MaxPlayersPerSession { get; init; } = 64;
-    public int PortRetentionDays { get; init; } = 45;
+    public int PortRetentionDays { get; init; } = 14;
+    public int ReclaimIdleHours { get; init; } = 12;
 
     public static RelayOptions Load(string? path)
     {

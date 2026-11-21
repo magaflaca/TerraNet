@@ -7,5 +7,6 @@
   "certificatePath": "/etc/terranet/relay.pfx",
   "maxSessionsPerAddress": 8,
   "maxPlayersPerSession": 64,
-  "portRetentionDays": 45
+  "portRetentionDays": 14,
+  "reclaimIdleHours": 12
 }

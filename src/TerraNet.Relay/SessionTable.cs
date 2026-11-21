@@ -34,6 +34,24 @@ public sealed class SessionTable(RelayOptions options)
         }
     }
 
+    public IReadOnlySet<int> ActivePorts
+    {
+        get
+        {
+            lock (_gate)
+                return _sessions.Values.Select(s => s.Port).ToHashSet();
+        }
+    }
+
+    public IReadOnlyList<DeviceId> ActiveDevices
+    {
+        get
+        {
+            lock (_gate)
+                return _sessions.Keys.ToList();
+        }
+    }
+
     public int Count
     {
         get

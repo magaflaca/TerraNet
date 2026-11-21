@@ -10,6 +10,7 @@ namespace TerraNet.Relay;
 public sealed class RelayServer(RelayOptions options, X509Certificate2 certificate)
 {
     private static readonly TimeSpan HandshakeTimeout = TimeSpan.FromSeconds(10);
+    private static readonly TimeSpan MaintenanceInterval = TimeSpan.FromHours(1);
 
     private readonly DeviceRegistry _registry = new(options);
     private readonly SessionTable _sessions = new(options);
@@ -20,6 +21,7 @@ public sealed class RelayServer(RelayOptions options, X509Certificate2 certifica
         var listener = new TcpListener(IPAddress.Any, options.ListenPort);
         listener.Start();
         Log.Info($"relay listening on {options.ListenPort}, ports {options.PortRangeStart}-{options.PortRangeEnd}, pin {CertificatePin.Compute(certificate)}");
+        _ = MaintainAsync(cancellation);
         try
         {
             while (!cancellation.IsCancellationRequested)
@@ -34,6 +36,25 @@ public sealed class RelayServer(RelayOptions options, X509Certificate2 certifica
         finally
         {
             listener.Stop();
+        }
+    }
+
+    private async Task MaintainAsync(CancellationToken cancellation)
+    {
+        using var timer = new PeriodicTimer(MaintenanceInterval);
+        try
+        {
+            do
+            {
+                foreach (var device in _sessions.ActiveDevices)
+                    _registry.Touch(device);
+                if (_registry.Sweep(_sessions.ActivePorts) is var released and > 0)
+                    Log.Info($"released {released} idle ports");
+            }
+            while (await timer.WaitForNextTickAsync(cancellation));
+        }
+        catch (OperationCanceledException)
+        {
         }
     }
 
@@ -91,7 +112,7 @@ public sealed class RelayServer(RelayOptions options, X509Certificate2 certifica
             return;
         }
 
-        var registration = _registry.Register(hello.Device, hello.Secret.Span);
+        var registration = _registry.Register(hello.Device, hello.Secret.Span, _sessions.ActivePorts);
         if (registration.Error is { } error)
         {
             Log.Warn($"rejected {hello.Device} from {address}: {error}");
@@ -113,6 +134,7 @@ public sealed class RelayServer(RelayOptions options, X509Certificate2 certifica
         finally
         {
             _sessions.Remove(session);
+            _registry.Touch(hello.Device);
         }
     }
 }
