@@ -3,12 +3,14 @@
     "en": [
       "All TShock options in one place: accounts, UUID login, server-side characters, world rules and more",
       "PC: start with Windows and keep running next to the clock",
-      "PC: a notification tells you TerraNet is still running"
+      "PC: a notification tells you TerraNet is still running",
+      "Choose the app language in Settings"
     ],
     "es": [
       "Todas las opciones de TShock en un solo lugar: cuentas, login por UUID, personajes en el servidor, reglas del mundo y más",
       "PC: inicia con Windows y sigue activo junto al reloj",
-      "PC: una notificación te avisa que TerraNet sigue activo"
+      "PC: una notificación te avisa que TerraNet sigue activo",
+      "Elige el idioma de la app en Ajustes"
     ]
   },
   "0.1.2": {
