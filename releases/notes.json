@@ -1,4 +1,16 @@
 {
+  "0.1.3": {
+    "en": [
+      "All TShock options in one place: accounts, UUID login, server-side characters, world rules and more",
+      "PC: start with Windows and keep running next to the clock",
+      "PC: a notification tells you TerraNet is still running"
+    ],
+    "es": [
+      "Todas las opciones de TShock en un solo lugar: cuentas, login por UUID, personajes en el servidor, reglas del mundo y más",
+      "PC: inicia con Windows y sigue activo junto al reloj",
+      "PC: una notificación te avisa que TerraNet sigue activo"
+    ]
+  },
   "0.1.2": {
     "en": [
       "Fixed the phone server closing when a player leaves",
