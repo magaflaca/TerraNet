@@ -2,7 +2,7 @@ import json
 import sys
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[2]
 ART = ROOT / "art"
@@ -113,6 +113,49 @@ def tray(palette, sprites, online):
     return canvas
 
 
+def outlined(canvas, position, text, font, fill, outline, shadow):
+    draw = ImageDraw.Draw(canvas)
+    draw.fontmode = "1"
+    x, y = position
+    draw.text((x, y + 2), text, font=font, fill=shadow)
+    for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, -1), (-1, 1), (1, 1), (-1, 2), (0, 2), (1, 2)):
+        draw.text((x + dx, y + dy), text, font=font, fill=outline)
+    draw.text((x, y), text, font=font, fill=fill)
+
+
+def og(palette, sprites):
+    width, height = 240, 126
+    banner = sky(126).resize((width, height), Image.NEAREST)
+    ground = height - 12
+    for x in range(0, width, 16):
+        stamp(banner, sprites["grass"], palette, x, ground)
+    stamp(banner, sprites["cloud"], palette, 14, 10)
+    stamp(banner, sprites["cloudSmall"], palette, 186, 30)
+    stamp(banner, sprites["sun"], palette, 212, 6)
+    stamp(banner, sprites["house"], palette, 14, ground - 20)
+    stamp(banner, sprites["lamp"], palette, 41, ground - 11)
+    stamp(banner, sprites["treeBig"], palette, 196, ground - 27)
+    stamp(banner, sprites["bush"], palette, 178, ground - 5)
+    stamp(banner, sprites["slime"], palette, 112, ground - 12)
+    stamp(banner, sprites["bunny"], palette, 150, ground - 6)
+    stamp(banner, sprites["flower"], palette, 70, ground - 4)
+    stamp(banner, sprites["mushroom"], palette, 92, ground - 6)
+
+    ink = (59, 47, 74, 255)
+    title = ImageFont.truetype(str(ART / "fonts" / "PixelifySans-Bold.ttf"), 30)
+    body = ImageFont.truetype(str(ART / "fonts" / "PixelifySans-SemiBold.ttf"), 13)
+    measure = ImageDraw.Draw(banner)
+    terra = measure.textlength("Terra", font=title)
+    total = terra + measure.textlength("Net", font=title)
+    left = round((width - total) / 2)
+    outlined(banner, (left, 14), "Terra", title, (155, 229, 138, 255), ink, ink)
+    outlined(banner, (left + round(terra), 14), "Net", title, (255, 207, 92, 255), ink, ink)
+    for index, line in enumerate(("Host Terraria worlds", "from your phone or PC")):
+        size = measure.textlength(line, font=body)
+        outlined(banner, (round((width - size) / 2), 54 + index * 16), line, body, (255, 255, 255, 255), ink, ink)
+    return banner.resize((width * 5, height * 5), Image.NEAREST)
+
+
 def notch(image, radius):
     mask = Image.new("L", image.size, 255)
     w, h = image.size
@@ -178,17 +221,7 @@ def main():
     svg.append("</svg>")
     (WEB / "favicon.svg").write_text("".join(svg), encoding="utf-8")
 
-    banner = sky(120)
-    banner = banner.resize((240, 126), Image.NEAREST)
-    stamp_y = 126 - 9
-    for x in range(0, 240, 16):
-        stamp(banner, sprites["grass"], palette, x, stamp_y)
-    stamp(banner, sprites["slime"], palette, 112, stamp_y - 11)
-    stamp(banner, sprites["cloud"], palette, 20, 18)
-    stamp(banner, sprites["cloudSmall"], palette, 170, 36)
-    stamp(banner, sprites["sun"], palette, 200, 8)
-    scaled_banner = banner.resize((1200, 630), Image.NEAREST)
-    scaled_banner.save(WEB / "og.png")
+    og(palette, sprites).save(WEB / "og.png")
     print("rendered", OUT, file=sys.stderr)
 
 
