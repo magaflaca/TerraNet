@@ -1,4 +1,14 @@
 {
+  "0.1.4": {
+    "en": [
+      "Sturdier connections: players who drop no longer keep a slot busy, and the server keeps accepting players when it fills up",
+      "Clear message when all public ports are busy, retrying on its own"
+    ],
+    "es": [
+      "Conexiones más firmes: quien se desconecta ya no deja un lugar ocupado y el servidor sigue aceptando jugadores aunque se llene",
+      "Aviso claro cuando todos los puertos públicos están ocupados, y reintenta solo"
+    ]
+  },
   "0.1.3": {
     "en": [
       "All TShock options in one place: accounts, UUID login, server-side characters, world rules and more",
