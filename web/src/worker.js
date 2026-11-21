@@ -59,7 +59,7 @@ async function page(request, env) {
   const asset = await env.ASSETS.fetch(new URL("/index.html", request.url));
   const country = request.cf?.country ?? "";
   const accept = request.headers.get("accept-language") ?? "";
-  const lang = SPANISH.has(country) || (!country && accept.toLowerCase().startsWith("es")) ? "es" : "en";
+  const lang = accept.toLowerCase().startsWith("es") || SPANISH.has(country) ? "es" : "en";
   const [android, windows] = await Promise.all(PLATFORMS.map((p) => release(env, p)));
   const data = JSON.stringify({
     lang,

@@ -1,6 +1,18 @@
 const REPO = "https://github.com/magaflaca/TerraNet";
 const DATA = window.TERRANET && typeof window.TERRANET === "object" ? window.TERRANET : {};
-const LANG = DATA.lang || ((navigator.language || "en").startsWith("es") ? "es" : "en");
+const SPANISH_ZONES = /^(America\/(Guayaquil|Bogota|Lima|Caracas|Santiago|Punta_Arenas|Montevideo|Asuncion|La_Paz|Guatemala|Tegucigalpa|El_Salvador|Managua|Costa_Rica|Panama|Havana|Santo_Domingo|Puerto_Rico|Mexico_City|Monterrey|Merida|Cancun|Chihuahua|Ciudad_Juarez|Hermosillo|Mazatlan|Matamoros|Ojinaga|Bahia_Banderas|Tijuana|Argentina\/.+|Buenos_Aires|Cordoba|Mendoza)|Europe\/Madrid|Atlantic\/Canary|Africa\/(Ceuta|Malabo)|Pacific\/(Galapagos|Easter))$/;
+const LANG = pickLanguage();
+
+function pickLanguage() {
+  const first = ((navigator.languages && navigator.languages[0]) || navigator.language || "").toLowerCase();
+  if (first.startsWith("es")) return "es";
+  let zone = "";
+  try {
+    zone = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+  } catch {}
+  if (SPANISH_ZONES.test(zone)) return "es";
+  return DATA.lang === "es" ? "es" : "en";
+}
 
 const TEXT = {
   en: {
@@ -483,6 +495,7 @@ function formatSize(bytes) {
 }
 
 function applyText() {
+  document.documentElement.lang = LANG;
   document.querySelectorAll("[data-i18n]").forEach((el) => (el.textContent = t(el.dataset.i18n)));
   document.querySelectorAll("[data-repo]").forEach((el) => (el.href = REPO));
   for (const platform of ["android", "windows"]) {
