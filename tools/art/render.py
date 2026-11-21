@@ -161,8 +161,30 @@ def og(palette, sprites):
     draw.fontmode = "1"
     for index, line in enumerate(lines):
         size = measure.textlength(line, font=body)
-        draw.text((round((banner.width - size) / 2), (54 + index * 15) * 5), line, font=body, fill=ink)
+        origin = (round((banner.width - size) / 2), (54 + index * 15) * 5)
+        draw.text(origin, line, font=body, fill=ink)
+        if line.endswith("C"):
+            open_c(banner, (origin[0] + round(draw.textlength(line[:-1], font=body)), origin[1]), body, ink)
     return banner
+
+
+def open_c(canvas, origin, font, ink):
+    pad = 20
+    mask = Image.new("L", (font.size * 2, font.size * 2), 0)
+    draw = ImageDraw.Draw(mask)
+    draw.fontmode = "1"
+    draw.text((pad, pad), "C", font=font, fill=255)
+    left, top, right, bottom = mask.getbbox()
+    middle = (left + right) // 2
+    cap = 0
+    while mask.getpixel((middle, top + cap)):
+        cap += 1
+    paper = canvas.getpixel((origin[0] + middle - pad, origin[1] + (top + bottom) // 2 - pad))
+    paint = ImageDraw.Draw(canvas)
+    for y in range(top + cap * 2, bottom - cap * 2):
+        for x in range(middle, right):
+            if mask.getpixel((x, y)):
+                paint.point((origin[0] + x - pad, origin[1] + y - pad), fill=paper)
 
 
 def sign(canvas, x, y, w, h, unit):
