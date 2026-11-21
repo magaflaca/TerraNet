@@ -113,13 +113,14 @@ def tray(palette, sprites, online):
     return canvas
 
 
-def outlined(canvas, position, text, font, fill, outline, shadow):
+def outlined(canvas, position, text, font, fill, outline, shadow, thickness=1):
     draw = ImageDraw.Draw(canvas)
     draw.fontmode = "1"
     x, y = position
-    draw.text((x, y + 2), text, font=font, fill=shadow)
-    for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, -1), (-1, 1), (1, 1), (-1, 2), (0, 2), (1, 2)):
-        draw.text((x + dx, y + dy), text, font=font, fill=outline)
+    draw.text((x, y + thickness * 2), text, font=font, fill=shadow)
+    for dx in range(-thickness, thickness + 1):
+        for dy in range(-thickness, thickness * 2 + 1):
+            draw.text((x + dx, y + dy), text, font=font, fill=outline)
     draw.text((x, y), text, font=font, fill=fill)
 
 
@@ -143,17 +144,35 @@ def og(palette, sprites):
 
     ink = (59, 47, 74, 255)
     title = ImageFont.truetype(str(ART / "fonts" / "PixelifySans-Bold.ttf"), 30)
-    body = ImageFont.truetype(str(ART / "fonts" / "PixelifySans-SemiBold.ttf"), 13)
+    body = ImageFont.truetype(str(ART / "fonts" / "PixelifySans-SemiBold.ttf"), 13 * 5)
     measure = ImageDraw.Draw(banner)
     terra = measure.textlength("Terra", font=title)
     total = terra + measure.textlength("Net", font=title)
     left = round((width - total) / 2)
     outlined(banner, (left, 14), "Terra", title, (155, 229, 138, 255), ink, ink)
     outlined(banner, (left + round(terra), 14), "Net", title, (255, 207, 92, 255), ink, ink)
-    for index, line in enumerate(("Host Terraria worlds", "from your phone or PC")):
+    banner = banner.resize((width * 5, height * 5), Image.NEAREST)
+    lines = ("Host Terraria worlds", "from your phone or PC")
+    text_width = max(measure.textlength(line, font=body) for line in lines)
+    plate_width = round(text_width / 5) + 16
+    plate_left = (width - plate_width) // 2
+    sign(banner, plate_left * 5, 50 * 5, plate_width * 5, 36 * 5, 5)
+    draw = ImageDraw.Draw(banner)
+    draw.fontmode = "1"
+    for index, line in enumerate(lines):
         size = measure.textlength(line, font=body)
-        outlined(banner, (round((width - size) / 2), 54 + index * 16), line, body, (255, 255, 255, 255), ink, ink)
-    return banner.resize((width * 5, height * 5), Image.NEAREST)
+        draw.text((round((banner.width - size) / 2), (54 + index * 15) * 5), line, font=body, fill=ink)
+    return banner
+
+
+def sign(canvas, x, y, w, h, unit):
+    draw = ImageDraw.Draw(canvas)
+    ink = (59, 47, 74, 255)
+    draw.rectangle((x + unit, y + h, x + w - 1, y + h + unit - 1), fill=(201, 190, 223, 255))
+    draw.rectangle((x + unit, y, x + w - unit - 1, y + h - 1), fill=ink)
+    draw.rectangle((x, y + unit, x + w - 1, y + h - unit - 1), fill=ink)
+    draw.rectangle((x + unit, y + unit, x + w - unit - 1, y + h - unit - 1), fill=(255, 251, 243, 255))
+    draw.rectangle((x + unit, y + unit, x + w - unit - 1, y + unit * 2 - 1), fill=(255, 255, 255, 255))
 
 
 def logo(palette, sprites):
