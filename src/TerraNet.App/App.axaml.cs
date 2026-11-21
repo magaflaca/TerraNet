@@ -11,6 +11,8 @@ public partial class App : Application
 {
     public static Func<IPlatform>? PlatformFactory { get; set; }
 
+    public static Action<IClassicDesktopStyleApplicationLifetime, MainWindow, MainViewModel>? DesktopReady { get; set; }
+
     public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
     public override void OnFrameworkInitializationCompleted()
@@ -22,8 +24,11 @@ public partial class App : Application
         switch (ApplicationLifetime)
         {
             case IClassicDesktopStyleApplicationLifetime desktop:
-                desktop.MainWindow = new MainWindow { DataContext = new MainViewModel(host) };
+                var main = new MainViewModel(host);
+                var window = new MainWindow { DataContext = main };
+                desktop.MainWindow = window;
                 desktop.ShutdownRequested += (_, e) => StopBeforeExit(host, desktop, e);
+                DesktopReady?.Invoke(desktop, window, main);
                 break;
             case IActivityApplicationLifetime activity:
                 activity.MainViewFactory = () => new MainView { DataContext = new MainViewModel(host) };

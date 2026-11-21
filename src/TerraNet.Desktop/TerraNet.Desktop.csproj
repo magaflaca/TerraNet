@@ -19,6 +19,10 @@
   <ItemGroup>
     <PackageReference Include="Avalonia.Desktop" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="../../art/build/tray-idle.ico" LogicalName="TerraNet.TrayIdle.ico" />
+    <EmbeddedResource Include="../../art/build/tray-online.ico" LogicalName="TerraNet.TrayOnline.ico" />
+  </ItemGroup>
   <ItemGroup Condition="Exists('$(ServerPackZip)')">
     <EmbeddedResource Include="$(ServerPackZip)" LogicalName="TerraNet.ServerPack.zip" />
   </ItemGroup>
