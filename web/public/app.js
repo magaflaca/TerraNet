@@ -1,8 +1,10 @@
 const REPO = "https://github.com/magaflaca/TerraNet";
 const DATA = window.TERRANET && typeof window.TERRANET === "object" ? window.TERRANET : {};
-const LANG = pickLanguage();
+let LANG = pickLanguage();
 
 function pickLanguage() {
+  const stored = localStorageGet("terranet-lang");
+  if (stored === "es" || stored === "en") return stored;
   const first = ((navigator.languages && navigator.languages[0]) || navigator.language || "").toLowerCase();
   if (first.startsWith("es")) return "es";
   return DATA.lang === "es" ? "es" : "en";
@@ -105,9 +107,12 @@ function scene() {
   let bunny = { x: 0, y: 0, w: 0, h: 0 };
   let slimeBox = { x: 0, y: 0, w: 0, h: 0 };
   let chest = { x: 0, y: 0, w: 0, h: 0 };
+  let door = { x: 0, y: 0, w: 0, h: 0 };
+  let pane = { x: 0, y: 0, w: 0, h: 0 };
   let speech = { who: null, text: "", until: 0 };
   let lastLine = -1;
-  const lines = (TEXT[LANG] || TEXT.en).slime;
+  const slimeLines = () => (TEXT[LANG] || TEXT.en).slime;
+  let mushrooms = [];
   let layout = null;
 
   const resize = () => {
@@ -225,7 +230,15 @@ function scene() {
     const ground = h + u * 2;
     const place = (name, x) => {
       const rows = atlas.sprites[name];
-      if (rows) drawSprite(g, name, Math.round(x / u) * u, ground - rows.length * u + u, u);
+      if (!rows) return;
+      const px = Math.round(x / u) * u;
+      const py = ground - rows.length * u + u;
+      drawSprite(g, name, px, py, u);
+      if (name.startsWith("house")) {
+        door = { x: px + 13 * u, y: py + 9 * u, w: 8 * u, h: 12 * u };
+        pane = { x: px + 3 * u, y: py + 8 * u, w: 8 * u, h: 8 * u };
+      }
+      if (name === "mushroom") mushrooms.push({ x: px - u, y: py - u, w: (rows[0].length + 2) * u, h: (rows.length + 2) * u });
     };
     const lit = night();
     const row = (items, start, direction) => {
@@ -238,6 +251,9 @@ function scene() {
       }
     };
     const { left, right, blocked } = current();
+    door = { x: 0, y: 0, w: 0, h: 0 };
+    pane = { x: 0, y: 0, w: 0, h: 0 };
+    mushrooms = [];
     for (let i = 0; i < 18; i++) place(hash(i * 3) > 0.5 ? "flower" : "tuft", hash(i * 7 + 1) * width);
     row([[lit ? "lampLit" : "lamp", 3], [lit ? "houseLit" : "house", 3], ["bush", 2], ["treeBig", 4], ["flower", 6], ["tree", 3], ["bush", 5], ["treeBig", 3], ["mushroom", 4], ["tree", 3]], left, -1);
     row([[null, blocked ? 22 : 0], ["mushroom", 3], ["tree", 3], ["bush", 4], ["treeBig", 4], ["tuft", 6], ["tree", 3], ["bush", 5], ["treeBig", 3], ["mushroom", 4]], right, 1);
@@ -377,6 +393,7 @@ function scene() {
   };
 
   const randomLine = () => {
+    const lines = slimeLines();
     let index = Math.floor(Math.random() * lines.length);
     if (index === lastLine) index = (index + 1) % lines.length;
     lastLine = index;
@@ -391,6 +408,9 @@ function scene() {
     if (inside(bunny, x, y)) return "bunny";
     if (inside(slimeBox, x, y)) return "slime";
     if (inside(chest, x, y)) return "chest";
+    if (inside(door, x, y)) return "door";
+    if (inside(pane, x, y)) return "window";
+    if (mushrooms.some((box) => inside(box, x, y))) return "mushroom";
     if (inside(celestial, x, y)) return "sky";
     return null;
   };
@@ -410,6 +430,22 @@ function scene() {
       case "chest":
         audio.play("chest");
         window.open(REPO, "_blank", "noopener");
+        break;
+      case "door":
+        audio.play("chest");
+        window.open("/terms", "_blank", "noopener");
+        break;
+      case "mushroom":
+        LANG = LANG === "es" ? "en" : "es";
+        localStorageSet("terranet-lang", LANG);
+        applyText();
+        invalidate();
+        audio.play("boing");
+        say("slime", LANG === "es" ? "¡ahora en español!" : "now in English!");
+        break;
+      case "window":
+        audio.play("chest");
+        window.open("/privacy", "_blank", "noopener");
         break;
       case "sky":
         toggleTheme();
