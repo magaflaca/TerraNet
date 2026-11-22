@@ -524,9 +524,27 @@ function formatSize(bytes) {
   return bytes ? `${(bytes / 1048576).toFixed(0)} MB` : "";
 }
 
+function openC(el) {
+  const text = el.textContent;
+  if (!text.includes("C")) return;
+  el.textContent = "";
+  text.split("C").forEach((part, index) => {
+    if (index > 0) {
+      const glyph = document.createElement("span");
+      glyph.className = "open-c";
+      glyph.textContent = "C";
+      el.append(glyph);
+    }
+    if (part) el.append(part);
+  });
+}
+
 function applyText() {
   document.documentElement.lang = LANG;
-  document.querySelectorAll("[data-i18n]").forEach((el) => (el.textContent = t(el.dataset.i18n)));
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    el.textContent = t(el.dataset.i18n);
+    openC(el);
+  });
   document.querySelectorAll("[data-repo]").forEach((el) => (el.href = REPO));
   for (const platform of ["android", "windows"]) {
     const info = DATA[platform];
@@ -535,6 +553,7 @@ function applyText() {
     if (info) meta.textContent = [`v${info.version}`, formatSize(info.size)].filter(Boolean).join(" · ");
     else {
       meta.textContent = t("soon");
+      openC(meta);
       link.removeAttribute("href");
       link.style.opacity = "0.7";
     }
