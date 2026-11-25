@@ -10,7 +10,7 @@
   <a href="https://github.com/magaflaca/TerraNet/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/magaflaca/TerraNet?style=flat-square&color=5fc970"></a>
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-GPL--3.0-ffcf5c?style=flat-square"></a>
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-Android%20%7C%20Windows-86cbff?style=flat-square">
-  <img alt="Terraria" src="https://img.shields.io/badge/Terraria-1.4.5-9be58a?style=flat-square">
+  <img alt="Terraria" src="https://img.shields.io/badge/Terraria-1.4.5%20%7C%201.4.6-9be58a?style=flat-square">
 </p>
 
 <p align="center">
@@ -28,6 +28,8 @@ TerraNet runs a Terraria server on your own device and gives it a public address
 
 - Android app and a single `TerraNet.exe` for Windows
 - Create, import, export and rename worlds, or host the world you already opened in Terraria
+- Players on Terraria 1.4.5 and 1.4.6 can play together, and worlds made in 1.4.6 can be imported
+- Console bridge: the app shows an internet server in the local games of the consoles on your network and relays the connection
 - Your own public address and port, reserved for your device
 - Vanilla by default, with every TShock option one tap away: PvP, spawn protection, anti-cheat, accounts, UUID login, server-side characters, plugins
 - Custom welcome message with Terraria color tags
