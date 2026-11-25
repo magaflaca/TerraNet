@@ -174,6 +174,8 @@ public sealed class HostSession
     private ProcessSpec BuildSpec(WorldEntry world, int port)
     {
         var current = _environment.Worlds.Find(world.Profile.Id) ?? world;
+        if (current.Generated)
+            WorldFormat.TryMakeCompatible(current.FilePath);
         return LaunchPlan.Build(_environment.Pack, _environment.Paths, new ServerLaunch(current, _environment.Settings.Current, port), _environment.Command);
     }
 

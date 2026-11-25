@@ -1,5 +1,6 @@
 using TerraNet.Core.Hosting;
 using TerraNet.Core;
+using TerraNet.Core.Proxy;
 using TerraNet.Core.Session;
 using TerraNet.Core.Settings;
 using TerraNet.Core.Updates;
@@ -21,6 +22,7 @@ public sealed class AppHost
         Plugins = new PluginLibrary(Paths);
         Settings = new SettingsService(Paths);
         Updates = new UpdateChecker(platform.Id, platform.AppVersion);
+        Proxy.Changed += platform.OnProxyChanged;
     }
 
     public static AppHost Current => _current ?? throw new InvalidOperationException("host not initialized");
@@ -35,6 +37,7 @@ public sealed class AppHost
     public PluginLibrary Plugins { get; }
     public SettingsService Settings { get; }
     public UpdateChecker Updates { get; }
+    public LanProxy Proxy { get; } = new();
 
     public event Action<double>? PrepareProgress;
 

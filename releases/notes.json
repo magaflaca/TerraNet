@@ -1,4 +1,16 @@
 {
+  "0.1.6": {
+    "en": [
+      "Terraria 1.4.6 players can join your worlds, and 1.4.5 players still can too",
+      "Worlds made in Terraria 1.4.6 can be imported and hosted",
+      "New console bridge: play internet servers from the consoles at home, this device shows them in their local games"
+    ],
+    "es": [
+      "Los jugadores con Terraria 1.4.6 pueden entrar a tus mundos, y los de 1.4.5 también",
+      "Los mundos creados en Terraria 1.4.6 se pueden importar y abrir",
+      "Nuevo puente para consolas: juega en servidores de internet desde las consolas de tu casa, este dispositivo los muestra en sus partidas locales"
+    ]
+  },
   "0.1.5": {
     "en": [
       "Export your server for a regular TShock: config, accounts, characters, plugins and, if you want, your worlds in one .zip"

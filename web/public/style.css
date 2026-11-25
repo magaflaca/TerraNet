@@ -384,3 +384,8 @@ main {
     animation: none;
   }
 }
+
+.open-c {
+  display: inline-block;
+  clip-path: polygon(0 0, 100% 0, 100% 40%, 55% 40%, 55% 66%, 100% 66%, 100% 100%, 0 100%);
+}
