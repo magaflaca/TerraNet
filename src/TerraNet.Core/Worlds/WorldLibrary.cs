@@ -33,7 +33,7 @@ public sealed class WorldLibrary(AppPaths paths)
         WorldFileInfo? info;
         await using (var file = File.OpenRead(target))
             info = WorldFileReader.TryRead(file);
-        if (info is null)
+        if (info is null || !WorldFormat.TryMakeCompatible(target))
         {
             File.Delete(target);
             return null;
