@@ -4,6 +4,7 @@ using Android.Media;
 using AndroidX.Core.Content;
 using TerraNet.App.Services;
 using TerraNet.Core.Hosting;
+using TerraNet.Core.Proxy;
 using TerraNet.Core.Session;
 using TerraNet.Core.Updates;
 using AndroidApp = Android.App.Application;
@@ -102,6 +103,12 @@ public sealed class AndroidPlatform(AndroidApp context) : IPlatform
         HostService.Ensure(context);
         if (Interlocked.Exchange(ref _askedExemption, 1) == 0 && MainActivity.Current is { } activity)
             activity.RunOnUiThread(activity.RequestBackgroundExemption);
+    }
+
+    public void OnProxyChanged(ProxySnapshot snapshot)
+    {
+        if (snapshot.IsActive)
+            HostService.EnsureProxy(context);
     }
 
     public Task<bool> ShareAsync(string text)

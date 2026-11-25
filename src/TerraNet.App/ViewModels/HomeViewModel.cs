@@ -25,9 +25,24 @@ public sealed partial class HomeViewModel : ObservableObject
             _preparing = p;
             Refresh();
         });
+        _host.Proxy.Changed += snapshot => Dispatcher.UIThread.Post(() => Proxy = snapshot);
+        _proxy = _host.Proxy.Snapshot;
         Reload();
         _ = AttachAsync();
     }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ProxyLine), nameof(ProxyOn))]
+    private Core.Proxy.ProxySnapshot _proxy;
+
+    public bool ProxyOn => Proxy.Status == Core.Proxy.ProxyStatus.Running;
+
+    public string ProxyLine => Proxy.Status switch
+    {
+        Core.Proxy.ProxyStatus.Running => Loc.Format("proxyActive", Proxy.World?.Name ?? Proxy.Host),
+        Core.Proxy.ProxyStatus.Probing => Loc.Get("proxyProbing"),
+        _ => Loc.Get("proxyTile")
+    };
 
     public ObservableCollection<WorldItemViewModel> Worlds { get; } = [];
 
@@ -56,6 +71,7 @@ public sealed partial class HomeViewModel : ObservableObject
     {
         Reload();
         Session = SessionView.From(_snapshot, _preparing);
+        OnPropertyChanged(nameof(ProxyLine));
     }
 
     private void Bind(HostSession session)

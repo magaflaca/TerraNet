@@ -1,0 +1,202 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:TerraNet.App.ViewModels"
+             xmlns:v="using:TerraNet.App.Views"
+             xmlns:c="using:TerraNet.App.Controls"
+             xmlns:app="using:TerraNet.App"
+             x:Class="TerraNet.App.Views.ProxyView"
+             x:DataType="vm:ProxyViewModel">
+  <UserControl.Styles>
+    <Style Selector="c|PixelFrame.step">
+      <Setter Property="Fill" Value="{DynamicResource AccentSoftBrush}" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Width" Value="30" />
+      <Setter Property="Height" Value="30" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="c|PixelFrame.step > TextBlock">
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+  </UserControl.Styles>
+
+  <c:PixelFrame Classes="sheet tall">
+    <Grid RowDefinitions="Auto,*,Auto">
+      <v:PageHeader Title="{app:Tr proxyTitle}" />
+
+      <ScrollViewer Grid.Row="1">
+        <StackPanel MaxWidth="560" Margin="16,8,16,16" Spacing="16">
+          <c:PixelFrame Classes="card" Fill="{DynamicResource AccentSoftBrush}" Padding="16,18">
+            <Grid ColumnDefinitions="Auto,*">
+              <Grid ColumnDefinitions="Auto,Auto" VerticalAlignment="Center" Margin="0,0,14,0">
+                <c:PixelSprite Classes="bob" Sprite="broadcast" Unit="4" Tint="{DynamicResource InkBrush}" />
+                <c:PixelSprite Grid.Column="1" Classes="twinkle" Sprite="sparkle" Unit="2" VerticalAlignment="Top" />
+              </Grid>
+              <TextBlock Grid.Column="1" Text="{app:Tr proxyHint}" TextWrapping="Wrap" VerticalAlignment="Center" FontSize="15" />
+            </Grid>
+          </c:PixelFrame>
+
+          <StackPanel Spacing="16" IsVisible="{Binding !IsRunning}">
+            <c:PixelFrame Classes="card">
+              <StackPanel Spacing="12">
+                <Grid ColumnDefinitions="Auto,*">
+                  <c:PixelFrame Classes="step"><TextBlock Text="1" /></c:PixelFrame>
+                  <TextBlock Grid.Column="1" Margin="12,0,0,0" Text="{app:Tr proxyStep1}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                </Grid>
+                <Grid ColumnDefinitions="Auto,*">
+                  <c:PixelFrame Classes="step"><TextBlock Text="2" /></c:PixelFrame>
+                  <TextBlock Grid.Column="1" Margin="12,0,0,0" Text="{app:Tr proxyStep2}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                </Grid>
+                <Grid ColumnDefinitions="Auto,*">
+                  <c:PixelFrame Classes="step"><TextBlock Text="3" /></c:PixelFrame>
+                  <TextBlock Grid.Column="1" Margin="12,0,0,0" Text="{app:Tr proxyStep3}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                </Grid>
+              </StackPanel>
+            </c:PixelFrame>
+
+            <Grid ColumnDefinitions="*,10,110" IsEnabled="{Binding IsSetup}">
+              <StackPanel>
+                <TextBlock Classes="label" Text="{app:Tr serverAddress}" />
+                <c:PixelFrame Classes="field">
+                  <TextBox Text="{Binding Address}" MaxLength="120" PlaceholderText="play.hacks.win" />
+                </c:PixelFrame>
+              </StackPanel>
+              <StackPanel Grid.Column="2">
+                <TextBlock Classes="label" Text="{app:Tr port}" />
+                <c:PixelFrame Classes="field">
+                  <TextBox Text="{Binding Port}" MaxLength="5" />
+                </c:PixelFrame>
+              </StackPanel>
+            </Grid>
+
+            <c:PixelFrame Classes="card pop" Padding="14,12" IsVisible="{Binding IsProbing}">
+              <StackPanel Orientation="Horizontal" Spacing="12">
+                <c:PixelSprite Classes="twinkle" Sprite="signal" Unit="2" Tint="{DynamicResource InkMutedBrush}" VerticalAlignment="Center" />
+                <TextBlock Classes="muted" Text="{app:Tr proxyProbing}" VerticalAlignment="Center" />
+              </StackPanel>
+            </c:PixelFrame>
+
+            <c:PixelFrame Classes="card pop" Padding="14,12" IsVisible="{Binding IsFailed}">
+              <Grid ColumnDefinitions="Auto,*">
+                <c:PixelSprite Sprite="heartEmpty" Unit="2" VerticalAlignment="Center" Margin="0,0,12,0" />
+                <TextBlock Grid.Column="1" Text="{Binding ErrorText}" TextWrapping="Wrap" VerticalAlignment="Center" />
+              </Grid>
+            </c:PixelFrame>
+          </StackPanel>
+
+          <StackPanel Spacing="16" IsVisible="{Binding IsRunning}">
+            <c:PixelFrame Classes="card pop" Fill="{DynamicResource SurfaceAltBrush}">
+              <StackPanel Spacing="14">
+                <Grid ColumnDefinitions="Auto,*">
+                  <c:PixelSprite Sprite="world" Unit="3" VerticalAlignment="Top" Margin="0,2,12,0" />
+                  <StackPanel Grid.Column="1" Spacing="6">
+                    <TextBlock Classes="h2" Text="{Binding WorldName}" TextTrimming="CharacterEllipsis" />
+                    <WrapPanel>
+                      <c:PixelFrame Classes="chip" Margin="0,0,6,6">
+                        <TextBlock Text="{Binding SizeLabel}" FontSize="13" />
+                      </c:PixelFrame>
+                      <c:PixelFrame Classes="chip" Margin="0,0,6,6">
+                        <StackPanel Orientation="Horizontal" Spacing="5">
+                          <c:PixelSprite Sprite="{Binding DifficultySprite}" Unit="1" />
+                          <TextBlock Text="{Binding DifficultyLabel}" FontSize="13" />
+                        </StackPanel>
+                      </c:PixelFrame>
+                      <c:PixelFrame Classes="chip" Margin="0,0,6,6">
+                        <c:PixelSprite Sprite="{Binding EvilSprite}" Unit="1" />
+                      </c:PixelFrame>
+                      <c:PixelFrame Classes="chip" Margin="0,0,6,6">
+                        <TextBlock Text="{Binding VersionLabel}" FontSize="13" />
+                      </c:PixelFrame>
+                      <c:PixelFrame Classes="chip" Margin="0,0,6,6" IsVisible="{Binding IsProtected}">
+                        <StackPanel Orientation="Horizontal" Spacing="5">
+                          <c:PixelSprite Sprite="lock" Unit="1" Tint="{DynamicResource InkBrush}" />
+                          <TextBlock Text="{app:Tr proxyProtected}" FontSize="13" />
+                        </StackPanel>
+                      </c:PixelFrame>
+                    </WrapPanel>
+                  </StackPanel>
+                </Grid>
+
+                <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding IsVisible}">
+                  <c:PixelSprite Classes="bob" Sprite="heart" Unit="2" VerticalAlignment="Center" />
+                  <TextBlock Classes="h2" Text="{app:Tr proxyLive}" VerticalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding IsUnreachable}">
+                  <c:PixelSprite Classes="twinkle" Sprite="signal" Unit="2" Tint="{DynamicResource InkMutedBrush}" VerticalAlignment="Center" />
+                  <TextBlock Classes="muted" Text="{app:Tr proxyServerDown}" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <StackPanel Spacing="8">
+                  <Grid ColumnDefinitions="Auto,*,Auto">
+                    <c:PixelSprite Sprite="person" Unit="2" Margin="0,0,8,0" />
+                    <TextBlock Grid.Column="1" Classes="label" Margin="0" VerticalAlignment="Center" Text="{app:Tr proxyThrough}" />
+                    <TextBlock Grid.Column="2" Classes="label" Margin="0" VerticalAlignment="Center" Text="{Binding ClientsText}" />
+                  </Grid>
+                  <Grid ColumnDefinitions="Auto,*,Auto" IsVisible="{Binding HasServerPlayers}">
+                    <c:PixelSprite Sprite="globe" Unit="2" Margin="0,0,8,0" Tint="{DynamicResource InkBrush}" />
+                    <TextBlock Grid.Column="1" Classes="label" Margin="0" VerticalAlignment="Center" Text="{app:Tr proxyOnServer}" />
+                    <TextBlock Grid.Column="2" Classes="label" Margin="0" VerticalAlignment="Center" Text="{Binding ServerPlayersText}" />
+                  </Grid>
+                </StackPanel>
+
+                <c:PixelFrame Classes="chip" HorizontalAlignment="Left" IsVisible="{Binding IsTranslating}">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <c:PixelSprite Classes="twinkle" Sprite="sparkle" Unit="1" />
+                    <TextBlock Text="{app:Tr proxyTranslating}" FontSize="13" />
+                  </StackPanel>
+                </c:PixelFrame>
+              </StackPanel>
+            </c:PixelFrame>
+
+            <c:PixelFrame Classes="card" Padding="14,12" IsVisible="{Binding IsLegacy}">
+              <Grid ColumnDefinitions="Auto,*">
+                <c:PixelSprite Sprite="sparkle" Unit="2" VerticalAlignment="Top" Margin="0,2,12,0" />
+                <TextBlock Grid.Column="1" Classes="muted" Text="{app:Tr proxyLegacy}" TextWrapping="Wrap" FontSize="13" />
+              </Grid>
+            </c:PixelFrame>
+
+            <StackPanel Spacing="12">
+              <StackPanel>
+                <TextBlock Classes="label" Text="{app:Tr proxyRemote}" />
+                <c:PixelFrame Classes="field" Padding="10,8">
+                  <SelectableTextBlock Text="{Binding RemoteEndpoint}" FontSize="16" FontWeight="Bold"
+                                       Foreground="{DynamicResource InkBrush}" TextTrimming="CharacterEllipsis" />
+                </c:PixelFrame>
+              </StackPanel>
+              <StackPanel IsVisible="{Binding HasLocalEndpoint}">
+                <TextBlock Classes="label" Text="{app:Tr proxyManual}" />
+                <c:PixelFrame Classes="field" Padding="10,6">
+                  <Grid ColumnDefinitions="*,Auto">
+                    <SelectableTextBlock Text="{Binding LocalEndpoint}" FontSize="19" FontWeight="Bold"
+                                         Foreground="{DynamicResource GoldBrush}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                    <Button Grid.Column="1" Classes="ghost" Command="{Binding CopyLocalCommand}">
+                      <c:PixelSprite Sprite="copy" Unit="2" />
+                    </Button>
+                  </Grid>
+                </c:PixelFrame>
+              </StackPanel>
+            </StackPanel>
+          </StackPanel>
+        </StackPanel>
+      </ScrollViewer>
+
+      <Border Grid.Row="2">
+        <Panel MaxWidth="560" Margin="16,8,16,16">
+          <Button Classes="primary" HorizontalAlignment="Stretch" Command="{Binding StartCommand}" IsVisible="{Binding !IsActive}">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <c:PixelSprite Sprite="signal" Unit="2" />
+              <TextBlock Text="{app:Tr proxyStart}" Foreground="{DynamicResource OnPrimaryBrush}" FontSize="18" />
+            </StackPanel>
+          </Button>
+          <Button Classes="danger" HorizontalAlignment="Stretch" Command="{Binding StopCommand}" IsVisible="{Binding IsActive}">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <c:PixelSprite Sprite="stop" Unit="2" />
+              <TextBlock Text="{app:Tr proxyStop}" Foreground="{DynamicResource OnPrimaryBrush}" FontSize="18" />
+            </StackPanel>
+          </Button>
+        </Panel>
+      </Border>
+    </Grid>
+  </c:PixelFrame>
+</UserControl>

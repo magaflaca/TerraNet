@@ -6,6 +6,7 @@ using Android.OS;
 using TerraNet.App.Services;
 using TerraNet.Core.Hosting;
 using TerraNet.Core.Localization;
+using TerraNet.Core.Proxy;
 using TerraNet.Core.Session;
 
 namespace TerraNet.Android;
@@ -18,6 +19,7 @@ public sealed class HostService : Service
     private const int NotificationId = 1;
     private const string ActionStop = "win.hacks.terranet.STOP";
     private const string ActionResume = "win.hacks.terranet.RESUME";
+    private const string ActionProxy = "win.hacks.terranet.PROXY";
 
     private static bool _running;
     private PowerManager.WakeLock? _wake;
@@ -29,6 +31,13 @@ public sealed class HostService : Service
         if (_running)
             return;
         context.StartForegroundService(new Intent(context, typeof(HostService)));
+    }
+
+    public static void EnsureProxy(Context context)
+    {
+        if (_running)
+            return;
+        context.StartForegroundService(new Intent(context, typeof(HostService)).SetAction(ActionProxy));
     }
 
     public static void Resume(Context context) =>
@@ -44,13 +53,19 @@ public sealed class HostService : Service
         else
             StartForeground(NotificationId, Build(SessionSnapshot.Idle));
         _running = true;
+        var proxy = AppHost.Current.Proxy;
+        proxy.Changed -= OnProxyChanged;
+        proxy.Changed += OnProxyChanged;
 
         if (intent?.Action == ActionStop)
         {
+            proxy.Stop();
             _ = StopSessionAsync();
             return StartCommandResult.NotSticky;
         }
 
+        if (intent?.Action == ActionProxy)
+            OnProxyChanged(proxy.Snapshot);
         _ = AttachAsync(intent?.Action == ActionResume || intent is null);
         return StartCommandResult.Sticky;
     }
@@ -64,7 +79,8 @@ public sealed class HostService : Service
         }
         catch (Exception)
         {
-            StopSelf();
+            if (!host.Proxy.Snapshot.IsActive)
+                StopSelf();
             return;
         }
 
@@ -83,9 +99,13 @@ public sealed class HostService : Service
             StopSelf();
     }
 
+    private void OnProxyChanged(ProxySnapshot snapshot) => OnChanged(_session?.Snapshot ?? SessionSnapshot.Idle);
+
     private void OnChanged(SessionSnapshot snapshot)
     {
-        if (!snapshot.IsActive && snapshot.Server is not ServerState.Crashed)
+        var proxy = AppHost.Current.Proxy.Snapshot;
+        var serving = snapshot.IsActive || snapshot.Server is ServerState.Crashed;
+        if (!serving && !proxy.IsActive)
         {
             ReleaseLocks();
             StopForeground(StopForegroundFlags.Remove);
@@ -94,7 +114,15 @@ public sealed class HostService : Service
         }
         HoldLocks(AppHost.Current.Settings.Current.KeepAwake);
         var manager = (NotificationManager?)GetSystemService(NotificationService);
-        manager?.Notify(NotificationId, Build(snapshot));
+        manager?.Notify(NotificationId, serving ? Build(snapshot) : Build(proxy));
+    }
+
+    private Notification Build(ProxySnapshot proxy)
+    {
+        var text = proxy.Status == ProxyStatus.Running
+            ? Loc.Format("proxyNotificationText", proxy.World?.Name ?? proxy.Host, proxy.Clients)
+            : Loc.Get("proxyProbing");
+        return Build(Loc.Get("proxyNotification"), text);
     }
 
     private Notification Build(SessionSnapshot snapshot)
@@ -109,6 +137,11 @@ public sealed class HostService : Service
             ServerState.Crashed => (world, Loc.Get("crashed")),
             _ => (world, Loc.Get("starting"))
         };
+        return Build(title, text);
+    }
+
+    private Notification Build(string title, string text)
+    {
 
         var open = PendingIntent.GetActivity(this, 0, new Intent(this, typeof(MainActivity)).AddFlags(ActivityFlags.SingleTop), PendingIntentFlags.Immutable);
         var stop = PendingIntent.GetService(this, 1, new Intent(this, typeof(HostService)).SetAction(ActionStop), PendingIntentFlags.Immutable);
@@ -165,6 +198,7 @@ public sealed class HostService : Service
         _running = false;
         if (_session is not null)
             _session.Changed -= OnChanged;
+        AppHost.Current.Proxy.Changed -= OnProxyChanged;
         ReleaseLocks();
         base.OnDestroy();
     }

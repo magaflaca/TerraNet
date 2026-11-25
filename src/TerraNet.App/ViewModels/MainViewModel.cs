@@ -149,6 +149,15 @@ public sealed partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void OpenBridge() => Navigate(new BridgeViewModel(Host, this));
 
+    [RelayCommand]
+    private void OpenProxy() => Navigate(new ProxyViewModel(Host, this));
+
+    partial void OnPageChanged(ObservableObject? oldValue, ObservableObject newValue)
+    {
+        if (oldValue is ProxyViewModel proxy && !_history.Contains(proxy))
+            proxy.Detach();
+    }
+
     public Task<bool> ConfirmAsync(string message, string confirm)
     {
         var dialog = new ConfirmViewModel(message, confirm, () => Dialog = null);

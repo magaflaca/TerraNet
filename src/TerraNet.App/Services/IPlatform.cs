@@ -1,4 +1,5 @@
 using TerraNet.Core.Hosting;
+using TerraNet.Core.Proxy;
 using TerraNet.Core.Session;
 using TerraNet.Core.Updates;
 
@@ -20,6 +21,10 @@ public interface IPlatform
     Task<ServerPack> PreparePackAsync(IProgress<double> progress);
 
     void OnSessionChanged(SessionSnapshot snapshot);
+
+    void OnProxyChanged(ProxySnapshot snapshot)
+    {
+    }
 
     Task<bool> ShareAsync(string text);
 
