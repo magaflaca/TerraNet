@@ -228,10 +228,10 @@
                 <c:PixelSprite Classes="bob" Sprite="broadcast" Unit="3" VerticalAlignment="Center" Margin="0,0,14,0" />
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
                   <TextBlock Classes="h2" Text="{app:Tr proxyTitle}" />
-                  <StackPanel Orientation="Horizontal" Spacing="6">
-                    <c:PixelSprite Sprite="heart" Unit="1" VerticalAlignment="Center" IsVisible="{Binding ProxyOn}" />
-                    <TextBlock Classes="muted" Text="{Binding ProxyLine}" TextWrapping="Wrap" FontSize="13" />
-                  </StackPanel>
+                  <Grid ColumnDefinitions="Auto,*">
+                    <c:PixelSprite Sprite="heart" Unit="1" VerticalAlignment="Center" Margin="0,0,6,0" IsVisible="{Binding ProxyOn}" />
+                    <TextBlock Grid.Column="1" Classes="muted" Text="{Binding ProxyLine}" TextWrapping="Wrap" FontSize="13" />
+                  </Grid>
                 </StackPanel>
                 <c:PixelSprite Grid.Column="2" Sprite="chevron" Unit="2" VerticalAlignment="Center" />
               </Grid>
