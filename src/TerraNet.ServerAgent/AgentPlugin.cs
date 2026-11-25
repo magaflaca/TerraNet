@@ -20,12 +20,15 @@ public sealed class AgentPlugin : TerrariaPlugin
     private static readonly TimeSpan ProgressInterval = TimeSpan.FromMilliseconds(500);
     private Timer? _progress;
     private double _lastProgress = -1;
+    private Compat146? _compat;
 
     public override void Initialize()
     {
         OTAPI.Hooks.Netplay.CreateTcpListener += OnCreateListener;
         HookEvents.Terraria.NetMessage.LogMessageError += OnPacketError;
         _progress = new Timer(_ => ReportProgress(), null, ProgressInterval, ProgressInterval);
+        _compat = new Compat146(this);
+        _compat.Register();
         ConsoleBridge.StartIfSuppressed();
         ServerApi.Hooks.GamePostInitialize.Register(this, OnPostInitialize);
         ServerApi.Hooks.NetGreetPlayer.Register(this, OnGreet);
@@ -44,6 +47,7 @@ public sealed class AgentPlugin : TerrariaPlugin
             ServerApi.Hooks.ServerLeave.Deregister(this, OnLeave);
             ServerApi.Hooks.WorldSave.Deregister(this, OnSave);
             _progress?.Dispose();
+            _compat?.Deregister();
         }
         base.Dispose(disposing);
     }
@@ -62,6 +66,7 @@ public sealed class AgentPlugin : TerrariaPlugin
     {
         _progress?.Dispose();
         _progress = null;
+        _compat?.YieldToStandalone();
         VanillaPermissions.Apply();
         if (Environment.GetEnvironmentVariable(AgentWire.PlayerCommandsVariable) != "1")
             VanillaCommands.Apply();
