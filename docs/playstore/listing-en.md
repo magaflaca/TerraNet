@@ -21,6 +21,8 @@ What you can do
 - Create worlds with size, difficulty, evil and seed, or import one you already have.
 - Rename and export your worlds.
 - Share the world you already opened in Terraria without starting another server.
+- Console bridge: shows an internet server in the local games of the consoles at home and relays the connection.
+- Players on Terraria 1.4.5 and 1.4.6 can join.
 - Plays like vanilla by default. Every TShock option is one tap away when you want more: PvP, spawn protection, anti-cheat, accounts, UUID login, server-side characters and world rules.
 - Add your own TShock plugins.
 - Welcome message with Terraria colors.

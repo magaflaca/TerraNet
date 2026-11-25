@@ -21,6 +21,8 @@ Lo que puedes hacer
 - Crear mundos con tamaño, dificultad, maldad y semilla, o importar uno que ya tengas.
 - Renombrar y exportar tus mundos.
 - Compartir el mundo que ya abriste en Terraria sin abrir otro servidor.
+- Puente para consolas: muestra un servidor de internet en las partidas locales de las consolas de tu casa y hace de puente.
+- Entran jugadores con Terraria 1.4.5 y 1.4.6.
 - Se juega como vanilla por defecto. Si quieres más, tienes a mano todas las opciones de TShock: PvP, protección del spawn, anti-trampas, cuentas, login por UUID, personajes guardados en el servidor y reglas del mundo.
 - Agregar tus propios plugins de TShock.
 - Mensaje de bienvenida con los colores de Terraria.
