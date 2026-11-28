@@ -1,4 +1,14 @@
 {
+  "0.1.7": {
+    "en": [
+      "Console bridge works with any server: it no longer joins the server to check it first, so servers with name rules or plugins don't block it",
+      "The bridge turns on even if the server is not answering yet, and keeps checking on its own"
+    ],
+    "es": [
+      "El puente para consolas funciona con cualquier servidor: ya no entra al servidor para comprobarlo, así que las reglas de nombre o los plugins no lo bloquean",
+      "El puente se activa aunque el servidor todavía no responda, y lo sigue comprobando solo"
+    ]
+  },
   "0.1.6": {
     "en": [
       "Terraria 1.4.6 players can join your worlds, and 1.4.5 players still can too",
