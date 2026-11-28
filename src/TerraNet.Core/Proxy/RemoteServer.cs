@@ -8,45 +8,25 @@ public sealed record RemoteWorld(
     ushort Width,
     bool Crimson,
     int GameMode,
-    bool HardMode,
     byte MaxPlayers,
     byte Players,
-    bool PlayersKnown,
-    bool Modern,
-    bool Protected);
+    bool Modern);
 
-public enum ProbeError
-{
-    None,
-    Unreachable,
-    Rejected,
-    NoAnswer
-}
-
-public sealed record ProbeResult(RemoteWorld? World, ProbeError Error)
-{
-    public bool Success => World is not null;
-}
+public sealed record ProbeResult(bool Reachable, RemoteWorld? Info);
 
 public static class RemoteServer
 {
     public const string ModernVersion = "Terraria329";
     public const string LegacyVersion = "Terraria326";
-    public const byte DefaultMaxPlayers = 16;
+    public const byte ServerInfo = 163;
 
-    private const byte Hello = 1;
-    private const byte Kick = 2;
-    private const byte Slot = 3;
-    private const byte RequestWorld = 6;
-    private const byte ClientUuid = 68;
-    private const byte WorldData = 7;
-    private const byte PasswordRequest = 37;
-    private const byte ServerInfo = 163;
-    private const int TreeTopAreas = 13;
+    private const byte DefaultMaxPlayers = 16;
+    private const ushort SmallWidth = 4200;
 
+    public static readonly TimeSpan GreetingWait = TimeSpan.FromSeconds(2);
     private static readonly TimeSpan ConnectTimeout = TimeSpan.FromSeconds(6);
-    private static readonly TimeSpan GreetingWait = TimeSpan.FromSeconds(2);
-    private static readonly TimeSpan AnswerTimeout = TimeSpan.FromSeconds(8);
+
+    public static RemoteWorld Unknown(string host) => new(host, SmallWidth, false, 0, DefaultMaxPlayers, 0, false);
 
     public static async Task<ProbeResult> ProbeAsync(string host, int port, CancellationToken cancellation)
     {
@@ -59,61 +39,32 @@ public static class RemoteServer
         }
         catch (Exception ex) when (ex is SocketException or OperationCanceledException or IOException && !cancellation.IsCancellationRequested)
         {
-            return new ProbeResult(null, ProbeError.Unreachable);
+            return new ProbeResult(false, null);
         }
 
-        var stream = client.GetStream();
-        var reader = new PacketReader(stream);
         try
         {
-            if (await WaitForDataAsync(client, GreetingWait, cancellation))
-            {
-                var first = await reader.ReadAsync(cancellation);
-                if (first is { Id: ServerInfo } info && ParseServerInfo(info.Body) is { } modern)
-                    return new ProbeResult(modern, ProbeError.None);
-            }
-            return await HandshakeAsync(stream, reader, host, cancellation);
+            if (!await WaitForDataAsync(client, GreetingWait, cancellation))
+                return new ProbeResult(true, null);
+            var first = await new PacketReader(client.GetStream()).ReadFrameAsync(cancellation);
+            return new ProbeResult(true, first is { } frame && frame[2] == ServerInfo ? ParseServerInfo(frame[3..]) : null);
         }
-        catch (Exception ex) when (ex is IOException or SocketException or EndOfStreamException or OperationCanceledException && !cancellation.IsCancellationRequested)
+        catch (Exception ex) when (ex is IOException or SocketException or InvalidDataException or ObjectDisposedException)
         {
-            return new ProbeResult(null, ProbeError.NoAnswer);
+            return new ProbeResult(true, null);
         }
     }
 
-    private static async Task<bool> WaitForDataAsync(TcpClient client, TimeSpan wait, CancellationToken cancellation)
+    public static async Task<bool> WaitForDataAsync(TcpClient client, TimeSpan wait, CancellationToken cancellation)
     {
         var deadline = DateTime.UtcNow + wait;
         while (client.Available == 0)
         {
-            if (DateTime.UtcNow >= deadline)
+            if (DateTime.UtcNow >= deadline || !client.Connected)
                 return false;
             await Task.Delay(50, cancellation);
         }
         return true;
-    }
-
-    private static async Task<ProbeResult> HandshakeAsync(NetworkStream stream, PacketReader reader, string host, CancellationToken cancellation)
-    {
-        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellation);
-        timeout.CancelAfter(AnswerTimeout);
-        await stream.WriteAsync(Packet.Build(Hello, w => w.Write(LegacyVersion)), timeout.Token);
-        while (true)
-        {
-            var packet = await reader.ReadAsync(timeout.Token) ?? throw new EndOfStreamException();
-            switch (packet.Id)
-            {
-                case Kick:
-                    return new ProbeResult(null, ProbeError.Rejected);
-                case PasswordRequest:
-                    return new ProbeResult(new RemoteWorld(host, 4200, false, 0, false, DefaultMaxPlayers, 0, false, false, true), ProbeError.None);
-                case Slot:
-                    await stream.WriteAsync(Packet.Build(ClientUuid, w => w.Write(Guid.NewGuid().ToString())), timeout.Token);
-                    await stream.WriteAsync(Packet.Build(RequestWorld, _ => { }), timeout.Token);
-                    break;
-                case WorldData when ParseWorldData(packet.Body) is { } world:
-                    return new ProbeResult(world, ProbeError.None);
-            }
-        }
     }
 
     public static RemoteWorld? ParseServerInfo(byte[] body)
@@ -129,30 +80,7 @@ public static class RemoteServer
             var mode = reader.ReadInt32();
             var max = reader.ReadByte();
             var players = reader.ReadByte();
-            return new RemoteWorld(name, width, crimson, mode, false, max, players, true, true, false);
-        }
-        catch (Exception ex) when (ex is EndOfStreamException or IOException or ArgumentException)
-        {
-            return null;
-        }
-    }
-
-    public static RemoteWorld? ParseWorldData(byte[] body)
-    {
-        try
-        {
-            using var reader = new BinaryReader(new MemoryStream(body), Encoding.UTF8);
-            reader.ReadInt32();
-            reader.ReadByte();
-            reader.ReadByte();
-            var width = reader.ReadInt16();
-            reader.ReadBytes(5 * 2 + 4);
-            var name = reader.ReadString();
-            var mode = reader.ReadByte();
-            reader.ReadBytes(16 + 8 + 1 + 13 + 3 + 4 + 1 + 3 * 4 + 4 + 3 * 4 + 4 + TreeTopAreas + 4);
-            var first = reader.ReadByte();
-            var second = reader.ReadByte();
-            return new RemoteWorld(name, (ushort)width, (second & 1 << 5) != 0, mode, (first & 1 << 4) != 0, DefaultMaxPlayers, 0, false, false, false);
+            return new RemoteWorld(name, width, crimson, mode, max, players, true);
         }
         catch (Exception ex) when (ex is EndOfStreamException or IOException or ArgumentException)
         {

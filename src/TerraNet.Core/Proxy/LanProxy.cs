@@ -21,10 +21,9 @@ public sealed record ProxySnapshot(
     string? LocalAddress,
     int Clients,
     bool Translating,
-    ProbeError Error,
     bool Unreachable)
 {
-    public static readonly ProxySnapshot Idle = new(ProxyStatus.Idle, "", 0, null, 0, null, 0, false, ProbeError.None, false);
+    public static readonly ProxySnapshot Idle = new(ProxyStatus.Idle, "", 0, null, 0, null, 0, false, false);
 
     public bool IsActive => Status is ProxyStatus.Probing or ProxyStatus.Running;
 }
@@ -35,6 +34,7 @@ public sealed class LanProxy
     private const int PortRange = 20;
     private const int BufferSize = 16 * 1024;
     private static readonly TimeSpan RefreshInterval = TimeSpan.FromSeconds(60);
+    private static readonly TimeSpan RetryInterval = TimeSpan.FromSeconds(15);
     private static readonly TimeSpan ConnectTimeout = TimeSpan.FromSeconds(8);
 
     private readonly Lock _gate = new();
@@ -83,24 +83,20 @@ public sealed class LanProxy
         try
         {
             var probe = await RemoteServer.ProbeAsync(host, port, cancellation);
-            if (!probe.Success)
-            {
-                Update(generation, s => s with { Status = ProxyStatus.Failed, Error = probe.Error });
-                return;
-            }
-
+            var world = probe.Info ?? RemoteServer.Unknown(host);
             using var listener = Listen(out var localPort);
             var translator = new LegacyTranslator();
             Update(generation, s => s with
             {
                 Status = ProxyStatus.Running,
-                World = probe.World,
+                World = world,
                 LocalPort = localPort,
-                LocalAddress = LanAnnouncer.LocalAddress()
+                LocalAddress = LanAnnouncer.LocalAddress(),
+                Unreachable = !probe.Reachable
             });
-            AppLog.Write($"proxy {host}:{port} on {localPort} modern={probe.World!.Modern}");
+            AppLog.Write($"proxy {host}:{port} on {localPort} reachable={probe.Reachable} modern={world.Modern}");
 
-            var announce = LanAnnouncer.RunAsync(() => LanAnnouncer.Build(Snapshot.World ?? probe.World!, localPort, PlayerCount()), cancellation);
+            var announce = LanAnnouncer.RunAsync(() => LanAnnouncer.Build(Snapshot.World ?? world, localPort, PlayerCount()), cancellation);
             var refresh = RefreshAsync(generation, host, port, cancellation);
             while (!cancellation.IsCancellationRequested)
             {
@@ -115,14 +111,14 @@ public sealed class LanProxy
         {
             AppLog.Error("proxy", ex);
             if (!cancellation.IsCancellationRequested)
-                Update(generation, s => s with { Status = ProxyStatus.Failed, Error = ProbeError.None });
+                Update(generation, s => s with { Status = ProxyStatus.Failed });
         }
     }
 
     private int PlayerCount()
     {
         var snapshot = Snapshot;
-        return snapshot.World is { PlayersKnown: true } world ? world.Players : snapshot.Clients;
+        return snapshot.World is { Modern: true } world ? world.Players : snapshot.Clients;
     }
 
     private static TcpListener Listen(out int port)
@@ -169,14 +165,11 @@ public sealed class LanProxy
         {
             while (!cancellation.IsCancellationRequested)
             {
-                await Task.Delay(RefreshInterval, cancellation);
-                if (Snapshot.World is not { Modern: true })
+                await Task.Delay(Snapshot.Unreachable ? RetryInterval : RefreshInterval, cancellation);
+                if (Snapshot is { Unreachable: false, World.Modern: false })
                     continue;
                 var probe = await RemoteServer.ProbeAsync(host, port, cancellation);
-                if (probe.World is { Modern: true } world)
-                    Update(generation, s => s with { World = world, Unreachable = false });
-                else if (probe.Error == ProbeError.Unreachable)
-                    Update(generation, s => s with { Unreachable = true });
+                Update(generation, s => s with { World = probe.Info ?? s.World, Unreachable = !probe.Reachable });
             }
         }
         catch (OperationCanceledException)
@@ -210,26 +203,36 @@ public sealed class LanProxy
             var consoleStream = console.GetStream();
             var remoteStream = remote.GetStream();
             using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellation);
+            if (Snapshot.Unreachable)
+                Update(generation, s => s with { Unreachable = false });
+
+            byte[]? greeting = null;
+            if (await RemoteServer.WaitForDataAsync(remote, RemoteServer.GreetingWait, linked.Token))
+                greeting = await new PacketReader(remoteStream).ReadFrameAsync(linked.Token);
+            var modern = greeting is { } first && first[2] == RemoteServer.ServerInfo;
+            if (modern && RemoteServer.ParseServerInfo(greeting![3..]) is { } info)
+                Update(generation, s => s with { World = info });
+            if (greeting is not null)
+                await consoleStream.WriteAsync(greeting, linked.Token);
+
             var consoleFrames = new PacketReader(consoleStream);
             var hello = await consoleFrames.ReadFrameAsync(linked.Token);
             if (hello is null)
                 return;
-            translate = Snapshot.World is { Modern: false } && LegacyTranslator.IsModernHello(hello);
+            translate = !modern && LegacyTranslator.IsModernHello(hello);
             if (translate)
             {
                 Adjust(generation, ref _translating, 1);
                 hello = LegacyTranslator.LegacyHello();
             }
             await remoteStream.WriteAsync(hello, linked.Token);
-            if (Snapshot.Unreachable)
-                Update(generation, s => s with { Unreachable = false });
 
             var upstream = translate
                 ? RelayFramesAsync(consoleFrames, remoteStream, frame => { translator.FromClient(frame); return frame; }, linked.Token)
                 : CopyAsync(consoleStream, remoteStream, linked.Token);
             var downstream = translate
                 ? RelayFramesAsync(new PacketReader(remoteStream), consoleStream, translator.FromServer, linked.Token)
-                : WatchServerAsync(generation, remoteStream, consoleStream, linked.Token);
+                : CopyAsync(remoteStream, consoleStream, linked.Token);
             await Task.WhenAny(upstream, downstream);
             await linked.CancelAsync();
             await Task.WhenAll(Quiet(upstream), Quiet(downstream));
@@ -243,18 +246,6 @@ public sealed class LanProxy
                 Adjust(generation, ref _translating, -1);
             Adjust(generation, ref _clients, -1);
         }
-    }
-
-    private async Task WatchServerAsync(int generation, NetworkStream remote, NetworkStream console, CancellationToken cancellation)
-    {
-        var frames = new PacketReader(remote);
-        var first = await frames.ReadFrameAsync(cancellation);
-        if (first is null)
-            return;
-        if (first[2] == 163 && RemoteServer.ParseServerInfo(first[3..]) is { } world)
-            Update(generation, s => s with { World = world });
-        await console.WriteAsync(first, cancellation);
-        await CopyAsync(remote, console, cancellation);
     }
 
     private static async Task RelayFramesAsync(PacketReader source, Stream destination, Func<byte[], byte[]> transform, CancellationToken cancellation)

@@ -80,7 +80,7 @@
             <c:PixelFrame Classes="card pop" Padding="14,12" IsVisible="{Binding IsFailed}">
               <Grid ColumnDefinitions="Auto,*">
                 <c:PixelSprite Sprite="heartEmpty" Unit="2" VerticalAlignment="Center" Margin="0,0,12,0" />
-                <TextBlock Grid.Column="1" Text="{Binding ErrorText}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Text="{app:Tr proxyFailed}" TextWrapping="Wrap" VerticalAlignment="Center" />
               </Grid>
             </c:PixelFrame>
           </StackPanel>
@@ -92,7 +92,7 @@
                   <c:PixelSprite Sprite="world" Unit="3" VerticalAlignment="Top" Margin="0,2,12,0" />
                   <StackPanel Grid.Column="1" Spacing="6">
                     <TextBlock Classes="h2" Text="{Binding WorldName}" TextTrimming="CharacterEllipsis" />
-                    <WrapPanel>
+                    <WrapPanel IsVisible="{Binding HasInfo}">
                       <c:PixelFrame Classes="chip" Margin="0,0,6,6">
                         <TextBlock Text="{Binding SizeLabel}" FontSize="13" />
                       </c:PixelFrame>
@@ -106,13 +106,7 @@
                         <c:PixelSprite Sprite="{Binding EvilSprite}" Unit="1" />
                       </c:PixelFrame>
                       <c:PixelFrame Classes="chip" Margin="0,0,6,6">
-                        <TextBlock Text="{Binding VersionLabel}" FontSize="13" />
-                      </c:PixelFrame>
-                      <c:PixelFrame Classes="chip" Margin="0,0,6,6" IsVisible="{Binding IsProtected}">
-                        <StackPanel Orientation="Horizontal" Spacing="5">
-                          <c:PixelSprite Sprite="lock" Unit="1" Tint="{DynamicResource InkBrush}" />
-                          <TextBlock Text="{app:Tr proxyProtected}" FontSize="13" />
-                        </StackPanel>
+                        <TextBlock Text="1.4.6" FontSize="13" />
                       </c:PixelFrame>
                     </WrapPanel>
                   </StackPanel>

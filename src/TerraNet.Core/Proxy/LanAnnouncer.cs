@@ -24,7 +24,7 @@ public static class LanAnnouncer
         writer.Write(world.GameMode);
         writer.Write(world.MaxPlayers);
         writer.Write((byte)Math.Clamp(players, 0, 255));
-        writer.Write(world.HardMode);
+        writer.Write(false);
         writer.Flush();
         return stream.ToArray();
     }
