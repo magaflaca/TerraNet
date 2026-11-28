@@ -33,9 +33,9 @@ public sealed partial class ProxyViewModel : ObservableObject
     private string _port;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsSetup), nameof(IsProbing), nameof(IsRunning), nameof(IsFailed), nameof(ErrorText),
+    [NotifyPropertyChangedFor(nameof(IsSetup), nameof(IsProbing), nameof(IsRunning), nameof(IsFailed),
         nameof(WorldName), nameof(SizeLabel), nameof(DifficultyLabel), nameof(DifficultySprite), nameof(EvilSprite),
-        nameof(VersionLabel), nameof(IsLegacy), nameof(IsProtected), nameof(ClientsText), nameof(HasServerPlayers),
+        nameof(IsLegacy), nameof(HasInfo), nameof(ClientsText), nameof(HasServerPlayers),
         nameof(ServerPlayersText), nameof(LocalEndpoint), nameof(HasLocalEndpoint), nameof(RemoteEndpoint),
         nameof(IsTranslating), nameof(IsUnreachable), nameof(IsVisible), nameof(IsActive))]
     [NotifyCanExecuteChangedFor(nameof(StartCommand))]
@@ -50,25 +50,16 @@ public sealed partial class ProxyViewModel : ObservableObject
     public bool IsVisible => IsRunning && !Snapshot.Unreachable;
     public bool IsTranslating => IsRunning && Snapshot.Translating;
 
-    public string ErrorText => Loc.Get(Snapshot.Error switch
-    {
-        ProbeError.Unreachable => "proxyUnreachable",
-        ProbeError.Rejected => "proxyRejected",
-        ProbeError.NoAnswer => "proxyNoAnswer",
-        _ => "proxyFailed"
-    });
-
     private RemoteWorld? World => Snapshot.World;
     public string WorldName => World?.Name ?? "";
     public string SizeLabel => Loc.Get(Size.ToString().ToLowerInvariant());
     public string DifficultyLabel => Loc.Get(Difficulty.ToString().ToLowerInvariant());
     public string DifficultySprite => Choices.DifficultySprite(Difficulty);
     public string EvilSprite => Choices.EvilSprite(World?.Crimson == true ? WorldEvil.Crimson : WorldEvil.Corruption);
-    public string VersionLabel => World?.Modern == true ? "1.4.6" : "1.4.5";
+    public bool HasInfo => World is { Modern: true };
     public bool IsLegacy => World is { Modern: false };
-    public bool IsProtected => World?.Protected == true;
     public string ClientsText => Snapshot.Clients.ToString();
-    public bool HasServerPlayers => World?.PlayersKnown == true;
+    public bool HasServerPlayers => HasInfo;
     public string ServerPlayersText => World is { } world ? $"{world.Players}/{world.MaxPlayers}" : "";
     public bool HasLocalEndpoint => Snapshot.LocalAddress is not null;
     public string LocalEndpoint => $"{Snapshot.LocalAddress}:{Snapshot.LocalPort}";
